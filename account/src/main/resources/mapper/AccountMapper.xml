@@ -1,0 +1,45 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ray.microservice.auth.mapper.AccountMapper">
+    <resultMap id="AccountDetial" type="Account">
+        <id property="uid" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="status" column="status"/>
+        <result property="lastlogin" column="last_login"/>
+        <collection property="roles" column="id" select="getAccountRoles"/>
+    </resultMap>
+
+    <select id="getDetialByName" resultMap="AccountDetial">
+        SELECT id, username, password, status, last_login
+        FROM t_account
+        WHERE username = #{username}
+    </select>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="uid" parameterType="Account">
+        INSERT INTO
+        t_account
+        (username,password,first_time,status)
+        VALUES
+        (#{username}, #{password},#{firsttime},#{status})
+    </insert>
+
+    <insert id="addRoleForAccount">
+        INSERT INTO
+        t_account_role_map
+        (uid, rid)
+        VALUES
+        (#{uid}, #{rid})
+    </insert>
+
+    <select id="getAllUsername" resultType="String">
+        SELECT username FROM t_account
+    </select>
+
+    <select id="getAccountRoles" resultType="Authority">
+        SELECT t_role.id, t_role.description
+        FROM t_account_role_map
+        INNER JOIN t_role
+        ON t_account_role_map.rid = t_role.id
+        AND t_account_role_map.uid = #{id}
+    </select>
+</mapper>
