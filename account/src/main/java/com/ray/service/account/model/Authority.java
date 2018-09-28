@@ -51,7 +51,7 @@ public class Authority implements GrantedAuthority {
                 desc = ROLE_DEBUG;
                 break;
             default:
-                desc = ROLE_GUEST;
+                desc = description == null ? ROLE_GUEST : description;
                 break;
         }
         return desc;

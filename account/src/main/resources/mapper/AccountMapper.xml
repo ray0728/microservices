@@ -1,16 +1,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ray.microservice.auth.mapper.AccountMapper">
+    <cache type="com.ray.service.account.redis.RedisCache"/>
     <resultMap id="AccountDetial" type="Account">
         <id property="uid" column="id"/>
         <result property="username" column="username"/>
         <result property="password" column="password"/>
         <result property="status" column="status"/>
+        <result property="firsttime" column="first_time"/>
+        <result property="times" column="login_times"/>
         <result property="lastlogin" column="last_login"/>
         <collection property="roles" column="id" select="getAccountRoles"/>
     </resultMap>
 
     <select id="getDetialByName" resultMap="AccountDetial">
-        SELECT id, username, password, status, last_login
+        SELECT *
         FROM t_account
         WHERE username = #{username}
     </select>
@@ -23,6 +26,30 @@
         (#{username}, #{password},#{firsttime},#{status})
     </insert>
 
+    <update id="setAccountStatus">
+        UPDATE t_account
+        SET
+        status = #{status}
+        WHERE
+        id = #{uid}
+    </update>
+
+    <delete id="deleteAccount">
+        DELETE FROM t_account WHERE id=#{uid};
+    </delete>
+
+    <select id="getAllRoleMapSpecialAccount" resultType="AccountRoleMap">
+        SELECT * FROM t_account_role_map WHERE uid = #{uid};
+    </select>
+
+    <delete id="deleteAllRoleMap">
+        DELETE FROM t_account_role_map
+        WHERE id in
+        <foreach collection="list" index="i" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
     <insert id="addRoleForAccount">
         INSERT INTO
         t_account_role_map
@@ -30,6 +57,16 @@
         VALUES
         (#{uid}, #{rid})
     </insert>
+
+    <delete id="deleteRoleMap">
+        DELETE FROM t_account_role_map WHERE id = #{id}
+    </delete>
+
+    <update id="updateLoginTime" parameterType="Account">
+        UPDATE t_account SET
+         login_times=#{times}, last_login=#{lastlogin}
+          WHERE id=#{uid};
+    </update>
 
     <select id="getAllUsername" resultType="String">
         SELECT username FROM t_account

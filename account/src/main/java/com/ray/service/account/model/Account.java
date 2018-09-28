@@ -19,7 +19,8 @@ public class Account implements Serializable {
     private String password;
     private int status = STATUS_NORMAL;
     private long firsttime;
-    private int lastlogin;
+    private int times;
+    private long lastlogin;
     private List<GrantedAuthority> roles;
     private User userDetails;
 
@@ -55,11 +56,11 @@ public class Account implements Serializable {
         this.status = status;
     }
 
-    public int getLastlogin() {
+    public long getLastlogin() {
         return lastlogin;
     }
 
-    public void setLastlogin(int lastlogin) {
+    public void setLastlogin(long lastlogin) {
         this.lastlogin = lastlogin;
     }
 
@@ -72,6 +73,10 @@ public class Account implements Serializable {
         roles.add(auth);
     }
 
+    public List<GrantedAuthority> getRoles() {
+        return roles;
+    }
+
     public long getFirsttime() {
         return firsttime;
     }
@@ -80,10 +85,35 @@ public class Account implements Serializable {
         this.firsttime = firsttime;
     }
 
+    public int getTimes() {
+        return times;
+    }
+
+    public void setTimes(int times) {
+        this.times = times;
+    }
+
+    public void appendOneTimes() {
+        this.times++;
+    }
+
     public User translat() {
         if (userDetails == null) {
             userDetails = new User(username, password, roles);
         }
         return userDetails;
+    }
+
+    public void reset() {
+        uid = 0;
+        username = null;
+        password = null;
+        status = STATUS_NORMAL;
+        firsttime = 0;
+        times = 0;
+        lastlogin = 0;
+        roles.clear();
+        roles = null;
+        userDetails = null;
     }
 }
