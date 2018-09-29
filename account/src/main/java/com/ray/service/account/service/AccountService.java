@@ -40,7 +40,7 @@ public class AccountService implements UserDetailsService {
         return uid;
     }
 
-    public Account getAccountByUsername(String username) {
+    public List<Account> getAccountByUsername(String username) {
         return mapper.getDetialByName(username);
     }
 
@@ -88,10 +88,10 @@ public class AccountService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = getAccountByUsername(username);
-        if (account == null) {
+        List<Account> accounts = getAccountByUsername(username);
+        if (accounts == null || accounts.isEmpty()) {
             throw new UsernameNotFoundException(username);
         }
-        return account.translat();
+        return accounts.get(0).translat();
     }
 }

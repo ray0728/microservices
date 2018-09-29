@@ -1,5 +1,5 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ray.microservice.auth.mapper.AccountMapper">
+<mapper namespace="com.ray.service.account.mapper.AccountMapper">
     <cache type="com.ray.service.account.redis.RedisCache"/>
     <resultMap id="AccountDetial" type="Account">
         <id property="uid" column="id"/>
@@ -15,7 +15,11 @@
     <select id="getDetialByName" resultMap="AccountDetial">
         SELECT *
         FROM t_account
-        WHERE username = #{username}
+        <where>
+            <if test="username != null">
+                username = #{username}
+            </if>
+        </where>
     </select>
 
     <insert id="create" useGeneratedKeys="true" keyProperty="uid" parameterType="Account">
@@ -39,7 +43,12 @@
     </delete>
 
     <select id="getAllRoleMapSpecialAccount" resultType="AccountRoleMap">
-        SELECT * FROM t_account_role_map WHERE uid = #{uid};
+        SELECT * FROM t_account_role_map
+        <where>
+            <if test="uid != 0">
+                uid = #{uid}
+            </if>
+        </where>
     </select>
 
     <delete id="deleteAllRoleMap">
@@ -65,7 +74,11 @@
     <update id="updateLoginTime" parameterType="Account">
         UPDATE t_account SET
          login_times=#{times}, last_login=#{lastlogin}
-          WHERE id=#{uid};
+        <where>
+            <if test="id != 0">
+                id = #{uid}
+            </if>
+        </where>
     </update>
 
     <select id="getAllUsername" resultType="String">

@@ -1,5 +1,6 @@
 package com.ray.service.account.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ray.service.account.model.Account;
 import com.ray.service.account.service.AccountService;
 import org.springframework.security.core.Authentication;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/account")
@@ -44,8 +46,8 @@ public class AccountController {
 
     @GetMapping("info")
     public String getInfo(String username) {
-        Account account = mAccountService.getAccountByUsername(username);
-        return account.toString();
+        List<Account> account = mAccountService.getAccountByUsername(username);
+        return JSONObject.toJSONString(account);
     }
 
     public String updateInfo(){
