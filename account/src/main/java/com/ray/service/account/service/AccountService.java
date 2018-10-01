@@ -26,22 +26,21 @@ public class AccountService implements UserDetailsService {
 
     public int createAccount(Account account) {
         int uid = 0;
-        if (mapper.getDetialByName(account.getUsername()) == null) {
+        if (mapper.getDetialByName(account.getUsername()).isEmpty()) {
             account.setPassword(Password.crypt(account.getPassword()));
             account.setFirsttime(SimpleDate.getCurrentTime());
             mapper.create(account);
             uid = account.getUid();
-            Iterator<GrantedAuthority> iter = account.translat().getAuthorities().iterator();
-            while (iter.hasNext()) {
-                Authority authority = (Authority) iter.next();
-                mapper.addRoleForAccount(uid, authority.getId());
-            }
         }
         return uid;
     }
 
     public List<Account> getAccountByUsername(String username) {
         return mapper.getDetialByName(username);
+    }
+
+    public Account getAccountByUid(int uid) {
+        return mapper.getDetialByUid(uid);
     }
 
     public int updateAccountTimeInfo(Account account) {
@@ -69,12 +68,41 @@ public class AccountService implements UserDetailsService {
         return mapper.setAccountStatus(account.getUid(), status);
     }
 
-    public int rmoveRoleFromAccount(Account account, Authority authority) {
+    public int changeAccountPassword(Account account, String password) {
+        account.setPassword(Password.crypt(password));
+        return mapper.changePassword(account);
+    }
+
+    public int autoChangeRoles(Account account, int... rids) {
+        List<GrantedAuthority> roles = account.getRoles();
+        boolean isAdd = true;
+        for (int rid : rids) {
+            isAdd = true;
+            if (roles != null) {
+                for (GrantedAuthority ga : roles) {
+                    if (((Authority) ga).getId() == rid) {
+                        isAdd = false;
+                        break;
+                    }
+                }
+            }
+            if (isAdd) {
+                mapper.addRoleForAccount(account.getUid(), rid);
+                account.addRole(rid);
+            } else {
+                rmoveRoleFromAccount(account.getUid(), rid);
+                account.deleteRole(rid);
+            }
+        }
+        return account.getRoles().size();
+    }
+
+    private int rmoveRoleFromAccount(int uid, int rid) {
         int count = 0;
-        List<AccountRoleMap> list = mapper.getAllRoleMapSpecialAccount(account.getUid());
+        List<AccountRoleMap> list = mapper.getAllRoleMapSpecialAccount(uid);
         if (list != null && !list.isEmpty()) {
             for (AccountRoleMap armap : list) {
-                if(armap.getRid() == authority.getId()){
+                if (armap.getRid() == rid) {
                     count += mapper.deleteRoleMap(armap.getId());
                 }
             }
@@ -82,7 +110,7 @@ public class AccountService implements UserDetailsService {
         return count;
     }
 
-    public List<String> getAllUsername(){
+    public List<String> getAllUsername() {
         return mapper.getAllUsername();
     }
 

@@ -3,6 +3,7 @@ package com.ray.service.account.model;
 import org.springframework.security.core.GrantedAuthority;
 
 public class Authority implements GrantedAuthority {
+    private static final long serialVersionUID = 201810011526002L;
     public static final String ROLE_GUEST = "Guest";
     public static final String ROLE_BEGINNER = "Beginner";
     public static final String ROLE_SKILLED = "Skilled";
@@ -60,5 +61,12 @@ public class Authority implements GrantedAuthority {
     @Override
     public String getAuthority() {
         return description;
+    }
+
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof Authority)) {
+            return false;
+        }
+        return getId() == ((Authority) obj).getId();
     }
 }

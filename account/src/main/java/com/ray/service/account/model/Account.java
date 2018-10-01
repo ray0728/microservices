@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class Account implements Serializable {
+    private static final long serialVersionUID = 201810011523001L;
     public static final int STATUS_NORMAL = 0;
     public static final int STATUS_EXPIRED = 1;
     public static final int STATUS_LOCKED = 2;
@@ -22,7 +23,6 @@ public class Account implements Serializable {
     private int times;
     private long lastlogin;
     private List<GrantedAuthority> roles;
-    private User userDetails;
 
     public int getUid() {
         return uid;
@@ -70,7 +70,17 @@ public class Account implements Serializable {
         if (roles == null) {
             roles = new ArrayList<>();
         }
-        roles.add(auth);
+        if(!roles.contains(auth)) {
+            roles.add(auth);
+        }
+    }
+
+    public void deleteRole(int rid){
+        Authority auth = new Authority();
+        auth.setId(rid);
+        if(roles != null && roles.contains(auth)){
+            roles.remove(auth);
+        }
     }
 
     public List<GrantedAuthority> getRoles() {
@@ -98,10 +108,7 @@ public class Account implements Serializable {
     }
 
     public User translat() {
-        if (userDetails == null) {
-            userDetails = new User(username, password, roles);
-        }
-        return userDetails;
+        return new User(username, password, roles);
     }
 
     public void reset() {
@@ -114,6 +121,5 @@ public class Account implements Serializable {
         lastlogin = 0;
         roles.clear();
         roles = null;
-        userDetails = null;
     }
 }

@@ -74,11 +74,7 @@
     <update id="updateLoginTime" parameterType="Account">
         UPDATE t_account SET
          login_times=#{times}, last_login=#{lastlogin}
-        <where>
-            <if test="id != 0">
-                id = #{uid}
-            </if>
-        </where>
+         WHERE id = #{uid}
     </update>
 
     <select id="getAllUsername" resultType="String">
@@ -92,4 +88,20 @@
         ON t_account_role_map.rid = t_role.id
         AND t_account_role_map.uid = #{id}
     </select>
+
+    <select id="getDetialByUid" resultMap="AccountDetial">
+        SELECT *
+        FROM t_account
+        <where>
+            <if test="uid != 0">
+                id = #{uid}
+            </if>
+        </where>
+    </select>
+
+    <update id="changePassword" parameterType="Account">
+        UPDATE t_account SET
+        password=#{password}
+        WHERE id = #{uid}
+    </update>
 </mapper>

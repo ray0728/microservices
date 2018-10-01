@@ -24,9 +24,13 @@ public interface AccountMapper {
 
     public int addRoleForAccount(@Param("uid") int uid, @Param("rid") int rid);
 
-    public List<Account> getDetialByName(String username);
+    public List<Account> getDetialByName(@Param("username")String username);
+
+    public Account getDetialByUid(@Param("uid")int uid);
 
     public int updateLoginTime(Account account);
 
     public List<String> getAllUsername();
+
+    public int changePassword(Account account);
 }
