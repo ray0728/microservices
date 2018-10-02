@@ -74,24 +74,33 @@ public class AccountService implements UserDetailsService {
     }
 
     public int autoChangeRoles(Account account, int... rids) {
-        List<GrantedAuthority> roles = account.getRoles();
-        boolean isAdd = true;
-        for (int rid : rids) {
-            isAdd = true;
-            if (roles != null) {
-                for (GrantedAuthority ga : roles) {
-                    if (((Authority) ga).getId() == rid) {
-                        isAdd = false;
-                        break;
-                    }
+        List<Authority> roles = account.getRoles();
+        boolean isSkip = false;
+        for (Authority ga : roles) {
+            isSkip = false;
+            for (int rid : rids) {
+                if (ga.getId() == rid) {
+                    isSkip = true;
+                    break;
                 }
             }
-            if (isAdd) {
+            if (!isSkip) {
+                rmoveRoleFromAccount(account.getUid(), ga.getId());
+                account.deleteRole(ga.getId());
+            }
+        }
+        isSkip = false;
+        for (int rid : rids) {
+            isSkip = false;
+            for (Authority ga : roles) {
+                if (ga.getId() == rid) {
+                    isSkip = true;
+                    break;
+                }
+            }
+            if (!isSkip) {
                 mapper.addRoleForAccount(account.getUid(), rid);
                 account.addRole(rid);
-            } else {
-                rmoveRoleFromAccount(account.getUid(), rid);
-                account.deleteRole(rid);
             }
         }
         return account.getRoles().size();

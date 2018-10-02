@@ -40,6 +40,21 @@ public class AuthorizationConfigurer extends AuthorizationServerConfigurerAdapte
     @Value("${token.browse.refresh.validity}")
     private int browse_refresh_validity_second;
 
+    @Value("${tokenkey.jks.private.key}")
+    private String tokenkey_jks_private_key;
+
+    @Value("${client.config.id}")
+    private String clientConfigId;
+
+    @Value("${client.config.secret}")
+    private String ClientConfigSecret;
+
+    @Value("#{'${client.config.grant}'.split(';')}")
+    private String[] clientConfigGrantTypes;
+
+    @Value("#{'${client.config.scopes}'.split(';')}")
+    private String[] clientConfigScopes;
+
     @Resource
     private AccountService mAccountService;
 
@@ -51,7 +66,6 @@ public class AuthorizationConfigurer extends AuthorizationServerConfigurerAdapte
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-//        return NoOpPasswordEncoder.getInstance();
         return new BCryptPasswordEncoder();
     }
 
@@ -67,20 +81,18 @@ public class AuthorizationConfigurer extends AuthorizationServerConfigurerAdapte
     public JwtAccessTokenConverter accessTokenConverter() {
         final JwtAccessTokenConverter converter = new JwtAccessToken();
         KeyStoreKeyFactory keyStoreKeyFactory =
-                new KeyStoreKeyFactory(new ClassPathResource("tokenkey.jks"), "Seraph@0728".toCharArray());
+                new KeyStoreKeyFactory(new ClassPathResource("tokenkey.jks"), tokenkey_jks_private_key.toCharArray());
         converter.setKeyPair(keyStoreKeyFactory.getKeyPair("tokenkey"));
-
-//        converter.setAccessTokenConverter(new CustomerAccessTokenConverter());
         return converter;
     }
 
 
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-                .withClient("rayapp")
-                .secret(passwordEncoder.encode("ray0728"))
-                .authorizedGrantTypes("authorization_code", "refresh_token")
-                .scopes("account_info")
+                .withClient(clientConfigId)
+                .secret(passwordEncoder.encode(ClientConfigSecret))
+                .authorizedGrantTypes(clientConfigGrantTypes)
+                .scopes(clientConfigScopes)
                 .accessTokenValiditySeconds(upload_access_validity_second)
                 .refreshTokenValiditySeconds(upload_refresh_validity_second)
         ;
@@ -91,7 +103,6 @@ public class AuthorizationConfigurer extends AuthorizationServerConfigurerAdapte
                 .tokenKeyAccess("permitAll()")
 //                .checkTokenAccess("isAuthenticated()")
                 .checkTokenAccess("permitAll()")
-//                .passwordEncoder(passwordEncoder())
                 .allowFormAuthenticationForClients();
     }
 

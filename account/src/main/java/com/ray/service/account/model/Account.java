@@ -2,11 +2,9 @@ package com.ray.service.account.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Account implements Serializable {
@@ -22,7 +20,7 @@ public class Account implements Serializable {
     private long firsttime;
     private int times;
     private long lastlogin;
-    private List<GrantedAuthority> roles;
+    private List<Authority> roles;
 
     public int getUid() {
         return uid;
@@ -83,7 +81,7 @@ public class Account implements Serializable {
         }
     }
 
-    public List<GrantedAuthority> getRoles() {
+    public List<Authority> getRoles() {
         return roles;
     }
 

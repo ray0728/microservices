@@ -40,11 +40,10 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests().antMatchers("/account/create").anonymous()
+                .authorizeRequests()
+
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .anyRequest().authenticated()
-//                .and().exceptionHandling()
-//                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/account/unauth"))
                 .and()
                 .httpBasic()
                 .and()

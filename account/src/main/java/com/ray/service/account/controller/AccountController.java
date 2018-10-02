@@ -28,6 +28,9 @@ public class AccountController {
         account.setUsername(username);
         account.setPassword(password);
         int uid = mAccountService.createAccount(account);
+        if(uid == 0){
+            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
+        }
         mAccountService.autoChangeRoles(account, roles);
         return JSONObject.toJSONString(account);
     }
@@ -46,9 +49,8 @@ public class AccountController {
     }
 
     @PutMapping("change")
-    public String ChangeStatus(@RequestParam(name = "uid", required = false, defaultValue = "0") int uid,
+    public String changeAccount(@RequestParam(name = "uid", required = false, defaultValue = "0") int uid,
                                @RequestParam(name = "status", required = false, defaultValue = "-1") int status,
-                               @RequestParam(name = "passwd", required = false, defaultValue = "") String password,
                                @RequestParam(name = "roles", required = false) int[] roles) {
         if (uid == 0) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
@@ -60,17 +62,30 @@ public class AccountController {
         if (status != -1) {
             mAccountService.setAccountStatus(account, status);
         }
-        if (!password.isEmpty()) {
-            mAccountService.changeAccountPassword(account, password);
-        }
         if (roles != null && roles.length > 0) {
             mAccountService.autoChangeRoles(account, roles);
         }
         return JSONObject.toJSONString(account);
     }
 
+    @PutMapping("edit")
+    public String changePassword(@RequestParam(name = "uid", required = false, defaultValue = "0") int uid,
+                                 @RequestParam(name = "passwd", required = false, defaultValue = "") String password){
+        if (uid == 0) {
+            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
+        }
+        Account account = mAccountService.getAccountByUid(uid);
+        if(account == null){
+            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid resources.");
+        }
+        if (!password.isEmpty()) {
+            mAccountService.changeAccountPassword(account, password);
+        }
+        return JSONObject.toJSONString(account);
+    }
+
     @GetMapping("info")
-    public String getInfo(String username) {
+    public String getInfo(@RequestParam(name = "username", required = true) String username) {
         List<Account> account = mAccountService.getAccountByUsername(username);
         return JSONObject.toJSONString(account);
     }
