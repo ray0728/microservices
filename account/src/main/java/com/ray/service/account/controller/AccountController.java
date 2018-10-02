@@ -16,7 +16,7 @@ public class AccountController {
     @Resource
     private AccountService mAccountService;
 
-    @GetMapping("create")
+    @PostMapping("create")
     public String create(@RequestParam(name = "usrname", required = false) String username,
                          @RequestParam(name = "passwd", required = false) String password,
                          @RequestParam(name = "roles", required = false, defaultValue = "[1]") int[] roles) {
