@@ -10,4 +10,9 @@ public class SimpleDate {
         Calendar cal = java.util.Calendar.getInstance(gZone);
         return cal.getTimeInMillis();
     }
+
+    public static String getCurrentDate() {
+        Calendar cal = java.util.Calendar.getInstance(gZone);
+        return cal.getTime().toString();
+    }
 }

@@ -74,7 +74,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public int autoChangeRoles(Account account, int... rids) {
-        List<Authority> roles = account.getRoles();
+        Authority[] roles = account.getRoles().toArray(new Authority[]{});
         boolean isSkip = false;
         for (Authority ga : roles) {
             isSkip = false;

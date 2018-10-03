@@ -4,15 +4,15 @@ import org.springframework.security.core.GrantedAuthority;
 
 public class Authority implements GrantedAuthority {
     private static final long serialVersionUID = 201810011526002L;
-    public static final String ROLE_GUEST = "Guest";
-    public static final String ROLE_BEGINNER = "Beginner";
-    public static final String ROLE_SKILLED = "Skilled";
-    public static final String ROLE_EXPERT = "Expert";
-    public static final String ROLE_AUTHORITY = "Authority";
-    public static final String ROLE_ADMIN = "Admin";
-    public static final String ROLE_DEBUG = "Debug";
+    public static final String ROLE_GUEST = "GUEST";
+    public static final String ROLE_BEGINNER = "BEGINNER";
+    public static final String ROLE_SKILLED = "SKILLED";
+    public static final String ROLE_EXPERT = "EXPERT";
+    public static final String ROLE_AUTHORITY = "AUTHORITY";
+    public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_DEBUG = "DEBUG";
     private int id = 0;
-    private String description;
+    private String authority;
 
     public int getId() {
         return id;
@@ -20,14 +20,14 @@ public class Authority implements GrantedAuthority {
 
     public void setId(int id) {
         this.id = id;
-        setDescription(getDescription(id));
+        setAuthority(translate(id));
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setAuthority(String authority) {
+        this.authority = authority;
     }
 
-    public String getDescription(int id) {
+    private String translate(int id) {
         String desc = null;
         switch (id) {
             case 1:
@@ -52,15 +52,15 @@ public class Authority implements GrantedAuthority {
                 desc = ROLE_DEBUG;
                 break;
             default:
-                desc = description == null ? ROLE_GUEST : description;
+                desc = ROLE_GUEST;
                 break;
         }
-        return desc;
+        return "ROLE_" + desc;
     }
 
     @Override
     public String getAuthority() {
-        return description;
+        return authority;
     }
 
     public boolean equals(Object obj) {

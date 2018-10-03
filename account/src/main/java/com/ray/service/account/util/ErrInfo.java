@@ -9,9 +9,12 @@ public class ErrInfo {
     public static final int CODE_DELETE_ACCOUNT = 402;
     public static final int CODE_CHANGE_ACCOUNT = 403;
     public static final int CODE_REFRESH_ACCOUNT = 404;
+    public static final int CODE_EDIT_ACCOUNT = 405;
+
     public static enum ErrType {
         PARAMS,
-        NULLOBJ
+        NULLOBJ,
+        INVALID
     };
 
     private static String translate(ErrType type) {

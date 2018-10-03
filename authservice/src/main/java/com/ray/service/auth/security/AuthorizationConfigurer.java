@@ -2,13 +2,11 @@ package com.ray.service.auth.security;
 
 import com.ray.service.auth.service.AccountService;
 import com.ray.service.auth.util.CompatRedisTokenStore;
-import com.ray.service.auth.util.JwtAccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,11 +16,13 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 
 @Configuration
 @EnableCaching
@@ -39,9 +39,6 @@ public class AuthorizationConfigurer extends AuthorizationServerConfigurerAdapte
 
     @Value("${token.browse.refresh.validity}")
     private int browse_refresh_validity_second;
-
-    @Value("${tokenkey.jks.private.key}")
-    private String tokenkey_jks_private_key;
 
     @Value("${client.config.id}")
     private String clientConfigId;
@@ -72,18 +69,15 @@ public class AuthorizationConfigurer extends AuthorizationServerConfigurerAdapte
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtAccessTokenConverter jwtAccessTokenConverter;
+
+    @Autowired
+    private TokenEnhancer jwtTokenEnhancer;
+
     @Bean
     public TokenStore tokenStore() {
         return new CompatRedisTokenStore(connectionFactory);
-    }
-
-    @Bean
-    public JwtAccessTokenConverter accessTokenConverter() {
-        final JwtAccessTokenConverter converter = new JwtAccessToken();
-        KeyStoreKeyFactory keyStoreKeyFactory =
-                new KeyStoreKeyFactory(new ClassPathResource("tokenkey.jks"), tokenkey_jks_private_key.toCharArray());
-        converter.setKeyPair(keyStoreKeyFactory.getKeyPair("tokenkey"));
-        return converter;
     }
 
 
@@ -108,9 +102,12 @@ public class AuthorizationConfigurer extends AuthorizationServerConfigurerAdapte
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(jwtTokenEnhancer, jwtAccessTokenConverter));
         endpoints
                 .userDetailsService(mAccountService)
-                .accessTokenConverter(accessTokenConverter())
+                .accessTokenConverter(jwtAccessTokenConverter)
+                .tokenEnhancer(tokenEnhancerChain)
                 .authenticationManager(authenticationManager)
                 .tokenStore(tokenStore())
         ;

@@ -2,11 +2,14 @@ package com.ray.service.account.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ray.service.account.model.Account;
+import com.ray.service.account.model.Authority;
 import com.ray.service.account.service.AccountService;
 import com.ray.service.account.util.ErrInfo;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -49,37 +52,37 @@ public class AccountController {
     }
 
     @PutMapping("change")
-    public String changeAccount(@RequestParam(name = "uid", required = false, defaultValue = "0") int uid,
+    public String changeAccount(Principal principal,
                                @RequestParam(name = "status", required = false, defaultValue = "-1") int status,
                                @RequestParam(name = "roles", required = false) int[] roles) {
-        if (uid == 0) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
+        if (principal == null) {
+            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
         }
-        Account account = mAccountService.getAccountByUid(uid);
+        List<Account> account = mAccountService.getAccountByUsername(principal.getName());
         if(account == null){
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid resources.");
+            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid resources.");
         }
         if (status != -1) {
-            mAccountService.setAccountStatus(account, status);
+            mAccountService.setAccountStatus(account.get(0), status);
         }
         if (roles != null && roles.length > 0) {
-            mAccountService.autoChangeRoles(account, roles);
+            mAccountService.autoChangeRoles(account.get(0), roles);
         }
         return JSONObject.toJSONString(account);
     }
 
     @PutMapping("edit")
-    public String changePassword(@RequestParam(name = "uid", required = false, defaultValue = "0") int uid,
+    public String changePassword(Principal principal,
                                  @RequestParam(name = "passwd", required = false, defaultValue = "") String password){
-        if (uid == 0) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
+        if (principal == null) {
+            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_EDIT_ACCOUNT, "Invalid request parameters.");
         }
-        Account account = mAccountService.getAccountByUid(uid);
+        List<Account> account = mAccountService.getAccountByUsername(principal.getName());
         if(account == null){
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid resources.");
+            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_EDIT_ACCOUNT, "Invalid resources.");
         }
         if (!password.isEmpty()) {
-            mAccountService.changeAccountPassword(account, password);
+            mAccountService.changeAccountPassword(account.get(0), password);
         }
         return JSONObject.toJSONString(account);
     }
@@ -91,15 +94,21 @@ public class AccountController {
     }
 
     @PutMapping("refresh")
-    public String refreshTime(@RequestParam(name = "uid", required = false, defaultValue = "0") int uid) {
-        if (uid == 0) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_REFRESH_ACCOUNT, "Invalid request parameters.");
+    public String refreshTime(Principal principal) {
+        if (principal == null) {
+            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_REFRESH_ACCOUNT, "Invalid request parameters.");
         }
-        Account account = mAccountService.getAccountByUid(uid);
+        List<Account> account = mAccountService.getAccountByUsername(principal.getName());
         if(account == null){
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_REFRESH_ACCOUNT, "Invalid resources.");
+            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_REFRESH_ACCOUNT, "Invalid resources.");
         }
-        mAccountService.updateAccountTimeInfo(account);
+        mAccountService.updateAccountTimeInfo(account.get(0));
         return JSONObject.toJSONString(account);
     }
+
+    @GetMapping("me")
+    public Authentication showMe(Authentication authentication) {
+        return authentication;
+    }
+
 }
