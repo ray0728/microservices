@@ -1,0 +1,94 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ray.service.store.mapper.ResourceMapper">
+    <cache type="com.ray.service.store.redis.RedisCache"/>
+    <resultMap id="logFileMap" type="LogFile">
+        <id column="id" property="id"/>
+        <result column="log_id" property="logid"/>
+        <result column="title" property="title"/>
+        <result column="create_uid" property="creatorid"/>
+        <result column="create_time" property="createtime"/>
+        <result column="modify_uid" property="modifyid"/>
+        <result column="modify_time" property="modifytime"/>
+        <association property="detial" column="log_id" select="queryLogDetialById"/>
+        <collection property="replyLogs" column="id" select="queryLogReplyByLogId"/>
+    </resultMap>
+    <resultMap id="logDetialMap" type="LogDetial">
+        <id column="id" property="id"/>
+        <result column="short_describe" property="shortDesc"/>
+        <result column="multmedia_dir_root" property="multMediaDirRoot"/>
+        <result column="multmedia_files" property="multMediaFiles"/>
+    </resultMap>
+    <resultMap id="logReplyMap" type="ReplyLog">
+        <id column="id" property="id"/>
+        <result column="log_id" property="logid"/>
+        <result column="uid" property="uid"/>
+        <result column="msg" property="msg"/>
+        <result column="time" property="time"/>
+    </resultMap>
+    <insert id="createLogDetial" useGeneratedKeys="true" keyProperty="id" parameterType="LogDetial">
+        INSERT INTO t_detial_log(short_describe, multmedia_dir_root, multmedia_files, extend_url)
+        VALUES(#{shortDesc},#{multMediaDirRoot},#{multMediaFiles},#{extendUrl});
+    </insert>
+
+    <insert id="createLog" useGeneratedKeys="true" keyProperty="id" parameterType="LogFile">
+        INSERT INTO t_user_logbook(log_id, title, create_uid, create_time)VALUES(#{logid}, #{title}, #{creatorid}, #{createtime});
+    </insert>
+
+    <insert id="createReply" useGeneratedKeys="true" keyProperty="id" parameterType="ReplyLog">
+        INSERT INTO t_reply_log(log_id,uid,msg,time) VALUES(#{logid}, #{uid}, #{msg}, #{time});
+    </insert>
+
+    <delete id="deleteLog">
+        DELETE FROM t_user_logbook WHERE id = #{id};
+    </delete>
+
+    <delete id="deleteLogDetial">
+        DELETE FROM t_detial_log WHERE id = #{id};
+    </delete>
+
+    <delete id="deleteReply">
+        DELETE FROM t_reply_log WHERE id = #{id};
+    </delete>
+
+    <update id="updateLogDetial">
+        UPDATE t_detial_log
+        <set>
+            <if test="shortDesc != null">short_describe = #{shortDesc},</if>
+            <if test="multMediaDirRoot != null">multmedia_dir_root = #{multMediaDirRoot},</if>
+            <if test="multMediaFiles != null">multmedia_files = #{multMediaFiles},</if>
+            <if test="extendUrl != null">extend_url = #{extendUrl},</if>
+        </set>
+        WHERE id = #{id};
+    </update>
+
+    <update id="updateLog">
+        UPDATE t_user_logbook
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="logid != 0">log_id = #{logid},</if>
+            <if test="modifyid != null">modify_uid = #{modifyid},</if>
+            <if test="modifytime != null">modify_time = #{modifytime},</if>
+        </set>
+        WHERE id = #{id};
+    </update>
+
+    <select id="queryLogById" resultMap="logFileMap">
+        SELECT * FROM t_user_logbook WHERE id = #{id};
+    </select>
+
+    <select id="queryLogDetialById" resultMap="logDetialMap">
+        SELECT * FROM t_detial_log WHERE id = #{id};
+    </select>
+
+    <select id="queryLogReplyByLogId" resultMap="logReplyMap">
+        SELECT * FROM t_reply_log WHERE log_id = #{id};
+    </select>
+
+    <select id="queryAllLogFile" resultMap="logFileMap">
+        SELECT * FROM t_user_logbook
+        <where>
+            <if test="uid != 0">create_uid=#{uid}</if>
+            <if test="logid != 0">and id = #{logid}</if>
+        </where>
+    </select>
+</mapper>
