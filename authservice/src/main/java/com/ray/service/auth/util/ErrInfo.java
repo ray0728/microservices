@@ -5,7 +5,7 @@ import com.ray.service.auth.model.ErrorData;
 
 
 public class ErrInfo {
-    public static final int CODE_GET_ACCOUNT = 501;
+    public static final int CODE_GET_ACCOUNT = 401;
     public static enum ErrType {
         PARAMS,
         NULLOBJ

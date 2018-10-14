@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Account implements Serializable {
-    private int uid = 0;
+    private long uid = 0;
     private String username;
     private String password;
     private int status;
@@ -15,11 +15,11 @@ public class Account implements Serializable {
     private long lastlogin;
     private List<Authority> roles;
 
-    public int getUid() {
+    public long getUid() {
         return uid;
     }
 
-    public void setUid(int uid) {
+    public void setUid(long uid) {
         this.uid = uid;
     }
 
