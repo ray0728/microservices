@@ -5,11 +5,11 @@ import com.ray.service.account.model.ErrorData;
 
 
 public class ErrInfo {
-    public static final int CODE_CREATE_ACCOUNT = 401;
-    public static final int CODE_DELETE_ACCOUNT = 402;
-    public static final int CODE_CHANGE_ACCOUNT = 403;
-    public static final int CODE_REFRESH_ACCOUNT = 404;
-    public static final int CODE_EDIT_ACCOUNT = 405;
+    public static final int CODE_CREATE_ACCOUNT = 301;
+    public static final int CODE_DELETE_ACCOUNT = 302;
+    public static final int CODE_CHANGE_ACCOUNT = 303;
+    public static final int CODE_REFRESH_ACCOUNT = 304;
+    public static final int CODE_EDIT_ACCOUNT = 305;
 
     public static enum ErrType {
         PARAMS,

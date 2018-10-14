@@ -3,14 +3,14 @@ package com.ray.service.account.model;
 import org.springframework.security.core.GrantedAuthority;
 
 public class Authority implements GrantedAuthority {
-    private static final long serialVersionUID = 201810011526002L;
     public static final String ROLE_GUEST = "GUEST";
-    public static final String ROLE_BEGINNER = "BEGINNER";
-    public static final String ROLE_SKILLED = "SKILLED";
-    public static final String ROLE_EXPERT = "EXPERT";
-    public static final String ROLE_AUTHORITY = "AUTHORITY";
+    public static final int ID_GUEST = 1;
+    public static final String ROLE_USER = "USER";
+    public static final int ID_USER = 2;
     public static final String ROLE_ADMIN = "ADMIN";
-    public static final String ROLE_DEBUG = "DEBUG";
+    public static final int ID_ADMIN = 7;
+    public static final String ROLE_SUPER = "SUPER";
+    public static final int ID_SUPER = 9;
     private int id = 0;
     private String authority;
 
@@ -30,29 +30,21 @@ public class Authority implements GrantedAuthority {
     private String translate(int id) {
         String desc = null;
         switch (id) {
-            case 1:
+            case ID_GUEST:
                 desc = ROLE_GUEST;
                 break;
-            case 2:
-                desc = ROLE_BEGINNER;
+            case ID_USER:
+                desc = ROLE_USER;
                 break;
-            case 3:
-                desc = ROLE_SKILLED;
-                break;
-            case 4:
-                desc = ROLE_EXPERT;
-                break;
-            case 5:
-                desc = ROLE_AUTHORITY;
-                break;
-            case 6:
+            case ID_ADMIN:
                 desc = ROLE_ADMIN;
                 break;
-            case 7:
-                desc = ROLE_DEBUG;
+            case ID_SUPER:
+                desc = ROLE_SUPER;
                 break;
             default:
                 desc = ROLE_GUEST;
+                this.id = ID_GUEST;
                 break;
         }
         return "ROLE_" + desc;
@@ -68,5 +60,13 @@ public class Authority implements GrantedAuthority {
             return false;
         }
         return getId() == ((Authority) obj).getId();
+    }
+
+    public boolean isAdminRole() {
+        return  authority.replace("ROLE_", "").equals(ROLE_ADMIN);
+    }
+
+    public boolean isSuperRole(){
+        return  authority.replace("ROLE_", "").equals(ROLE_SUPER);
     }
 }

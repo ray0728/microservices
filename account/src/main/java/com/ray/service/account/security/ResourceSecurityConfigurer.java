@@ -20,9 +20,9 @@ public class ResourceSecurityConfigurer extends ResourceServerConfigurerAdapter 
                 .antMatchers(HttpMethod.PUT, "/account/create")
                 .permitAll()
                 .antMatchers(HttpMethod.DELETE, "/account/delete")
-                .hasAnyRole(Authority.ROLE_ADMIN, Authority.ROLE_DEBUG)
+                .hasAnyRole(Authority.ROLE_ADMIN, Authority.ROLE_SUPER)
                 .antMatchers(HttpMethod.PUT, "/account/change")
-                .hasAnyRole(Authority.ROLE_ADMIN, Authority.ROLE_DEBUG)
+                .hasAnyRole(Authority.ROLE_ADMIN, Authority.ROLE_SUPER)
                 .anyRequest()
                 .authenticated();
     }

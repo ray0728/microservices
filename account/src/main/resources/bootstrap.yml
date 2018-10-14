@@ -5,5 +5,5 @@ spring:
     active: dev
   cloud:
     config:
-      uri: http://localhost:10002
+      uri: http://localhost:10001
 

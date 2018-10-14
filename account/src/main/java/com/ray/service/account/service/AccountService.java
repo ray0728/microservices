@@ -24,8 +24,8 @@ public class AccountService implements UserDetailsService {
     @Autowired
     AccountMapper mapper;
 
-    public int createAccount(Account account) {
-        int uid = 0;
+    public long createAccount(Account account) {
+        long uid = 0;
         if (mapper.getDetialByName(account.getUsername()).isEmpty()) {
             account.setPassword(Password.crypt(account.getPassword()));
             account.setFirsttime(SimpleDate.getCurrentTime());
@@ -39,7 +39,7 @@ public class AccountService implements UserDetailsService {
         return mapper.getDetialByName(username);
     }
 
-    public Account getAccountByUid(int uid) {
+    public Account getAccountByUid(long uid) {
         return mapper.getDetialByUid(uid);
     }
 
@@ -106,7 +106,7 @@ public class AccountService implements UserDetailsService {
         return account.getRoles().size();
     }
 
-    private int rmoveRoleFromAccount(int uid, int rid) {
+    private int rmoveRoleFromAccount(long uid, int rid) {
         int count = 0;
         List<AccountRoleMap> list = mapper.getAllRoleMapSpecialAccount(uid);
         if (list != null && !list.isEmpty()) {

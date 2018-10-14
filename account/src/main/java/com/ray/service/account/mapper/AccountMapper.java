@@ -12,21 +12,21 @@ import java.util.List;
 public interface AccountMapper {
     public int create(Account account);
 
-    public int setAccountStatus(@Param("uid") int uid, @Param("status") int status);
+    public int setAccountStatus(@Param("uid") long uid, @Param("status") int status);
 
-    public int deleteAccount(@Param("uid") int uid);
+    public int deleteAccount(@Param("uid") long uid);
 
-    public List<AccountRoleMap> getAllRoleMapSpecialAccount(@Param("uid")int uid);
+    public List<AccountRoleMap> getAllRoleMapSpecialAccount(@Param("uid")long uid);
 
     public int deleteAllRoleMap(List<Integer> ids);
 
     public int deleteRoleMap(@Param("id") int id);
 
-    public int addRoleForAccount(@Param("uid") int uid, @Param("rid") int rid);
+    public int addRoleForAccount(@Param("uid") long uid, @Param("rid") int rid);
 
     public List<Account> getDetialByName(@Param("username")String username);
 
-    public Account getDetialByUid(@Param("uid")int uid);
+    public Account getDetialByUid(@Param("uid")long uid);
 
     public int updateLoginTime(Account account);
 
