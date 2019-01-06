@@ -10,7 +10,7 @@ public class Account implements Serializable {
     public static final int STATUS_EXPIRED = 1;
     public static final int STATUS_LOCKED = 2;
     public static final int STATUS_DISABLED = 3;
-    private long uid = 0;
+    private int uid = 0;
     private String username;
     private String password;
     private int status = STATUS_NORMAL;
@@ -19,11 +19,11 @@ public class Account implements Serializable {
     private long lastlogin;
     private List<Authority> roles;
 
-    public long getUid() {
+    public int getUid() {
         return uid;
     }
 
-    public void setUid(long uid) {
+    public void setUid(int uid) {
         this.uid = uid;
     }
 

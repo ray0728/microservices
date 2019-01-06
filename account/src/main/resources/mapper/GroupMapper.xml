@@ -1,0 +1,69 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rcircle.service.account.mapper.GroupMapper">
+    <cache type="com.rcircle.service.account.redis.RedisCache"/>
+    <resultMap id="GroupDetial" type="Group">
+        <id column="id" property="gid"/>
+        <result column="name" property="name"/>
+        <result column="desc" property="desc"/>
+        <result column="type" property="type"/>
+        <result column="level" property="level"/>
+        <result column="admin_uid" property="admin_uid"/>
+        <result column="create_date" property="create_date"/>
+        <collection column="id" property="member" select="getAllMembers"/>
+    </resultMap>
+    <insert id="create" useGeneratedKeys="true" keyProperty="gid" parameterType="Group">
+        INSERT INTO t_group (name, desc, type)
+        VALUES (#{name}, #{desc}, #{type})
+    </insert>
+
+    <update id="change" parameterType="Group">
+        UPDATE t_group
+        <set>
+            <if test="name != null">name=#{name}</if>
+            <if test="desc != null">desc=#{desc}</if>
+            <if test="type != 0">type=#{type}</if>
+            <if test="admin_uid != 0">admin_uid=#{admin_uid}</if>
+        </set>
+        WHERE id = #{gid}
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM t_group
+        WHERE id = #{gid}
+    </delete>
+
+    <insert id="addMember" useGeneratedKeys="true" keyProperty="id" parameterType="GroupMemberMap">
+        INSERT INTO t_group_member(gid, uid)
+        VALUES (#{gid}, #{uid})
+    </insert>
+
+    <delete id="deleteMember">
+        DELETE
+        FROM t_group_member
+        WHERE id = #{id}
+          AND gid = #{gid}
+          AND uid = #{uid}
+    </delete>
+
+    <select id="getDetialById" resultMap="GroupDetial">
+        SELECT *
+        FROM t_group
+        WHERE id = #{gid}
+    </select>
+
+    <select id="getAllMembers" resultType="GroupMemberMap">
+        SELECT *
+        FROM t_group_member
+        WHERE gid = #{id}
+    </select>
+
+    <select id="getDetialByName" resultMap="GroupDetial">
+        <bind name="pattern" value="'%' + keyword + '%'" />
+        SELECT * FROM t_group WHERE name LIKE #{pattern} OR desc LIKE #{pattern}
+    </select>
+
+    <select id="getDetialByAccount" resultType="Group">
+        SELECT gid FROM t_group_member WHERE uid=#{uid}
+    </select>
+</mapper>

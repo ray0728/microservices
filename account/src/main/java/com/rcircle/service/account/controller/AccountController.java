@@ -42,8 +42,8 @@ public class AccountController {
 
 
     @PostMapping("create")
-    public String create(Principal principal, @RequestParam(name = "usrname", required = false) String username,
-                         @RequestParam(name = "passwd", required = false) String password,
+    public String create(Principal principal, @RequestParam(name = "usrname", required = true) String username,
+                         @RequestParam(name = "passwd", required = true) String password,
                          @RequestParam(name = "roles", required = false, defaultValue = "") int[] roles) {
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");

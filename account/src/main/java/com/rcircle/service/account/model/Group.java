@@ -1,17 +1,18 @@
 package com.rcircle.service.account.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Group implements Serializable {
-    private int gid;
-    private String name;
-    private String desc;
-    private int type;
-    private int level;
-    private int admin_uid;
-    private long create_date;
-    private List<Account> member;
+    private int gid = 0;
+    private String name = "";
+    private String desc = "";
+    private int type = 0;
+    private int level = 0;
+    private int admin_uid = 0;
+    private long create_date = 0;
+    private List<GroupMemberMap> member = null;
 
     public int getGid() {
         return gid;
@@ -69,11 +70,43 @@ public class Group implements Serializable {
         this.create_date = create_date;
     }
 
-    public List<Account> getMember() {
+    public List<GroupMemberMap> getMember() {
+        if (member == null) {
+            member = new ArrayList<>();
+        }
         return member;
     }
 
-    public void setMember(List<Account> member) {
+    public void setMember(List<GroupMemberMap> member) {
         this.member = member;
+    }
+
+    public int addMember(int rowid, int uid) {
+        GroupMemberMap gmm = new GroupMemberMap();
+        gmm.setGid(gid);
+        gmm.setUid(uid);
+        gmm.setId(rowid);
+        getMember().add(gmm);
+        return getMember().size();
+    }
+
+    public int removeMember(int rowid, int uid){
+        for(GroupMemberMap gmm:getMember()){
+            if(gmm.getId() == rowid && gmm.getUid() == uid){
+                getMember().remove(gmm);
+                break;
+            }
+        }
+        return getMember().size();
+    }
+
+    public void reset() {
+        name = null;
+        desc = null;
+        type = 0;
+        admin_uid = 0;
+        member.clear();
+        create_date = 0;
+        gid = 0;
     }
 }

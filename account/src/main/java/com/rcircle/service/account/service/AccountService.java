@@ -34,6 +34,15 @@ public class AccountService {
         return mapper.getDetialByName(username);
     }
 
+    public Account getOpAccount(String username){
+        Account account = null;
+        List<Account> opAccountList = getAccountByUsername(username);
+        if (opAccountList != null && opAccountList.size() > 0) {
+            account = opAccountList.get(0);
+        }
+        return account;
+    }
+
     public Account getAccountByUid(long uid) {
         return mapper.getDetialByUid(uid);
     }

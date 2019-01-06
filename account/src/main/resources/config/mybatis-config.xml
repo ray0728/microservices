@@ -16,5 +16,7 @@
         <typeAlias alias="Account" type="com.rcircle.service.account.model.Account"/>
         <typeAlias alias="Authority" type="com.rcircle.service.account.model.Authority"/>
         <typeAlias alias="AccountRoleMap" type="com.rcircle.service.account.model.AccountRoleMap"/>
+        <typeAlias alias="Group" type="com.rcircle.service.account.model.Group"/>
+        <typeAlias alias="GroupMemberMap" type="com.rcircle.service.account.model.GroupMemberMap"/>
     </typeAliases>
 </configuration>
