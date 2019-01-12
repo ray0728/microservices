@@ -14,6 +14,7 @@ public class ErrInfo {
     public static final int CODE_DELETE_GROUP = 307;
     public static final int CODE_CHANGE_GROUP = 308;
     public static final int CODE_CHANGE_GROUP_MEMBER = 309;
+    public static final int CODE_QUERY_GROUP= 310;
 
     public static enum ErrType {
         PARAMS,

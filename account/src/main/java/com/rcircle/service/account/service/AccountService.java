@@ -36,6 +36,9 @@ public class AccountService {
 
     public Account getOpAccount(String username){
         Account account = null;
+        if(username == null || username.isEmpty()){
+            return account;
+        }
         List<Account> opAccountList = getAccountByUsername(username);
         if (opAccountList != null && opAccountList.size() > 0) {
             account = opAccountList.get(0);

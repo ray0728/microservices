@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.security.Principal;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -155,11 +156,30 @@ public class GroupController {
         return JSONObject.toJSONString(group);
     }
 
-//    @GetMapping("info")
-//    public String getDetial(Principal principal, @RequestParam(name="gid", required = false, defaultValue = 0)int gid,
-//                            @RequestParam(name="keyword", required = false, defaultValue = "")String keyword,
-//                            @RequestParam(name="uid", required = false, defaultValue = "0")int uid){
-//
-//
-//    }
+    @GetMapping("info")
+    public String getDetial(Principal principal, @RequestParam(name="gid", required = false, defaultValue = "0")int gid,
+                            @RequestParam(name="keyword", required = false, defaultValue = "")String keyword,
+                            @RequestParam(name="uid", required = false, defaultValue = "0")int uid){
+        if (principal == null || gid == 0) {
+            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_QUERY_GROUP, "Invalid request parameters.");
+        }
+        Account opAccount = accountService.getOpAccount(principal.getName());
+        if (opAccount == null) {
+            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_QUERY_GROUP, "Invalid request parameters.");
+        }
+        List<Group> groups = null;
+        Group group = null;
+        if(gid > 0){
+            group = groupService.getDetialById(gid);
+        }else if(uid > 0){
+            groups = groupService.getDetialByUid(uid);
+        }else if(!keyword.isEmpty()){
+            groups = groupService.getDetialByKeyWord(keyword);
+        }
+        if(group != null){
+            groups = new LinkedList<>();
+            groups.add(group);
+        }
+        return JSONObject.toJSONString(groups);
+    }
 }

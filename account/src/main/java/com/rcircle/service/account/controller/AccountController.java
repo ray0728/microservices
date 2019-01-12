@@ -19,27 +19,18 @@ public class AccountController {
     private AccountService mAccountService;
 
     private boolean isAdminAccount(String name) {
-        List<Account> opAccountList = mAccountService.getAccountByUsername(name);
-        for (Account opaccount : opAccountList) {
-            List<Authority> authorities = opaccount.getRoles();
-            for (Authority role : authorities) {
-                if (role.isAdminRole() || role.isSuperRole()) {
-                    return true;
-                }
+        Account opAccount = mAccountService.getOpAccount(name);
+        if (opAccount == null) {
+            return false;
+        }
+        List<Authority> authorities = opAccount.getRoles();
+        for (Authority role : authorities) {
+            if (role.isAdminRole() || role.isSuperRole()) {
+                return true;
             }
         }
         return false;
     }
-
-    private Account getOpAccount(String name) {
-        Account account = null;
-        List<Account> opAccountList = mAccountService.getAccountByUsername(name);
-        if (opAccountList != null && opAccountList.size() > 0) {
-            account = opAccountList.get(0);
-        }
-        return account;
-    }
-
 
     @PostMapping("create")
     public String create(Principal principal, @RequestParam(name = "usrname", required = true) String username,
@@ -59,9 +50,9 @@ public class AccountController {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
         }
         if (isAdminOp) {
-            if(roles.length == 0){
+            if (roles.length == 0) {
                 mAccountService.autoChangeRoles(account, Authority.ID_USER);
-            }else {
+            } else {
                 mAccountService.autoChangeRoles(account, roles);
             }
         } else {
@@ -73,7 +64,7 @@ public class AccountController {
 
     @DeleteMapping("delete")
     public String delete(Principal principal,
-                         @RequestParam(name = "uid", required = false, defaultValue = "0") int uid) {
+                         @RequestParam(name = "uid", required = true) int uid) {
         if (uid == 0) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_DELETE_ACCOUNT, "Invalid request parameters.");
         }
@@ -99,8 +90,8 @@ public class AccountController {
         if (uid == 0 || principal == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
         }
-        Account opAccount = getOpAccount(principal.getName());
-        if(opAccount == null){
+        Account opAccount = mAccountService.getOpAccount(principal.getName());
+        if (opAccount == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
         }
         int maxRoleLevel = opAccount.getMaxLevelRole();
@@ -133,20 +124,23 @@ public class AccountController {
         if (principal == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_EDIT_ACCOUNT, "Invalid request parameters.");
         }
-        List<Account> accounts = mAccountService.getAccountByUsername(principal.getName());
-        if (accounts == null) {
+        Account account = mAccountService.getOpAccount(principal.getName());
+        if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_EDIT_ACCOUNT, "Invalid resources.");
         }
         if (!password.isEmpty()) {
-            mAccountService.changeAccountPassword(accounts.get(0), password);
+            mAccountService.changeAccountPassword(account, password);
         }
-        accounts.get(0).setPassword("******");
-        return JSONObject.toJSONString(accounts.get(0));
+        account.setPassword("******");
+        return JSONObject.toJSONString(account);
     }
 
     @GetMapping("info")
     public String getInfo(@RequestParam(name = "username", required = true) String username) {
         List<Account> accounts = mAccountService.getAccountByUsername(username);
+//        增加网关之后通过传入特定头
+//        再来判断是否需要将密码隐藏
+//        仅在auth服务调用时不隐藏密码，其余调用均需隐藏
 //        if(accounts != null){
 //            for(Account account:accounts){
 //                account.setPassword("******");
@@ -160,23 +154,24 @@ public class AccountController {
         if (principal == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_REFRESH_ACCOUNT, "Invalid request parameters.");
         }
-        List<Account> accounts = mAccountService.getAccountByUsername(principal.getName());
-        if (accounts == null) {
+        Account account = mAccountService.getOpAccount(principal.getName());
+        if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_REFRESH_ACCOUNT, "Invalid resources.");
         }
-        mAccountService.updateAccountTimeInfo(accounts.get(0));
-        accounts.get(0).setPassword("******");
-        return JSONObject.toJSONString(accounts.get(0));
+        mAccountService.updateAccountTimeInfo(account);
+        account.setPassword("******");
+        return JSONObject.toJSONString(account);
     }
 
     @GetMapping("me")
     public String showMe(Principal principal) {
         Account account = null;
-        if(principal != null){
-            account = getOpAccount(principal.getName());
+        if (principal != null) {
+            account = mAccountService.getOpAccount(principal.getName());
             account.setPassword("******");
-        };
-        return account == null? "":JSONObject.toJSONString(account);
+        }
+        ;
+        return account == null ? "" : JSONObject.toJSONString(account);
     }
 
 }
