@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.24, for Linux (x86_64)
 --
--- Host: 127.0.0.1    Database: account
+-- Host: localhost    Database: account
 -- ------------------------------------------------------
 -- Server version	5.7.24-0ubuntu0.18.04.1
 
@@ -31,7 +31,7 @@ CREATE TABLE `t_account` (
   `times` int(11) DEFAULT '0',
   `last_login` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=armscii8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=armscii8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `t_account` (
 
 LOCK TABLES `t_account` WRITE;
 /*!40000 ALTER TABLE `t_account` DISABLE KEYS */;
-INSERT INTO `t_account` VALUES (5,'txtx','$2a$10$X.T0ZsTmgUZ1oIsxgO3gl.Q28Syzod8yuQs3./L1uOqRFYzt5rA0W',0,20190105022804,0,0),(6,'xx','$2a$10$035zozhft7MY6mZKp7I7zuzvgp5NpMO4J/cg.Qm8eV77KFHAWyj.S',0,20190105023207,0,0);
+INSERT INTO `t_account` VALUES (1,'txtx','$2a$10$cVS2RMtMVoLbxtmhEkhU3O5f9y7LBYgR63Ql4Ct6nt3HsAWlUrDCy',0,20190119023618,0,0);
 /*!40000 ALTER TABLE `t_account` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -56,7 +56,7 @@ CREATE TABLE `t_account_role_map` (
   `uid` int(11) NOT NULL,
   `rid` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=armscii8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=armscii8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,7 +65,7 @@ CREATE TABLE `t_account_role_map` (
 
 LOCK TABLES `t_account_role_map` WRITE;
 /*!40000 ALTER TABLE `t_account_role_map` DISABLE KEYS */;
-INSERT INTO `t_account_role_map` VALUES (2,5,7),(3,6,2);
+INSERT INTO `t_account_role_map` VALUES (1,1,9);
 /*!40000 ALTER TABLE `t_account_role_map` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -79,10 +79,9 @@ DROP TABLE IF EXISTS `t_group`;
 CREATE TABLE `t_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT NULL,
-  `desc` varchar(200) DEFAULT NULL,
+  `desc` varchar(45) DEFAULT NULL,
   `type` int(11) DEFAULT NULL,
   `level` int(11) DEFAULT NULL,
-  `admin_uid` int(11) DEFAULT NULL,
   `create_date` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -153,4 +152,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-05 23:32:31
+-- Dump completed on 2019-01-19 23:23:29
