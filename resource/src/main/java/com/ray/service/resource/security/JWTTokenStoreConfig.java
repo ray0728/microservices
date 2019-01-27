@@ -1,4 +1,4 @@
-package com.ray.service.store.security;
+package com.ray.service.resource.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;

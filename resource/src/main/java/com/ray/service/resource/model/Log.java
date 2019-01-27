@@ -1,4 +1,4 @@
-package com.ray.service.store.model;
+package com.ray.service.resource.model;
 
 import java.io.Serializable;
 import java.util.List;
@@ -17,7 +17,7 @@ public class Log implements Serializable {
     private int unlike_num;
     private int status;
 
-    private LogDetial detial;
+    private LogDetail detail;
 
     private List<Reply> replyList;
 
@@ -85,12 +85,12 @@ public class Log implements Serializable {
         this.unlike_num = unlike_num;
     }
 
-    public LogDetial getDetial() {
-        return detial;
+    public LogDetail getDetial() {
+        return detail;
     }
 
-    public void setDetial(LogDetial detial) {
-        this.detial = detial;
+    public void setDetial(LogDetail detial) {
+        this.detail = detial;
     }
 
     public List<Reply> getReplyList() {

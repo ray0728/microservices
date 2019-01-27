@@ -1,4 +1,4 @@
-package com.ray.service.store.redis;
+package com.ray.service.resource.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

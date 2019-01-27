@@ -1,20 +1,20 @@
-package com.ray.service.store;
+package com.ray.service.resource;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
 @EnableResourceServer
-@MapperScan("com.ray.service.store.mapper")
+@MapperScan("com.ray.service.resource.mapper")
 @SpringBootApplication
+@EnableCircuitBreaker
 @EnableFeignClients
-public class StoreApplication {
+public class ResourceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(StoreApplication.class, args);
+        SpringApplication.run(ResourceApplication.class, args);
     }
 }

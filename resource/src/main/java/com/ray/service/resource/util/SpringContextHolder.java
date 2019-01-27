@@ -1,4 +1,4 @@
-package com.ray.service.store.util;
+package com.ray.service.resource.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;

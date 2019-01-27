@@ -1,8 +1,8 @@
-package com.ray.service.store.model;
+package com.ray.service.resource.model;
 
 import java.io.Serializable;
 
-public class LogDetial implements Serializable {
+public class LogDetail implements Serializable {
     private int id;
     private int lid;
     private String res_url;

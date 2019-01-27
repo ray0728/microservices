@@ -1,4 +1,4 @@
-package com.ray.service.store.model;
+package com.ray.service.resource.model;
 
 import org.springframework.security.core.userdetails.User;
 

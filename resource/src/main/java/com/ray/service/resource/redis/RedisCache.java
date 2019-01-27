@@ -1,6 +1,6 @@
-package com.ray.service.store.redis;
+package com.ray.service.resource.redis;
 
-import com.ray.service.store.util.SpringContextHolder;
+import com.ray.service.resource.util.SpringContextHolder;
 import org.apache.ibatis.cache.Cache;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;

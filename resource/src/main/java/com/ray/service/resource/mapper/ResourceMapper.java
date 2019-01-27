@@ -1,8 +1,8 @@
-package com.ray.service.store.mapper;
+package com.ray.service.resource.mapper;
 
-import com.ray.service.store.model.Log;
-import com.ray.service.store.model.LogDetial;
-import com.ray.service.store.model.Reply;
+import com.ray.service.resource.model.Log;
+import com.ray.service.resource.model.LogDetail;
+import com.ray.service.resource.model.Reply;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface ResourceMapper {
-    public int createLogDetial(LogDetial detial);
+    public int createLogDetial(LogDetail detial);
 
     public int createLog(Log log);
 
@@ -24,6 +24,8 @@ public interface ResourceMapper {
 
     public int changeLog(Log log);
 
+    public int getLogStatus(@Param("id")int id);
+
     public int changeLogStatus(@Param("id") int id, @Param("status") int status);
 
     public Log getLogById(@Param("id") int lid);
@@ -33,4 +35,6 @@ public interface ResourceMapper {
     public List<Log> getPublicLogsByType(@Param("type") int type);
 
     public List<Log> getGroupLogsByType(@Param("type") int type, @Param("gid") int gid);
+
+    public List<Reply> getLogReplies(@Param("id")int lid);
 }

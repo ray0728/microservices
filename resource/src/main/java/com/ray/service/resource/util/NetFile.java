@@ -1,5 +1,6 @@
-package com.ray.service.store.util;
+package com.ray.service.resource.util;
 
+import com.ray.service.resource.model.FileInfo;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 

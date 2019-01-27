@@ -1,16 +1,20 @@
-package com.ray.service.store.util;
+package com.ray.service.resource.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ray.service.store.model.ErrorData;
+import com.ray.service.resource.model.ErrorData;
 
 
 public class ErrInfo {
-    public static final int CODE_GET_ACCOUNT = 501;
-    public static final int CODE_SAVE_NETFILE = 502;
-    public static final int CODE_GET_LOGFILE = 503;
-    public static final int CODE_UPDATE_LOGFILE = 504;
-    public static final int CODE_CREATE_FILE_STREAM = 505;
-    public static final int CODE_GET_FILES = 506;
+    public static final int CODE_CREATE_NEW = 501;
+    public static final int CODE_UPDATE_RES = 502;
+    public static final int CODE_DELETE_RES = 503;
+    public static final int CODE_DELETE_RES_FILES = 504;
+    public static final int CODE_UPLOAD_RES = 505;
+    public static final int CODE_GET_RES_FILES = 506;
+
+    public static final int CODE_CREATE_FILE_STREAM = 507;
+    public static final int CODE_GET_FILES = 508;
+    public static final int CODE_SAVE_NETFILE = 509;
 
 
     public static enum ErrType {
