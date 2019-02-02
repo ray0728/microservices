@@ -10,4 +10,7 @@ public interface RemoteAccountFeignClient {
     @RequestMapping(method = RequestMethod.GET, value="/account/info")
     public String getInfo(@RequestParam(name = "username", required = true) String username);
 
+    @RequestMapping(method=RequestMethod.GET, value="/group/info")
+    public String getGroupsInfo();
+
 }

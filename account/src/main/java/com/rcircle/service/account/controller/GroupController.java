@@ -158,8 +158,7 @@ public class GroupController {
 
     @GetMapping("info")
     public String getDetial(Principal principal, @RequestParam(name="gid", required = false, defaultValue = "0")int gid,
-                            @RequestParam(name="keyword", required = false, defaultValue = "")String keyword,
-                            @RequestParam(name="uid", required = false, defaultValue = "0")int uid){
+                            @RequestParam(name="keyword", required = false, defaultValue = "")String keyword){
         if (principal == null || gid == 0) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_QUERY_GROUP, "Invalid request parameters.");
         }
@@ -171,12 +170,12 @@ public class GroupController {
         Group group = null;
         if(gid > 0){
             group = groupService.getDetialById(gid);
-        }else if(uid > 0){
-            groups = groupService.getDetialByUid(uid);
         }else if(!keyword.isEmpty()){
             groups = groupService.getDetialByKeyWord(keyword);
+        }else{
+            groups = groupService.getDetialByUid(opAccount.getUid());
         }
-        if(group != null){
+        if(groups == null){
             groups = new LinkedList<>();
             groups.add(group);
         }

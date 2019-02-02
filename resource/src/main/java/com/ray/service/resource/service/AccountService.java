@@ -31,6 +31,10 @@ public class AccountService {
     public String getAccountInfo(String username){
         return remoteAccountFeignClient.getInfo(username);
     }
+    @HystrixCommand(fallbackMethod = "buildFallbackAccountInfo", threadPoolKey = "GroupInfoThreadPool")
+    public String getGroupList(){
+        return remoteAccountFeignClient.getGroupsInfo();
+    }
 
     private String buildFallbackAccountInfo(){
         return "Invalid resources.";

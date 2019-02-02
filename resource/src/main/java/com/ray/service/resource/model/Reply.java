@@ -8,8 +8,8 @@ public class Reply implements Serializable {
     private int uid;
     private String desc;
     private long date;
-    private int like_num;
-    private int unlike_num;
+    private int like_num = 0;
+    private int unlike_num = 0;
 
     public int getId() {
         return id;

@@ -11,10 +11,11 @@ public class ErrInfo {
     public static final int CODE_DELETE_RES_FILES = 504;
     public static final int CODE_UPLOAD_RES = 505;
     public static final int CODE_GET_RES_FILES = 506;
-
-    public static final int CODE_CREATE_FILE_STREAM = 507;
-    public static final int CODE_GET_FILES = 508;
-    public static final int CODE_SAVE_NETFILE = 509;
+    public static final int CODE_CREATE_REPLY = 507;
+    public static final int CODE_DELETE_REPLY = 508;
+    public static final int CODE_GET_RES = 509;
+    public static final int CODE_CREATE_FILE_STREAM = 510;
+    public static final int CODE_SAVE_NETFILE = 511;
 
 
     public static enum ErrType {
