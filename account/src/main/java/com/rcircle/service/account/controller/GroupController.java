@@ -159,7 +159,7 @@ public class GroupController {
     @GetMapping("info")
     public String getDetial(Principal principal, @RequestParam(name="gid", required = false, defaultValue = "0")int gid,
                             @RequestParam(name="keyword", required = false, defaultValue = "")String keyword){
-        if (principal == null || gid == 0) {
+        if (principal == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_QUERY_GROUP, "Invalid request parameters.");
         }
         Account opAccount = accountService.getOpAccount(principal.getName());
