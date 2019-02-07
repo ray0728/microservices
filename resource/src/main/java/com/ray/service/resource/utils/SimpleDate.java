@@ -1,4 +1,4 @@
-package com.ray.service.resource.util;
+package com.ray.service.resource.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

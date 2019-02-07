@@ -1,4 +1,4 @@
-package com.ray.service.resource.util;
+package com.ray.service.resource.utils;
 
 import com.ray.service.resource.model.FileInfo;
 import org.apache.commons.codec.digest.DigestUtils;

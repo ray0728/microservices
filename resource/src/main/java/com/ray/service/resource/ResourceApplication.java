@@ -7,11 +7,11 @@ import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
-@EnableResourceServer
-@MapperScan("com.ray.service.resource.mapper")
 @SpringBootApplication
 @EnableCircuitBreaker
 @EnableFeignClients
+@EnableResourceServer
+@MapperScan("com.ray.service.resource.mapper")
 public class ResourceApplication {
 
     public static void main(String[] args) {

@@ -2,14 +2,12 @@ package com.ray.service.resource.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ray.service.resource.clients.RemoteAccountFeignClient;
 import com.ray.service.resource.model.*;
 import com.ray.service.resource.service.AccountService;
 import com.ray.service.resource.service.ResourceService;
-import com.ray.service.resource.util.ErrInfo;
-import com.ray.service.resource.util.NetFile;
-import com.ray.service.resource.util.SimpleDate;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ray.service.resource.utils.ErrInfo;
+import com.ray.service.resource.utils.NetFile;
+import com.ray.service.resource.utils.SimpleDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

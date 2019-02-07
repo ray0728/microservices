@@ -1,4 +1,4 @@
-package com.ray.service.resource.util;
+package com.ray.service.resource.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ray.service.resource.model.ErrorData;
