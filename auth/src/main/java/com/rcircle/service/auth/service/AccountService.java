@@ -3,10 +3,11 @@ package com.rcircle.service.auth.service;
 
 import com.alibaba.fastjson.JSON;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.rcircle.service.auth.clients.RemoteAccountFeignClient;
 import com.rcircle.service.auth.model.Account;
-import com.rcircle.service.auth.util.ErrInfo;
+import com.rcircle.service.auth.utils.HttpContext;
+import com.rcircle.service.auth.utils.HttpContextHolder;
+import com.rcircle.service.auth.utils.SimpleDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -35,7 +36,10 @@ public class AccountService implements UserDetailsService {
 
     @HystrixCommand(fallbackMethod = "buildFallbackAccountInfo", threadPoolKey = "AccountInfoThreadPool")
     public String getAccountInfo(String username){
-        return remoteAccountFeignClient.getInfo(username);
+       HttpContextHolder.getContext().setValue(HttpContext.QUERY_ACCOUNT_SECU, SimpleDate.getUTCString());
+       String info = remoteAccountFeignClient.getInfo(username);
+       HttpContextHolder.getContext().clear();
+       return info;
     }
 
     private String buildFallbackAccountInfo(){

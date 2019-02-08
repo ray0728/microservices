@@ -1,7 +1,6 @@
 package com.rcircle.service.auth.security;
 
-import com.rcircle.service.auth.util.SimpleDate;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.rcircle.service.auth.utils.SimpleDate;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -18,7 +17,7 @@ public class JWTTokenEnhancer implements TokenEnhancer {
     public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
         Map<String, Object> additionalInfo = new HashMap<>();
         additionalInfo.put(TAG_AUTHINFO, "Published by SERVICE-AUTH");
-        additionalInfo.put(TAG_TIMESTAMP, SimpleDate.getCurrentDate());
+        additionalInfo.put(TAG_TIMESTAMP, SimpleDate.getUTCString());
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
         return accessToken;
     }

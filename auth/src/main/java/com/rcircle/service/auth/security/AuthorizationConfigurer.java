@@ -1,7 +1,7 @@
 package com.rcircle.service.auth.security;
 
 import com.rcircle.service.auth.service.AccountService;
-import com.rcircle.service.auth.util.CompatRedisTokenStore;
+import com.rcircle.service.auth.utils.CompatRedisTokenStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;

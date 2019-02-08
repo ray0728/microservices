@@ -1,14 +1,18 @@
 package com.rcircle.service.account.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.netflix.ribbon.proxy.annotation.Http;
 import com.rcircle.service.account.model.Account;
 import com.rcircle.service.account.model.Authority;
 import com.rcircle.service.account.service.AccountService;
 import com.rcircle.service.account.util.ErrInfo;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Enumeration;
 import java.util.List;
 
 @RestController
@@ -136,16 +140,14 @@ public class AccountController {
     }
 
     @GetMapping("info")
-    public String getInfo(@RequestParam(name = "username", required = true) String username) {
+    public String getInfo(HttpServletRequest request, @RequestParam(name = "username", required = true) String username) {
         List<Account> accounts = mAccountService.getAccountByUsername(username);
-//        增加网关之后通过传入特定头
-//        再来判断是否需要将密码隐藏
-//        仅在auth服务调用时不隐藏密码，其余调用均需隐藏
-//        if(accounts != null){
-//            for(Account account:accounts){
-//                account.setPassword("******");
-//            }
-//        }
+        String securityFlag = request.getHeader("rc-account-security");
+        if(accounts != null && securityFlag == null){
+            for(Account account:accounts){
+                account.setPassword("******");
+            }
+        }
         return JSONObject.toJSONString(accounts);
     }
 
