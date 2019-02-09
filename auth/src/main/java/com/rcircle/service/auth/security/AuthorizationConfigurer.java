@@ -61,11 +61,6 @@ public class AuthorizationConfigurer extends AuthorizationServerConfigurerAdapte
     @Autowired
     private RedisConnectionFactory connectionFactory;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
