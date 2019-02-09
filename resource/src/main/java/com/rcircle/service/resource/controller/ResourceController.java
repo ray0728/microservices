@@ -2,7 +2,6 @@ package com.rcircle.service.resource.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ray.service.resource.model.*;
 import com.rcircle.service.resource.service.AccountService;
 import com.rcircle.service.resource.service.ResourceService;
 import com.rcircle.service.resource.utils.ErrInfo;
