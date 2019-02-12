@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title}"></title>
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/nav-userdef.css">
+</head>
+<body>
+<nav class="navbar navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-menu"/>
+        </div>
+        <a class="navbar-brand" href="/">MY_LOGO</a>
+        <div class="collapse navbar-collapse" id="nav-menu">
+            <ul class="nav nav-tabs">
+                <li th:each="item:${menuList}"
+                    th:class="${item.isActive()}? 'active' : ${item.isDropDownMenu()? 'dropdown'}">
+                    <a th:href="${item.url}" th:text="${item.name}"
+                       th:class="${item.isDropDownMenu}? 'dropdown-toggle'"
+                       th:data-toggle="${item.isDropDownMenu}? 'dropdown'"></a>
+                    <ul th:if="${item.isDropDownMenu()}" class="dropdown-menu">
+                        <li th:each="drop:${item.dropList}" th:class="${drop.isDivider()}? 'divider'">
+                            <a th:unless="drop.isDivider()" th:href="${drop.url}" th:text="${drop.name}"></a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
