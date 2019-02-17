@@ -1,17 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="${title}"></title>
-    <link rel="stylesheet" href="/global/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/global/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/global/css/nav-userdef.css">
-</head>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <body>
-<!--<nav th:include="public::topbar"></nav>-->
-<nav class="navbar navbar-static-top" role="navigation">
+<body>
+<nav class="navbar navbar-static-top" role="navigation" th:fragment="topbar">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#nav-menu"/>
@@ -43,7 +34,5 @@
         </div>
     </div>
 </nav>
-<script src="/global/js/jquery-3.3.1.min.js"></script>
-<script src="/global/bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>
