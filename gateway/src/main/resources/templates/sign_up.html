@@ -10,39 +10,8 @@
     <link rel="stylesheet" href="/global/css/nav-userdef.css">
 </head>
 <body>
-<!--<nav th:include="public::topbar"></nav>-->
-<nav class="navbar navbar-static-top" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#nav-menu"/>
-            <span class="sr-only">切换导航</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </div>
-        <a class="navbar-brand" href="#">MY_LOGO</a>
-        <div class="collapse navbar-collapse" id="nav-menu">
-            <ul class="nav nav-tabs">
-                <li><a href="#">HOME</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Popular <b
-                            class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Topics</a></li>
-                        <li><a href="#">Courses</a></li>
-                        <li><a href="#">Courses</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">Trend</a></li>
-                    </ul>
-                </li>
-                <li><a href="#">Events</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<div th:include="public::topbar"></div>
+
 <script src="/global/js/jquery-3.3.1.min.js"></script>
 <script src="/global/bootstrap/js/bootstrap.min.js"></script>
 </body>
