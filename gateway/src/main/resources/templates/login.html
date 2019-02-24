@@ -14,27 +14,28 @@
 <body>
 <div th:include="public::topbar"></div>
 <div class="container">
-    <h1>Join R-Circle</h1>
-    <p class="lead">The best way to ask, learn, and find your interest.</p>
-    <h2>Create your personal account</h2>
-    <form role="form">
+    <h1>Sign in to RCircle</h1>
+    <form class="form-horizontal" role="form">
         <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" class="form-control" id="username">
+            <label for="username" class="col-sm-4 col-md-4 control-label">Username or email address</label>
+            <div class="col-sm-8 col-md-8">
+                <input type="text" id="username">
+            </div>
         </div>
         <div class="form-group">
-            <label for="email">Email address</label>
-            <input id="email" type="text" class="form-control">
-            <p class="help-block">We’ll occasionally send updates about your account to this inbox. We’ll never share
-                your email address with anyone.</p>
+            <label for="password" class="col-sm-4 col-md-4 control-label">Password</label>
+            <div class="col-sm-8 col-md-8">
+                <input type="password" id="password">
+            </div>
         </div>
         <div class="form-group">
-            <label for="password">Password</label>
-            <input id="password" type="password" class="form-control">
-            <p class="help-block">Make sure it's more than 15 characters OR at least 8 characters including a number and a lowercase letter.</p>
+            <div class="col-sm-offset-2 col-md-offset-2 col-sm-8 col-md-8">
+                <button type="submit" class="btn btn-success">Sign in</button>
+            </div>
         </div>
-        <button type="submit" class="btn btn-success">Create an account</button>
     </form>
+    <span>New to RCircle?</span>
+    <a href="join"> Create an account. </a>
 </div>
 <div th:include="public::bottombar"></div>
 <script src="/global/js/jquery-3.3.1.min.js"></script>

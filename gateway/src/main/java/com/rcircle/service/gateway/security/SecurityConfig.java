@@ -11,10 +11,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableOAuth2Sso
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    protected void configure(HttpSecurity http) throws Exception{
+    protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/debug/**").permitAll()
-                .antMatchers("/","/login**").permitAll()
+                .antMatchers("/", "/login**", "/join**").permitAll()
                 .antMatchers("/admin/**").hasRole(Authority.ROLE_ADMIN)
                 .antMatchers("/test/**").hasRole(Authority.ROLE_SUPER)
                 .anyRequest().authenticated();

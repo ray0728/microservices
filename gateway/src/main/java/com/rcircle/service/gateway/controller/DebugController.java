@@ -13,4 +13,10 @@ public class DebugController {
         mm.addAttribute("title", "Join RC");
         return "sign_up";
     }
+
+    @GetMapping("login")
+    public String login(ModelMap mm){
+        mm.addAttribute("title", "Login");
+        return "login";
+    }
 }
