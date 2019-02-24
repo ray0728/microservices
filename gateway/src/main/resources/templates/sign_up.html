@@ -8,10 +8,29 @@
     <link rel="stylesheet" href="/global/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/global/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="/global/css/nav-userdef.css">
+    <link rel="stylesheet" href="/global/css/style.css">
 </head>
 <body>
 <div th:include="public::topbar"></div>
-
+<div class="container">
+    <h1>Join R-Circle</h1>
+    <p class="lead">The best way to ask, learn, and find your interest.</p>
+    <h2>Create your personal account</h2>
+    <form role="form">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username">
+        </div>
+        <div class="form-group">
+            <label for="">Email address</label>
+            <input id="email" type="text" class="form-control">
+            <p class="help-block">We’ll occasionally send updates about your account to this inbox. We’ll never share your email address with anyone.</p>
+        </div>
+        <div class="form-group">
+            <label for></label>
+        </div>
+    </form>
+</div>
 <script src="/global/js/jquery-3.3.1.min.js"></script>
 <script src="/global/bootstrap/js/bootstrap.min.js"></script>
 </body>
