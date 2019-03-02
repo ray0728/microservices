@@ -13,6 +13,7 @@ public class Account implements Serializable {
     private int uid = 0;
     private String username;
     private String password;
+    private String email;
     private int status = STATUS_NORMAL;
     private long firsttime;
     private int times;
@@ -41,6 +42,14 @@ public class Account implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public int getStatus() {

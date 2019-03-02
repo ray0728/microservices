@@ -38,6 +38,7 @@ public class AccountController {
 
     @PostMapping("create")
     public String create(Principal principal, @RequestParam(name = "usrname", required = true) String username,
+                         @RequestParam(name = "email", required = true) String email,
                          @RequestParam(name = "passwd", required = true) String password,
                          @RequestParam(name = "roles", required = false, defaultValue = "") int[] roles) {
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
@@ -50,6 +51,7 @@ public class AccountController {
         Account account = new Account();
         account.setUsername(username);
         account.setPassword(password);
+        account.setEmail(email);
         if (mAccountService.createAccount(account) == 0) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
         }

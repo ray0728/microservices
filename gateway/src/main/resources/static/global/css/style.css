@@ -6,6 +6,11 @@
     color:gray;
 }
 
+.errinfo{
+    color:red;
+    font-style:italic;
+}
+
 .horizon-ul{
     list-style: none;
     display: inline-block;

@@ -5,6 +5,7 @@
         <id property="uid" column="id"/>
         <result property="username" column="username"/>
         <result property="password" column="password"/>
+        <result property="email" column="email"/>
         <result property="status" column="status"/>
         <result property="firsttime" column="first_time"/>
         <result property="times" column="login_times"/>
@@ -25,9 +26,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="uid" parameterType="Account">
         INSERT INTO
         t_account
-        (username,password,first_time,status)
+        (username,password,email,first_time,status)
         VALUES
-        (#{username}, #{password},#{firsttime},#{status})
+        (#{username}, #{password}, #{email}, #{firsttime},#{status})
     </insert>
 
     <update id="setAccountStatus">

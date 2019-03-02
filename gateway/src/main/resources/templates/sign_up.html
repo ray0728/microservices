@@ -17,20 +17,21 @@
     <h1>Join R-Circle</h1>
     <p class="lead">The best way to ask, learn, and find your interest.</p>
     <h2>Create your personal account</h2>
-    <form role="form">
+    <h2 class="errinfo" th:text="${errinfo}" th:if="${errinfo}"></h2>
+    <form role="form" action="#" th:action="@{/join}" th:object="${account}" method="post">
         <div class="form-group">
             <label for="username">Username</label>
-            <input type="text" class="form-control" id="username">
+            <input type="text" class="form-control" id="username" th:field="*{username}">
         </div>
         <div class="form-group">
             <label for="email">Email address</label>
-            <input id="email" type="text" class="form-control">
+            <input id="email" type="text" class="form-control" th:field="*{email}">
             <p class="help-block">We’ll occasionally send updates about your account to this inbox. We’ll never share
                 your email address with anyone.</p>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input id="password" type="password" class="form-control">
+            <input id="password" type="password" class="form-control" th:field="*{password}">
             <p class="help-block">Make sure it's more than 15 characters OR at least 8 characters including a number and a lowercase letter.</p>
         </div>
         <button type="submit" class="btn btn-success">Create an account</button>
