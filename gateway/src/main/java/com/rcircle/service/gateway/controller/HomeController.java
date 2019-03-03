@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/")
@@ -18,7 +19,12 @@ public class HomeController {
     AccountService accountService;
 
     @GetMapping("")
-    public String showHomePage() {
+    public String showHomePage(Principal principal, ModelMap mm) {
+        if (principal != null) {
+            mm.addAttribute("title", "RC - Welcome," + principal.getName());
+        } else {
+            mm.addAttribute("title", "RC - Welcome");
+        }
         return "index";
     }
 
@@ -40,9 +46,9 @@ public class HomeController {
         if (ret.startsWith("failed")) {
             mm.addAttribute("errinfo", ret);
             return "sign_up";
-        }else{
-            mm.clear();
         }
+        mm.clear();
+        mm.addAttribute("title", "RC - Welcome");
         return "index";
     }
 

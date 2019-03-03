@@ -45,9 +45,12 @@
                     <li><a href="#">Blog</a></li>
                     <li><a href="#">Contact</a></li>
                 </ul>
-                <div class="navbar-right btn-group">
+                <div class="navbar-right btn-group" th:unless="${#authentication.name}">
                     <button type="button" class="btn btn-default navbar-btn">Sign in</button>
                     <button type="button" class="btn btn-default navbar-btn">Sign up</button>
+                </div>
+                <div class="navbar-right" th:if="${#authentication.name}">
+                    <img src="/global/img/default-head.jpg" class="img-thumbnail">
                 </div>
             </div>
         </div>
@@ -61,7 +64,8 @@
         </ul>
         <ul class="float-right horizon-ul">
             <li><a href="#" title="RCircle on Weibo"><i class="fa fa-weibo fa-2x icon-color-gray"></i></a></li>
-            <li><a href="https://github.com/ray0728/microservices" target="_blank" title="RCircle on Github"><i class="fa fa-github fa-2x icon-color-gray"></i></a></li>
+            <li><a href="https://github.com/ray0728/microservices" target="_blank" title="RCircle on Github"><i
+                    class="fa fa-github fa-2x icon-color-gray"></i></a></li>
         </ul>
     </div>
 </div>

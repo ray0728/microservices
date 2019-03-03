@@ -46,7 +46,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .and()
                 .httpBasic()
                 .and()
-                .formLogin().permitAll();
+                .formLogin().disable();
     }
 
     @Override
