@@ -84,6 +84,7 @@ public class AuthorizationConfigurer extends AuthorizationServerConfigurerAdapte
                 .scopes(clientConfigScopes)
                 .accessTokenValiditySeconds(upload_access_validity_second)
                 .refreshTokenValiditySeconds(upload_refresh_validity_second)
+                .autoApprove(true)
         ;
     }
 
