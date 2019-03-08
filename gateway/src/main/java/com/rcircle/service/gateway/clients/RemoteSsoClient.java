@@ -11,6 +11,7 @@ import java.util.Map;
 @FeignClient(name = "service-auth", configuration = RemoteSsoClientConfiguration.class)
 public interface RemoteSsoClient {
     @RequestMapping({"/oauth/authorize"})
+    @ResponseBody
     public String getAuthorizeCode(@RequestParam Map<String, String> parameters);
 
     @RequestMapping(

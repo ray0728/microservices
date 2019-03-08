@@ -24,9 +24,6 @@ public class AccountService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String accountinfo = getAccountInfo(username);
-        if(accountinfo.equals("Invalid resources.")){
-            throw new UsernameNotFoundException("Invalid resources.");
-        }
         List<Account> accountList = JSON.parseArray(accountinfo, Account.class);
         if (accountList == null||accountList.isEmpty()) {
             throw new UsernameNotFoundException(username);

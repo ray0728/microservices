@@ -1,6 +1,5 @@
 package com.rcircle.service.gateway.clients;
 
-import com.rcircle.service.gateway.utils.HttpContext;
 import com.rcircle.service.gateway.utils.HttpContextHolder;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -20,12 +19,12 @@ public class RemoteSsoRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate requestTemplate) {
         Set<String> keys = HttpContextHolder.getContext().keys();
-        for(String key:keys) {
-            if(key.equals(USERNAMEANDPASSWORD)){
+        for (String key : keys) {
+            if (key.equals(USERNAMEANDPASSWORD)) {
                 requestTemplate.header(AUTHORIZATION, new String[]{extractBasic(HttpContextHolder.getContext().getValue(key).toString())});
-            }else if(key.equals(ACCESSTOKEN)){
+            } else if (key.equals(ACCESSTOKEN)) {
                 requestTemplate.header(AUTHORIZATION, new String[]{extractToken(HttpContextHolder.getContext().getValue(key).toString())});
-            }else {
+            } else {
                 requestTemplate.header(key, HttpContextHolder.getContext().getStringArrayValue(key));
             }
         }

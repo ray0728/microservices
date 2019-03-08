@@ -1,8 +1,11 @@
 package com.rcircle.service.gateway.model;
 
-import java.io.Serializable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
-public class Account implements Serializable {
+import java.util.Collection;
+
+public class Account implements Authentication {
     private String username;
     private String email;
     private String password;
@@ -29,5 +32,40 @@ public class Account implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public Object getCredentials() {
+        return null;
+    }
+
+    @Override
+    public Object getDetails() {
+        return null;
+    }
+
+    @Override
+    public Object getPrincipal() {
+        return null;
+    }
+
+    @Override
+    public boolean isAuthenticated() {
+        return false;
+    }
+
+    @Override
+    public void setAuthenticated(boolean b) throws IllegalArgumentException {
+
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
 }

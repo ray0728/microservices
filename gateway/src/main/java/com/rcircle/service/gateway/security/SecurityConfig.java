@@ -1,23 +1,26 @@
 package com.rcircle.service.gateway.security;
 
 import com.rcircle.service.gateway.model.Authority;
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
-@EnableOAuth2Sso
+@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/debug/**").permitAll()
-                .antMatchers("/", "/login**", "/join**").permitAll()
+                .antMatchers("/", "/join**", "/rst/redirect").permitAll()
                 .antMatchers("/admin/**").hasRole(Authority.ROLE_ADMIN)
-                .antMatchers("/test/**").hasRole(Authority.ROLE_SUPER)
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+        .and()
+        .httpBasic().disable()
+        .formLogin().loginPage("/login").permitAll()
+        ;
     }
 
     public void configure(WebSecurity web) throws Exception {
