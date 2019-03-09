@@ -21,12 +21,12 @@ public class AccountService {
                     @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds",
                             value = "1000")})
     public String createAccount(Account account) {
-        String info = remoteAccountClient.getInfo(account.getUsername());
+        String info = remoteAccountClient.getInfo(account.getName());
         List<Account> accountList = JSON.parseArray(info, Account.class);
         if (accountList != null && !accountList.isEmpty()) {
-            return String.format("failed! username(%s) already exists", account.getUsername());
+            return String.format("failed! username(%s) already exists", account.getName());
         }
-        info = remoteAccountClient.create(account.getUsername(), account.getEmail(), account.getPassword(), null);
+        info = remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null);
         ErrorData errorData = JSON.parseObject(info, ErrorData.class);
         return errorData.getCode() == ErrorData.INVALID_CODE ? "success" : errorData.toString();
     }

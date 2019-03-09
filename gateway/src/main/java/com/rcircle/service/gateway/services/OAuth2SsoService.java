@@ -48,7 +48,7 @@ public class OAuth2SsoService {
         return remoteSsoClient.getAccessToken(parameters);
     }
 
-    private String buildFallbackAccessToken(String username, String password, Throwable throwable){
+    public String buildFallbackAccessToken(String username, String password, Throwable throwable){
         return "failed! " + throwable.getMessage();
     }
 

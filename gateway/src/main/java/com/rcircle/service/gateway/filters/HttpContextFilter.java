@@ -1,5 +1,6 @@
-package com.rcircle.service.gateway.utils;
+package com.rcircle.service.gateway.filters;
 
+import com.rcircle.service.gateway.utils.HttpContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;

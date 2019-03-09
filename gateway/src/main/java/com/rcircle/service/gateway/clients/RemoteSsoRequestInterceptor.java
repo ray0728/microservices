@@ -7,7 +7,7 @@ import feign.Util;
 
 import com.rcircle.service.gateway.utils.Base64;
 
-import java.util.Set;
+import java.util.Map;
 
 public class RemoteSsoRequestInterceptor implements RequestInterceptor {
     private static final String BEARER = "Bearer";
@@ -18,14 +18,18 @@ public class RemoteSsoRequestInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
-        Set<String> keys = HttpContextHolder.getContext().keys();
-        for (String key : keys) {
-            if (key.equals(USERNAMEANDPASSWORD)) {
-                requestTemplate.header(AUTHORIZATION, new String[]{extractBasic(HttpContextHolder.getContext().getValue(key).toString())});
-            } else if (key.equals(ACCESSTOKEN)) {
-                requestTemplate.header(AUTHORIZATION, new String[]{extractToken(HttpContextHolder.getContext().getValue(key).toString())});
-            } else {
-                requestTemplate.header(key, HttpContextHolder.getContext().getStringArrayValue(key));
+        Map<String, Object> map = HttpContextHolder.getContext().getMap();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            switch (entry.getKey()) {
+                case USERNAMEANDPASSWORD:
+                    requestTemplate.header(AUTHORIZATION, new String[]{extractBasic((String) entry.getValue())});
+                    break;
+                case ACCESSTOKEN:
+                    requestTemplate.header(AUTHORIZATION, new String[]{extractToken((String) entry.getValue())});
+                    break;
+                default:
+                    requestTemplate.header(entry.getKey(), (String) entry.getValue());
+                    break;
             }
         }
     }

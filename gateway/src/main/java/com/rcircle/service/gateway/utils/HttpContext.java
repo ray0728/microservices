@@ -33,8 +33,8 @@ public class HttpContext {
         return contextMap.isEmpty();
     }
 
-    public Set<String> keys(){
-        return contextMap.keySet();
+    public Map<String, Object> getMap(){
+        return contextMap;
     }
 
     public void clear(){
