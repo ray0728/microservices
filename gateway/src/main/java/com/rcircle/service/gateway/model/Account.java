@@ -1,5 +1,6 @@
 package com.rcircle.service.gateway.model;
 
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,11 +10,10 @@ import java.util.Collection;
 
 public class Account implements Authentication, CredentialsContainer {
     private String email;
-    private String accesstoken;
-
     private Object credentials;
     private Object principal;
     private Object detials;
+    private JWTToken jwtToken = null;
     private boolean authenticated = false;
 
 
@@ -68,12 +68,12 @@ public class Account implements Authentication, CredentialsContainer {
         return false;
     }
 
-    public String getAccesstoken() {
-        return accesstoken;
+    public void setToken(String token) {
+        jwtToken = JSONObject.parseObject(token, JWTToken.class);
     }
 
-    public void setAccesstoken(String accesstoken) {
-        this.accesstoken = accesstoken;
+    public JWTToken getToken(){
+        return jwtToken;
     }
 
     public void setCredentials(Object credentials) {

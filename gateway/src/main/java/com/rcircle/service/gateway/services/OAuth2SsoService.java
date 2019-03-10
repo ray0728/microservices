@@ -6,6 +6,7 @@ import com.rcircle.service.gateway.clients.RemoteSsoClient;
 import com.rcircle.service.gateway.clients.RemoteSsoRequestInterceptor;
 import com.rcircle.service.gateway.utils.HttpContextHolder;
 import com.rcircle.service.gateway.utils.Toolkit;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,21 +39,39 @@ public class OAuth2SsoService {
         parameters.put("state", state);
         String map = remoteSsoClient.getAuthorizeCode(parameters);
         HashMap<String, String> authcode = JSON.parseObject(map, HashMap.class);
-        if(!state.equals(authcode.get("state"))){
+        if (!state.equals(authcode.get("state"))) {
             return "failed! state mismatch";
         }
         HttpContextHolder.getContext().delete(RemoteSsoRequestInterceptor.USERNAMEANDPASSWORD);
         parameters.remove("response");
+        parameters.put("client_secret", secret);
         parameters.put("grant_type", "authorization_code");
         parameters.put("code", authcode.get("code"));
-        return remoteSsoClient.getAccessToken(parameters);
+        String token = remoteSsoClient.getAccessToken(parameters);
+        return token;
     }
 
-    public String buildFallbackAccessToken(String username, String password, Throwable throwable){
-        return "failed! " + throwable.getMessage();
+    public String buildFallbackAccessToken(String username, String password, Throwable throwable) {
+        int status = 0;
+        String reason = null;
+        if (throwable instanceof FeignException) {
+            status = ((FeignException) throwable).status();
+        }
+        switch (status) {
+            case 401:
+                reason = "Incorrect Password!";
+                break;
+            case 500:
+                reason = "Server Busy";
+                break;
+            default:
+                reason ="Network Timeout";
+                break;
+        }
+        return "failed! " + reason;
     }
 
     private String extractRedirect(String endpoint) {
-        return String.format("http://%s:%d/%s", Toolkit.getLocalIP(), port, endpoint);
+        return String.format("http://%s:%d%s", Toolkit.getLocalIP(), port, endpoint);
     }
 }

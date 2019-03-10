@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <body>
 <body>
 <div th:fragment="topbar">
@@ -45,13 +47,27 @@
                     <li><a href="#">Blog</a></li>
                     <li><a href="#">Contact</a></li>
                 </ul>
-                <div class="navbar-right btn-group" th:unless="${#authentication.name}">
+                <div class="navbar-right btn-group" sec:authorize="!isAuthenticated()">
                     <button type="button" class="btn btn-default navbar-btn">Sign in</button>
                     <button type="button" class="btn btn-default navbar-btn">Sign up</button>
                 </div>
-                <div class="navbar-right" th:if="${#authentication.name}">
-                    <img src="/global/img/default-head.jpg" class="img-thumbnail">
-                </div>
+                <ul class="nav navbar-nav navbar-right" sec:authorize="isAuthenticated()">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                           sec:authentication="name">username<span>&nbsp;</span>
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Notifications</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Profile</a></li>
+                            <li><a href="#">Settings</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>

@@ -19,9 +19,9 @@ public class OAuthFeignAuthenticationProvider implements AuthenticationProvider 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String token = oAuth2SsoService.getAccessToken(authentication.getName(), authentication.getCredentials().toString());
         if(token.startsWith("failed!")){
-           throw new BadCredentialsException("Incorrect Password!");
+           throw new BadCredentialsException(token);
         }
-        ((Account)authentication).setAccesstoken(token);
+        ((Account)authentication).setToken(token);
         authentication.setAuthenticated(true);
         return authentication;
     }
