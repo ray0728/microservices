@@ -5,70 +5,58 @@
 <body>
 <body>
 <div th:fragment="topbar">
-    <nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse"
-                        data-target="#example-navbar-collapse">
-                    <span class="sr-only">切换导航</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">MY_LOGO</a>
-            </div>
-            <div class="collapse navbar-collapse" id="example-navbar-collapse">
-                <div class="navbar-left">
-                    <form class="navbar-form" role="search">
-                        <div class="input-group">
-                            <input type="text" class="form-control">
-                            <span class="input-group-btn">
-                                <button class="btn btn-default" type="button">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
+            <a class="navbar-brand" href="#">MY_LOGO</a>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <form class="form-inline">
+                    <div class="input-group">
+                        <input type="text" class="form-control">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fa fa-search"></i>
+                            </button>
                         </div>
-                    </form>
-                </div>
-                <ul class="nav navbar-nav">
-                    <li><a href="/">HOME</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Popular <b
-                                class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Topics</a></li>
-                            <li><a href="#">Courses</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">Trend</a></li>
-                        </ul>
+                    </div>
+                </form>
+                <ul class="navbar-nav ml-2">
+                    <li class="nav-item"><a class="nav-link" href="/">HOME</a></li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Popular</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">Topics</a>
+                            <a class="dropdown-item" href="#">Courses</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Trend</a>
+                        </div>
                     </li>
-                    <li><a href="#">Events</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-                <div class="navbar-right btn-group" sec:authorize="!isAuthenticated()">
-                    <button type="button" class="btn btn-default navbar-btn">Sign in</button>
-                    <button type="button" class="btn btn-default navbar-btn">Sign up</button>
-                </div>
-                <ul class="nav navbar-nav navbar-right" sec:authorize="isAuthenticated()">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-                           sec:authentication="name">username<span>&nbsp;</span>
-                            <b class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Notifications</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">Profile</a></li>
-                            <li><a href="#">Settings</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">Logout</a></li>
-                        </ul>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#">Events</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                 </ul>
             </div>
+            <div class="navbar" sec:authorize="!isAuthenticated()">
+                <button type="button" class="btn btn-outline-light">Sign in</button>
+                <button type="button" class="btn btn-outline-light ml-1">Sign up</button>
+            </div>
+            <div class="navbar" sec:authorize="isAuthenticated()">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" sec:authentication="name">username</a>
+                    <div class="dropdown-menu">
+                        <a class="nav-link" href="#">Notifications</a>
+                        <a class="nav-link" href="#">Blog</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="nav-link" href="#">Profile</a>
+                        <a class="nav-link" href="#">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="nav-link" href="#">Logout</a>
+                    </div>
+                </li>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
     </nav>
 </div>
