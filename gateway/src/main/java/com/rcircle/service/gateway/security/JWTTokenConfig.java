@@ -19,11 +19,11 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Configuration
+//@Configuration
 public class JWTTokenConfig {
-    @Value("${security.oauth2.jwt.publickey.local}")
+//    @Value("${security.oauth2.jwt.publickey.local}")
     private String local_public_key;
-    @Value("${security.oauth2.jwt.publickey.remote}")
+//    @Value("${security.oauth2.jwt.publickey.remote}")
     private String remote_public_key;
 
     private String getPubKey() {
