@@ -76,23 +76,28 @@ public class ResourceService {
         return reply;
     }
 
-    public Log getLogDetial(int id){
+    public Log getLogDetial(int id) {
         return resourceMapper.getLogById(id);
     }
 
-    public List<Log> getLogsByUid(int uid){
+    public List<Log> getLogsByUid(int uid) {
         return resourceMapper.getLogsByUid(uid);
     }
 
-    public List<Log> getPublicLogsByType(int type){
+    public List<Log> getPublicLogsByType(int type) {
         return resourceMapper.getPublicLogsByType(type);
     }
 
-    public List<Log> getGroupLogsByType(int type, int gid){
+    public List<Log> getGroupLogsByType(int type, int gid) {
         return resourceMapper.getGroupLogsByType(type, gid);
     }
 
-    public List<Reply> getReplies(int lid){
+    public List<Reply> getReplies(int lid) {
         return resourceMapper.getLogReplies(lid);
     }
+
+    public List<String> getAllCategory(int uid) {
+        return resourceMapper.getCategoryId(uid);
+    }
+
 }

@@ -4,7 +4,7 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <body>
 <div th:fragment="topbar">
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark mb-2">
         <div class="container">
             <a class="navbar-brand" href="#">MY_LOGO</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -62,16 +62,18 @@
     </nav>
 </div>
 <div th:fragment="bottombar">
-    <div class="container">
-        <ul class="horizon-ul">
-            <li><i class="fa fa-copyright"> 2019 RCircle, Inc.</i></li>
-            <li><a href="#">Terms</a></li>
-        </ul>
-        <ul class="float-right horizon-ul">
-            <li><a href="#" title="RCircle on Weibo"><i class="fa fa-weibo fa-2x icon-color-gray"></i></a></li>
-            <li><a href="https://github.com/ray0728/microservices" target="_blank" title="RCircle on Github"><i
-                    class="fa fa-github fa-2x icon-color-gray"></i></a></li>
-        </ul>
+    <div class="container mt-2">
+        <div class="d-flex">
+            <ul class="horizon-ul">
+                <li><i class="fa fa-copyright"> 2019 RCircle, Inc.</i></li>
+                <li><a href="#">About us</a></li>
+            </ul>
+            <ul class="ml-auto horizon-ul">
+                <li><a href="#" title="RCircle on Weibo"><i class="fa fa-weibo icon-color-gray"></i></a></li>
+                <li><a href="https://github.com/ray0728/microservices" target="_blank" title="RCircle on Github"><i
+                        class="fa fa-github icon-color-gray"></i></a></li>
+            </ul>
+        </div>
     </div>
 </div>
 </body>

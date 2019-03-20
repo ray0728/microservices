@@ -37,4 +37,6 @@ public interface ResourceMapper {
     public List<Log> getGroupLogsByType(@Param("type") int type, @Param("gid") int gid);
 
     public List<Reply> getLogReplies(@Param("id")int lid);
+
+    public List<String> getCategoryId(@Param("uid")int uid);
 }

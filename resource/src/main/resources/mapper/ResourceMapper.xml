@@ -30,23 +30,31 @@
     </resultMap>
 
     <update id="changeLogStatus">
-        UPDATE t_log SET status=#{status} WHERE id=#{id}
+        UPDATE t_log
+        SET status=#{status}
+        WHERE id = #{id}
     </update>
 
     <select id="getLogStatus">
-        SELECT status FROM t_log WHERE id=#{id}
+        SELECT status
+        FROM t_log
+        WHERE id = #{id}
     </select>
 
     <select id="getLogReplies" resultType="Reply">
-        SELECT * FROM t_reply WHERE lid=#{id}
+        SELECT *
+        FROM t_reply
+        WHERE lid = #{id}
     </select>
 
     <select id="getLogDetail" resultType="LogDetail">
-        SELECT * FROM t_log_detail WHERE lid=#{id}
+        SELECT *
+        FROM t_log_detail
+        WHERE lid = #{id}
     </select>
 
     <insert id="createLogDetail" useGeneratedKeys="true" keyProperty="id" parameterType="LogDetail">
-        INSERT INTO t_log_detail(lid,res_url)
+        INSERT INTO t_log_detail(lid, res_url)
         VALUES (#{lid}, #{res_url});
     </insert>
 
@@ -113,5 +121,12 @@
             <if test="gid != 0">gid=#{gid}</if>
             <if test="type != 0">and type = #{type}</if>
         </where>
+    </select>
+
+    <select id="getCategoryId" resultType="String">
+        SELECT t_category.desc
+        FROM t_category
+                 INNER JOIN t_account_category_map ON t_category.id = t_account_category_map.type_id
+        WHERE t_account_category_map.uid = #{uid};
     </select>
 </mapper>

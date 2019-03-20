@@ -15,32 +15,44 @@
 <div th:include="public::topbar"></div>
 <div class="container">
     <form role="form" action="#" th:action="@{/log}" th:object="${logfile}" method="post">
-        <div class="container mb-1">
-            <div class="row">
-                <label class="col-1">Title</label>
-                <input type="text" class="col-11">
-            </div>
-            <label for="type">Classifier</label>
-            <div class="btn-group" id="type">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                    Create New
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Create New</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item">Link 1</a>
-                    <a class="dropdown-item">Link 2</a>
-                </div>
-            </div>
+        <div class="d-flex mb-1">
+            <p class="font-weight-bold mr-1 my-auto">Title</p>
+            <input type="text" class="flex-grow-1">
+        </div>
+        <div class="d-flex mb-1">
+            <p class="my-auto ml-auto mr-1 font-weight-bold">Category</p>
+            <select>
+                <option value="Link1">Link 1</option>
+                <option value="Link2">Link 2</option>
+            </select>
+            <button type="button" class="btn fa fa-plus" data-toggle="modal" data-target="#addLogType"></button>
         </div>
         <div id="summernote"></div>
-        <div class="btn-group mt-2">
-            <button type="button" class="btn btn-primary mr-1">Preview</button>
-            <button type="submit" class="btn btn-success">Publish</button>
+        <div class="mt-2 d-flex">
+            <div class="btn-group ml-auto">
+                <button type="button" class="btn btn-primary mr-1">Preview</button>
+                <button type="submit" class="btn btn-success">Publish</button>
+            </div>
         </div>
     </form>
 </div>
 <div th:include="public::bottombar"></div>
+<div class="modal" id="addLogType">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create category</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body d-flex">
+                <input placeholder="set up a new category for your unique article" id="classifier" class="flex-fill">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Create category</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="/global/js/jquery-3.3.1.min.js"></script>
 <script src="/global/js/popper.min.js"></script>
 <script src="/global/bootstrap/js/bootstrap.min.js"></script>
