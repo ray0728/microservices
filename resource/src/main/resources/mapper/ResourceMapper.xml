@@ -129,4 +129,6 @@
                  INNER JOIN t_account_category_map ON t_category.id = t_account_category_map.type_id
         WHERE t_account_category_map.uid = #{uid};
     </select>
+
+
 </mapper>

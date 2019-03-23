@@ -1,5 +1,6 @@
 package com.rcircle.service.resource.mapper;
 
+import com.rcircle.service.resource.model.Category;
 import com.rcircle.service.resource.model.Log;
 import com.rcircle.service.resource.model.LogDetail;
 import com.rcircle.service.resource.model.Reply;
@@ -39,4 +40,14 @@ public interface ResourceMapper {
     public List<Reply> getLogReplies(@Param("id")int lid);
 
     public List<String> getCategoryId(@Param("uid")int uid);
+
+    public int createCategory(Category category);
+
+    public int addNewCategoryFor(@Param("uid")int uid, @Param("cid")int cid);
+
+    public int deleteCategory(@Param("cid")int cid);
+
+    public int deleteCategoryFor(@Param("uid")int uid, @Param("cid")int cid);
+
+
 }
