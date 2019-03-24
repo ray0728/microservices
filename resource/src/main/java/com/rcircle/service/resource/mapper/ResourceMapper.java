@@ -39,15 +39,21 @@ public interface ResourceMapper {
 
     public List<Reply> getLogReplies(@Param("id")int lid);
 
-    public List<String> getCategoryId(@Param("uid")int uid);
+    public List<Category> getAllCategory(@Param("uid")int uid);
 
     public int createCategory(Category category);
 
-    public int addNewCategoryFor(@Param("uid")int uid, @Param("cid")int cid);
+    public int addUserDefCategory(Category category);
 
-    public int deleteCategory(@Param("cid")int cid);
+    public int deleteCategory(@Param("cid")int cid, @Param("desc")String desc);
 
-    public int deleteCategoryFor(@Param("uid")int uid, @Param("cid")int cid);
+    public int deleteUserDefCategory(@Param("id")int id, @Param("uid")int uid);
+
+//    public int getAccountCategoryMapId(Category category);
+
+    public Category getCategory(@Param("desc")String desc);
+
+//    public String getCategory(@Param("id")int id);
 
 
 }

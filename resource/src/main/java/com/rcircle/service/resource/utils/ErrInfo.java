@@ -16,6 +16,10 @@ public class ErrInfo {
     public static final int CODE_GET_RES = 509;
     public static final int CODE_CREATE_FILE_STREAM = 510;
     public static final int CODE_SAVE_NETFILE = 511;
+    public static final int CODE_GET_ALL_CATEGORY_FOR_ACCOUNT = 512;
+    public static final int CODE_CREATE_NEW_CATEGORY = 513;
+    public static final int CODE_DELETE_CATEGORY = 514;
+    public static final int CODE_UPDATE_CATEGORY = 515;
 
 
     public static enum ErrType {

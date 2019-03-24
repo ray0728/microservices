@@ -1,6 +1,7 @@
 package com.rcircle.service.resource.service;
 
 import com.rcircle.service.resource.mapper.ResourceMapper;
+import com.rcircle.service.resource.model.Category;
 import com.rcircle.service.resource.model.Log;
 import com.rcircle.service.resource.model.LogDetail;
 import com.rcircle.service.resource.model.Reply;
@@ -96,8 +97,28 @@ public class ResourceService {
         return resourceMapper.getLogReplies(lid);
     }
 
-    public List<String> getAllCategory(int uid) {
-        return resourceMapper.getCategoryId(uid);
+    public List<Category> getAllCategory(int uid) {
+        return resourceMapper.getAllCategory(uid);
+    }
+
+    public Category createNewCategory(int uid, String desc){
+        Category newcategory = resourceMapper.getCategory(desc);
+        if(newcategory == null){
+            newcategory = new Category();
+            newcategory.setDesc(desc);
+            resourceMapper.createCategory(newcategory);
+        }
+        newcategory.setUid(uid);
+        resourceMapper.addUserDefCategory(newcategory);
+        return newcategory;
+    }
+
+    public int deleteUserDefCategory(int uid, int id){
+        return resourceMapper.deleteUserDefCategory(id, uid);
+    }
+
+    public int deleteCategory(int id, String desc){
+        return resourceMapper.deleteCategory(id, desc);
     }
 
 }

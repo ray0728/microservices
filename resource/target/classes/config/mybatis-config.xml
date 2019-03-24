@@ -7,6 +7,7 @@
     </settings>
     <typeAliases>
         <typeAlias alias="Integer" type="java.lang.Integer"/>
+        <typeAlias alias="String" type="java.lang.String"/>
         <typeAlias alias="Long" type="java.lang.Long"/>
         <typeAlias alias="HashMap" type="java.util.HashMap"/>
         <typeAlias alias="LinkedHashMap" type="java.util.LinkedHashMap"/>
@@ -15,5 +16,6 @@
         <typeAlias type="com.rcircle.service.resource.model.Log" alias="Log"/>
         <typeAlias type="com.rcircle.service.resource.model.LogDetail" alias="LogDetail"/>
         <typeAlias type="com.rcircle.service.resource.model.Reply" alias="Reply"/>
+        <typeAlias type="com.rcircle.service.resource.model.Category" alias="Category"/>
     </typeAliases>
 </configuration>
