@@ -14,7 +14,7 @@
 <body>
 <div th:include="public::topbar"></div>
 <div class="container">
-    <form role="form" action="#" th:action="@{/log}" th:object="${logfile}" method="post">
+    <form id="logform" role="form" action="#" th:action="@{/log}" th:object="${logfile}" method="post">
         <div class="d-flex mb-1">
             <p class="font-weight-bold mr-1 my-auto">Title</p>
             <input type="text" class="flex-grow-1">
@@ -57,11 +57,7 @@
 <script src="/global/js/popper.min.js"></script>
 <script src="/global/bootstrap/js/bootstrap.min.js"></script>
 <script src="/global/summernote/summernote-bs4.min.js"></script>
-<script src="/global/js/richeditor.js"></script>
-<script>
-    $(document).ready(function () {
-        initEditor("write here...");
-    });
-</script>
+<script src="/global/summernote/plugin/summernote-ext-myvideo.js"></script>
+<script src="/global/js/logeditor.js"></script>
 </body>
 </html>
