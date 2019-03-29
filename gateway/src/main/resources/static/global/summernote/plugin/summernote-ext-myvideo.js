@@ -61,6 +61,7 @@
                 if ($node) {
                     context.invoke('editor.insertNode', $node);
                 }
+                ui.hideDialog(self.$dialog);
             }).fail(function () {
                 context.invoke('editor.restoreRange');
             });
@@ -111,7 +112,8 @@
         this.createVideoNodeByFile = function (file) {
             var $video = $('<video controls>')
                 .attr('src', URL.createObjectURL(file[0]))
-                .attr('width', '100%').attr('height', '360');
+                .attr('width', '100%').attr('height', 'auto')
+                .attr("data-filename", file[0].filename);;
             $video.addClass('note-video-clip');
             return $video[0];
         };
@@ -155,50 +157,41 @@
                 $video = $('<iframe>')
                     .attr('frameborder', 0)
                     .attr('src', '//www.youtube.com/embed/' + youtubeId + (start > 0 ? '?start=' + start : ''))
-                    .attr('width', '100%').attr('height', '360');
             } else if (igMatch && igMatch[0].length) {
                 $video = $('<iframe>')
                     .attr('frameborder', 0)
                     .attr('src', 'https://instagram.com/p/' + igMatch[1] + '/embed/')
-                    .attr('width', '100%').attr('height', '710')
                     .attr('scrolling', 'no')
                     .attr('allowtransparency', 'true');
             } else if (vMatch && vMatch[0].length) {
                 $video = $('<iframe>')
                     .attr('frameborder', 0)
                     .attr('src', vMatch[0] + '/embed/simple')
-                    .attr('width', '100%').attr('height', '600')
                     .attr('class', 'vine-embed');
             } else if (vimMatch && vimMatch[3].length) {
                 $video = $('<iframe webkitallowfullscreen mozallowfullscreen allowfullscreen>')
                     .attr('frameborder', 0)
                     .attr('src', '//player.vimeo.com/video/' + vimMatch[3])
-                    .attr('width', '100%').attr('height', '360');
             } else if (dmMatch && dmMatch[2].length) {
                 $video = $('<iframe>')
                     .attr('frameborder', 0)
                     .attr('src', '//www.dailymotion.com/embed/video/' + dmMatch[2])
-                    .attr('width', '100%').attr('height', '360');
             } else if (youkuMatch && youkuMatch[1].length) {
                 $video = $('<iframe webkitallowfullscreen mozallowfullscreen allowfullscreen>')
                     .attr('frameborder', 0)
-                    .attr('height', '498')
-                    .attr('width', '100%')
                     .attr('src', '//player.youku.com/embed/' + youkuMatch[1]);
             } else if ((qqMatch && qqMatch[1].length) || (qqMatch2 && qqMatch2[2].length)) {
                 var vid = ((qqMatch && qqMatch[1].length) ? qqMatch[1] : qqMatch2[2]);
                 $video = $('<iframe webkitallowfullscreen mozallowfullscreen allowfullscreen>')
                     .attr('frameborder', 0)
-                    .attr('height', '310')
-                    .attr('width', '100%')
                     .attr('src', 'http://v.qq.com/iframe/player.html?vid=' + vid + '&amp;auto=0');
             } else if (mp4Match || oggMatch || webmMatch) {
                 $video = $('<video controls>')
                     .attr('src', url)
-                    .attr('width', '100%').attr('height', '360');
             } else {
                 return false;
             }
+            $video.attr('width', '100%').attr('height', 'auto').attr("data-filename", "netfile");
             $video.addClass('note-video-clip');
             return $video[0];
         };

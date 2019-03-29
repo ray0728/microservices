@@ -38,3 +38,8 @@
     float: right;
     align-items: revert;
 }
+
+.modal-div{
+    max-height:50%;
+    overflow-y:auto
+}
