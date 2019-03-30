@@ -30,7 +30,7 @@
         <div class="mt-2 d-flex">
             <div class="btn-group ml-auto">
                 <button type="button" class="btn btn-primary mr-1" data-toggle="modal" data-target="#previewmodal">Preview</button>
-                <button type="button" class="btn btn-success" id="btn_submit">Publish</button>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#uploadmodal">Publish</button>
             </div>
         </div>
         <input type="hidden" id="code" value="">
@@ -64,6 +64,20 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="uploadmodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Pre-Check</h4>
+            </div>
+            <div class="modal-body modal-div" id="content">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
