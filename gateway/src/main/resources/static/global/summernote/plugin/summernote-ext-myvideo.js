@@ -113,7 +113,7 @@
             var $video = $('<video controls>')
                 .attr('src', URL.createObjectURL(file[0]))
                 .attr('width', '100%').attr('height', 'auto')
-                .attr("data-filename", file[0].filename);;
+                .attr("data-filename", file[0].name);;
             $video.addClass('note-video-clip');
             return $video[0];
         };
