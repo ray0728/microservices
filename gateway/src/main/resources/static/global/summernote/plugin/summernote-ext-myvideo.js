@@ -100,7 +100,6 @@
 
         this.createVideoNode = function (data) {
             var datatype = toString.call(data);
-            console.log(datatype);
             if (datatype == "[object String]") {
                 return self.createVideoNodeByUrl(data);
             } else if (datatype == "[object FileList]") {
@@ -110,6 +109,7 @@
         };
 
         this.createVideoNodeByFile = function (file) {
+            console.log(file[0]);
             var $video = $('<video controls>')
                 .attr('src', URL.createObjectURL(file[0]))
                 .attr('width', '100%').attr('height', 'auto')

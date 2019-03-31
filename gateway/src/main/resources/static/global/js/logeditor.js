@@ -20,13 +20,9 @@ $(document).ready(function () {
 
 
 $("#logform").submit(function (event) {
-    console.log("handler for submit");
     var title = $(this).find('input[type="text"]').val();
     var category = $("#category").find(":selected").val();
     var code = $('#summernote').summernote('code');
-    console.log(title);
-    console.log(category);
-    console.log(code);
     if ("" == title) {
         $(this).find('input[type="text"]').css("border-color", "red");
         event.preventDefault();
@@ -50,7 +46,6 @@ $('#addcategory').click(function () {
     var userdefcategory = input.val();
     var shoudadd = true;
     $("#category options").each(function () {
-        console.log($(this).text());
         if ($(this).text() == userdefcategory) {
             shoudadd = false;
         }
@@ -70,11 +65,13 @@ $('#uploadmodal').on('shown.bs.modal', function () {
     var content = $(this).find('div[id="content"]');
     if (title.val() == "") {
         title.css("border-color", "red");
-        this.hide();
-    }else if(files.length > 0){
+        $('#uploadmodal').modal("hide");
+    } else if (files.length > 0) {
         header.text("Upload Files");
         content.html(dynamicsBody(files));
+        processUpload();
     }
+    // $('#uploadmodal').modal("hide");
     console.log("submit");
     // $("#logform").submit();
 });
@@ -83,7 +80,7 @@ dynamicsBody = function (files) {
     body = [];
     body.push('<div class="table-responsive-md">');
     body.push('<table class="table">');
-    body.push('<thead  class="thead-light">');
+    body.push('<thead class="thead-light">');
     body.push('<tr>');
     body.push('<th>#</th>');
     body.push('<th>File</th>');
@@ -92,9 +89,9 @@ dynamicsBody = function (files) {
     body.push('</thead>');
     body.push('<tbody>');
     $.each(files, function (index, file) {
-        console.log(file);
         var filename = file.getAttribute("data-filename");
         var url = file.src;
+        console.log(toString.call(url));
         body.push('<tr class="table-warning">');
         body.push('<td>' + (index + 1) + '</td>');
         body.push('<td value=' + url + '>' + filename + '</td>');
@@ -103,32 +100,46 @@ dynamicsBody = function (files) {
     });
     body.push('</tbody>');
     body.push('</table>');
+    body.push('<div class="progress">');
+    body.push('<div class="progress-bar progress-bar-striped progress-bar-animated" style="width:1%"></div>');
+    body.push('</div>');
     return body.join('');
 };
 
-showDialog = function (dialog) {
-    var ui = $.summernote.ui;
-    console.log("show dialog");
-    return $.Deferred(function (deferred) {
-        var $cancelBtn = dialog.find('button[class="btn btn-danger"]');
-        ui.onDialogShown(dialog, function () {
-            deferred.resolve(true);
-            $cancelBtn.click(function (event) {
-                event.preventDefault();
-                deferred.resolve(false);
-            });
-        });
-        ui.onDialogHidden(dialog, function () {
-            $cancelBtn.off('click');
-            if (deferred.state() === 'pending') {
-                deferred.reject();
-            }
 
-        });
-        ui.showDialog(dialog);
+processUpload = function () {
+    var trlist = $('#uploadmodal').find('tr[class="table-warning"]');
+    $.each(trlist, function (index, row) {
+        var obj = $(row).find("td:eq(1)");
+        var status = $(row).find("td:eq(2)");
+        var file = blobToFile($(obj).attr("value"), $(obj).text());
+        console.log(file);
     });
 };
 
 blobToFile = function (url, filename) {
+    console.log(url, filename);
+    // return new File(toByteArray(url), filename, {type: "video/mp4", lastModified: Date.now()});
+    var xhr = new XMLHttpRequest;
+    xhr.responseType = 'blob';
+    xhr.onload = function() {
+        var recoveredBlob = xhr.response;
+        var reader = new FileReader;
+        reader.onload = function() {
+            var blobAsDataUrl = reader.result;
+            window.location = blobAsDataUrl;
+        };
+        reader.readAsDataURL(recoveredBlob);
+        console.log(recoveredBlob);
+    };
+    xhr.open('GET', url);
+    xhr.send();
+};
 
-}
+toByteArray = function (str) {
+    var result = [];
+    for (var i = 0; i < str.length; i++) {
+        result.push(str.charCodeAt(i).toString(2));
+    }
+    return result;
+};
