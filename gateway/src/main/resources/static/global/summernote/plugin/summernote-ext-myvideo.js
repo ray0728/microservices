@@ -27,11 +27,11 @@
             });
             return button.render();
         });
-        
+
         this.initialize = function () {
             self.createVideoDialog();
         };
-        
+
         this.createVideoDialog = function () {
             var body = [
                 '<div class="form-group note-form-group note-group-select-from-files">',
@@ -57,10 +57,21 @@
             context.invoke('editor.saveRange');
             self.showVideoDialog().then(function (data) {
                 context.invoke('editor.restoreRange');
-                var $node = self.createVideoNode(data);
-                if ($node) {
-                    context.invoke('editor.insertNode', $node);
+                let nodeid = "vid_" + $.now();
+                let node = self.createVideoNode(nodeid, data);
+                if (node) {
+                    context.invoke('editor.insertNode', node);
                 }
+                context.invoke('editor.insertParagraph');
+                let options = {
+                    fluid:true,
+                    controls:true,
+                    preload:'auto',
+                    userActions: {
+                        doubleClick: videoDoubleClickHandler
+                    }
+                };
+                videojs(nodeid, options);
                 ui.hideDialog(self.$dialog);
             }).fail(function () {
                 context.invoke('editor.restoreRange');
@@ -98,51 +109,44 @@
             })
         };
 
-        this.createVideoNode = function (data) {
+        this.createVideoNode = function (id, data) {
             var datatype = toString.call(data);
             if (datatype == "[object String]") {
-                return self.createVideoNodeByUrl(data);
+                return self.createVideoNodeByUrl(id, data);
             } else if (datatype == "[object FileList]") {
-                return self.createVideoNodeByFile(data);
+                return self.createVideoNodeByFile(id, data);
             }
             return false;
         };
 
-        this.createVideoNodeByFile = function (file) {
+        this.createVideoNodeByFile = function (id, file) {
             console.log(file[0]);
-            var $video = $('<video controls>')
-                .attr('src', URL.createObjectURL(file[0]))
-                .attr('width', '100%').attr('height', 'auto')
-                .attr("data-filename", file[0].name);;
-            $video.addClass('note-video-clip');
-            return $video[0];
+            let video = $('<video controls>')
+                .attr("data-filename", file[0].name);
+            video.addClass('video-js');
+            video.addClass('vjs-big-play-centered');
+            video.html('<source src="' + URL.createObjectURL(file[0]) + '" type="' + file[0].type +'">');
+            return video[0];
         };
 
-        this.createVideoNodeByUrl = function (url) {
-            var ytRegExp = /\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w|-]{11})(?:(?:[\?&]t=)(\S+))?$/;
-            var ytRegExpForStart = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/;
-            var ytMatch = url.match(ytRegExp);
-            var igRegExp = /(?:www\.|\/\/)instagram\.com\/p\/(.[a-zA-Z0-9_-]*)/;
-            var igMatch = url.match(igRegExp);
-            var vRegExp = /\/\/vine\.co\/v\/([a-zA-Z0-9]+)/;
-            var vMatch = url.match(vRegExp);
-            var vimRegExp = /\/\/(player\.)?vimeo\.com\/([a-z]*\/)*(\d+)[?]?.*/;
-            var vimMatch = url.match(vimRegExp);
-            var dmRegExp = /.+dailymotion.com\/(video|hub)\/([^_]+)[^#]*(#video=([^_&]+))?/;
-            var dmMatch = url.match(dmRegExp);
-            var youkuRegExp = /\/\/v\.youku\.com\/v_show\/id_(\w+)=*\.html/;
-            var youkuMatch = url.match(youkuRegExp);
-            var qqRegExp = /\/\/v\.qq\.com.*?vid=(.+)/;
-            var qqMatch = url.match(qqRegExp);
-            var qqRegExp2 = /\/\/v\.qq\.com\/x?\/?(page|cover).*?\/([^\/]+)\.html\??.*/;
-            var qqMatch2 = url.match(qqRegExp2);
-            var mp4RegExp = /^.+.(mp4|m4v)$/;
-            var mp4Match = url.match(mp4RegExp);
-            var oggRegExp = /^.+.(ogg|ogv)$/;
-            var oggMatch = url.match(oggRegExp);
-            var webmRegExp = /^.+.(webm)$/;
-            var webmMatch = url.match(webmRegExp);
-            var $video;
+        this.createVideoNodeByUrl = function (id, url) {
+            let ytRegExp = /\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w|-]{11})(?:(?:[\?&]t=)(\S+))?$/;
+            let ytRegExpForStart = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/;
+            let ytMatch = url.match(ytRegExp);
+            let igRegExp = /(?:www\.|\/\/)instagram\.com\/p\/(.[a-zA-Z0-9_-]*)/;
+            let igMatch = url.match(igRegExp);
+            let vRegExp = /\/\/vine\.co\/v\/([a-zA-Z0-9]+)/;
+            let vMatch = url.match(vRegExp);
+            let vimRegExp = /\/\/(player\.)?vimeo\.com\/([a-z]*\/)*(\d+)[?]?.*/;
+            let vimMatch = url.match(vimRegExp);
+            let dmRegExp = /.+dailymotion.com\/(video|hub)\/([^_]+)[^#]*(#video=([^_&]+))?/;
+            let dmMatch = url.match(dmRegExp);
+            let youkuRegExp = /\/\/v\.youku\.com\/v_show\/id_(\w+)=*\.html/;
+            let youkuMatch = url.match(youkuRegExp);
+            let qqRegExp = /\/\/v\.qq\.com.*?vid=(.+)/;
+            let qqMatch = url.match(qqRegExp);
+            let qqRegExp2 = /\/\/v\.qq\.com\/x?\/?(page|cover).*?\/([^\/]+)\.html\??.*/;
+            let qqMatch2 = url.match(qqRegExp2);
             if (ytMatch && ytMatch[1].length === 11) {
                 var youtubeId = ytMatch[1];
                 var start = 0;
@@ -197,6 +201,6 @@
         };
     };
     $.extend($.summernote.plugins, {
-        'myvideo':myVideoPlugin
+        'myvideo': myVideoPlugin
     });
 }));

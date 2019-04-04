@@ -59,10 +59,10 @@ $('#addcategory').click(function () {
 
 
 $('#uploadmodal').on('shown.bs.modal', function () {
-    var title = $("#logform").find('input[type="text"]');
-    var files = $("#logform").find('video[class="note-video-clip"]');
-    var header = $(this).find('h4[class="modal-title"]');
-    var content = $(this).find('div[id="content"]');
+    let title = $("#logform").find('input[type="text"]');
+    let files = $("#logform").find('video[class="note-video-clip"]');
+    let header = $(this).find('h4[class="modal-title"]');
+    let content = $(this).find('div[id="content"]');
     if (title.val() == "") {
         title.css("border-color", "red");
         $('#uploadmodal').modal("hide");
@@ -143,3 +143,7 @@ toByteArray = function (str) {
     }
     return result;
 };
+
+videoDoubleClickHandler = function (e) {
+    console.log(e);
+}
