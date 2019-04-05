@@ -71,12 +71,18 @@
                         doubleClick: videoDoubleClickHandler
                     }
                 };
+                console.log(node);
+                console.log(nodeid);
                 videojs(nodeid, options);
                 ui.hideDialog(self.$dialog);
             }).fail(function () {
                 context.invoke('editor.restoreRange');
             });
         };
+
+        function videoDoubleClickHandler(e) {
+            console.log(e);
+        }
 
         this.showVideoDialog = function () {
             return $.Deferred(function (deferred) {
@@ -122,6 +128,7 @@
         this.createVideoNodeByFile = function (id, file) {
             console.log(file[0]);
             let video = $('<video controls>')
+                .attr("id", id)
                 .attr("data-filename", file[0].name);
             video.addClass('video-js');
             video.addClass('vjs-big-play-centered');

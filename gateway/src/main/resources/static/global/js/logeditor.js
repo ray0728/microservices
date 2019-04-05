@@ -141,9 +141,5 @@ toByteArray = function (str) {
     for (var i = 0; i < str.length; i++) {
         result.push(str.charCodeAt(i).toString(2));
     }
-    return result;
+    return resu
 };
-
-videoDoubleClickHandler = function (e) {
-    console.log(e);
-}
