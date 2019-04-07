@@ -21,8 +21,10 @@ public class RestPageController {
 
     @PostMapping("/upload")
     public String uploadFiles(MultipartFile file,
+                              @RequestParam(name="resid")int id,
                               @RequestParam(name = "index") int index,
                               @RequestParam(name="count") int count,
+                              @RequestParam(name="filename")String filename,
                               @RequestParam(name="chunksize") int chunksize,
                               @RequestParam(name="checksum") String checksum) {
         return "";

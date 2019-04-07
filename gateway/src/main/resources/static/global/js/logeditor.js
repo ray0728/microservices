@@ -20,9 +20,9 @@ $(document).ready(function () {
 
 
 $("#logform").submit(function (event) {
-    var title = $(this).find('input[type="text"]').val();
-    var category = $("#category").find(":selected").val();
-    var code = $('#summernote').summernote('code');
+    let title = $(this).find('input[type="text"]').val();
+    let category = $("#category").find(":selected").val();
+    let code = $('#summernote').summernote('code');
     if ("" == title) {
         $(this).find('input[type="text"]').css("border-color", "red");
         event.preventDefault();
@@ -32,26 +32,26 @@ $("#logform").submit(function (event) {
 });
 
 $("#previewmodal").on('show.bs.modal', function () {
-    var title = $("#logform").find('input[type="text"]').val();
-    var code = $('#summernote').summernote('code');
-    var header = $(this).find('h4[class="modal-title"]');
-    var content = $(this).find('div[id="content"]');
+    let title = $("#logform").find('input[type="text"]').val();
+    let code = $('#summernote').summernote('code');
+    let header = $(this).find('h4[class="modal-title"]');
+    let content = $(this).find('div[id="content"]');
     header.text(title);
     content.html(code);
 });
 
 $('#addcategory').click(function () {
-    var dialog = this.parent().parent();
-    var input = dialog.find('input[id="classifier"]');
-    var userdefcategory = input.val();
-    var shoudadd = true;
+    let dialog = this.parent().parent();
+    let input = dialog.find('input[id="classifier"]');
+    let userdefcategory = input.val();
+    let shoudadd = true;
     $("#category options").each(function () {
         if ($(this).text() == userdefcategory) {
             shoudadd = false;
         }
     });
     if (shoudadd) {
-        var newoption = new Option(userdefcategory, userdefcategory);
+        let newoption = new Option(userdefcategory, userdefcategory);
         $('#category').append(newoption);
     }
     input.val("");
@@ -60,7 +60,7 @@ $('#addcategory').click(function () {
 
 $('#uploadmodal').on('shown.bs.modal', function () {
     let title = $("#logform").find('input[type="text"]');
-    let files = $("#logform").find('video[class="note-video-clip"]');
+    let files = $("#logform").find('video[class="vjs-tech"]');
     let header = $(this).find('h4[class="modal-title"]');
     let content = $(this).find('div[id="content"]');
     if (title.val() == "") {
@@ -69,11 +69,12 @@ $('#uploadmodal').on('shown.bs.modal', function () {
     } else if (files.length > 0) {
         header.text("Upload Files");
         content.html(dynamicsBody(files));
-        processUpload();
+        processUpload(0);
+    }else {
+        // $('#uploadmodal').modal("hide");
+        console.log("submit");
+        // $("#logform").submit();
     }
-    // $('#uploadmodal').modal("hide");
-    console.log("submit");
-    // $("#logform").submit();
 });
 
 dynamicsBody = function (files) {
@@ -89,8 +90,8 @@ dynamicsBody = function (files) {
     body.push('</thead>');
     body.push('<tbody>');
     $.each(files, function (index, file) {
-        var filename = file.getAttribute("data-filename");
-        var url = file.src;
+        let filename = file.getAttribute("data-filename");
+        let url = file.src;
         console.log(toString.call(url));
         body.push('<tr class="table-warning">');
         body.push('<td>' + (index + 1) + '</td>');
@@ -107,39 +108,86 @@ dynamicsBody = function (files) {
 };
 
 
-processUpload = function () {
-    var trlist = $('#uploadmodal').find('tr[class="table-warning"]');
+processUpload = function (lid) {
+    let trlist = $('#uploadmodal').find('tr[class="table-warning"]');
     $.each(trlist, function (index, row) {
-        var obj = $(row).find("td:eq(1)");
-        var status = $(row).find("td:eq(2)");
-        var file = blobToFile($(obj).attr("value"), $(obj).text());
-        console.log(file);
+        let obj = $(row).find("td:eq(1)");
+        let progress = $(row).find("td:eq(2)");
+        let url = $(obj).attr("value");
+        let filename = $(obj).text();
+        let xhr = new XMLHttpRequest;
+        xhr.responseType = 'blob';
+        xhr.onload = function () {
+            if (this.status == 200) {
+                let blobdata = xhr.response;
+                blobdata.name = filename;
+                blobdata.lastModifiedDate = $.now();
+                progress.text = "uploading";
+                sliceUpload(lid, new File([blobdata], filename, {
+                    type: blobdata.type,
+                    lastModified: Date.now()
+                }), 2097152, progress);
+            }
+        };
+        xhr.open('GET', url, true);
+        xhr.send();
     });
 };
 
-blobToFile = function (url, filename) {
-    console.log(url, filename);
-    // return new File(toByteArray(url), filename, {type: "video/mp4", lastModified: Date.now()});
-    var xhr = new XMLHttpRequest;
-    xhr.responseType = 'blob';
-    xhr.onload = function() {
-        var recoveredBlob = xhr.response;
-        var reader = new FileReader;
-        reader.onload = function() {
-            var blobAsDataUrl = reader.result;
-            window.location = blobAsDataUrl;
-        };
-        reader.readAsDataURL(recoveredBlob);
-        console.log(recoveredBlob);
-    };
-    xhr.open('GET', url);
-    xhr.send();
-};
+sliceUpload = function (lid, file, chunkSize) {
+    let chunks = Math.ceil(file.size / chunkSize);
+    let currentChunk = 0;
+    let checksum;
+    let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
+    let spark = new SparkMD5();
+    let fileReader = new FileReader();
+    let start = 0;
+    let end = chunkSize >= file.size ? file.size : chunkSize;
 
-toByteArray = function (str) {
-    var result = [];
-    for (var i = 0; i < str.length; i++) {
-        result.push(str.charCodeAt(i).toString(2));
-    }
-    return resu
+    fileReader.onload = function (e) {
+        spark.appendBinary(e.target.result);
+        checksum = spark.end();
+    };
+
+    fileReader.onloadend = function (e) {
+        let formData = new FormData();
+        formData.append("resid", lid);
+        formData.append("index", currentChunk);
+        formData.append("count", chunks);
+        formData.append("filename", file.name);
+        formData.append("file", filedata);
+        formData.append("chunksize", chunkSize);
+        formData.append("checksum", checksum);
+        $.ajax({
+            url: "upload",
+            data: formData,
+            type: "Post",
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (res == "resend") {
+                    console.log("resend");
+                    start = currentChunk * chunkSize;
+                    end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+                    filedata = blobSlice.call(file, start, end);
+                    fileReader.readAsBinaryString(filedata);
+                } else if (res == "abort") {
+                    console.log("abort upload");
+                } else if (currentChunk + 1 < chunks) {
+                    currentChunk++;
+                    start = currentChunk * chunkSize;
+                    end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+                    filedata = blobSlice.call(file, start, end);
+                    fileReader.readAsBinaryString(filedata);
+                }
+            },
+            error: function (res) {
+                console.log(res);
+            }
+        });
+    };
+    let filedata = blobSlice.call(file, start, end);
+    fileReader.readAsBinaryString(filedata);
+
 };

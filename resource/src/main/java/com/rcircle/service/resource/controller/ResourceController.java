@@ -26,9 +26,6 @@ public class ResourceController {
     @Value("${rource.upload.dir.root}")
     private String saveDirRoot;
 
-    @Value("#{'${spring.servlet.multipart.max-file-size}'.replace('MB','')}")
-    private int chunkSize;
-
     @Value("${label.upload.files}")
     private String uploadFileLabel;
 
@@ -120,6 +117,7 @@ public class ResourceController {
                                   @RequestParam(name = "name", required = true) String filename,
                                   @RequestParam(name = "index", required = true) long index,
                                   @RequestParam(name = "total", required = true) long total,
+                                  @RequestParam(name = "chunksize") int chunkSize,
                                   @RequestParam(name = "checksum", required = true) String checksum) {
         String result = "";
         Account account = getOpAccount(principal);
@@ -139,7 +137,7 @@ public class ResourceController {
         String saveDir = log.getDetial().getRes_url();
         //NetFile.getDirAbsolutePath(saveDirRoot, String.valueOf(account.getUid()), String.valueOf(id));
         try {
-            int err = NetFile.saveSplitFile(saveDir, filename, index, total, checksum, chunkSize * 1024 * 1024, files.get(0));
+            int err = NetFile.saveSplitFile(saveDir, filename, index, total, checksum, chunkSize, files.get(0));
             if (err != 0) {
                 result = ErrInfo.assembleJson(ErrInfo.ErrType.MISMATCH, err, "checksum mismatch.");
             }
@@ -251,13 +249,13 @@ public class ResourceController {
         return JSONObject.toJSONString(logs);
     }
 
-    private boolean isBelongGid(int gid){
+    private boolean isBelongGid(int gid) {
         List<Group> groupList = getAllGroupBelongOpAccount();
-        if(groupList == null || gid == 0){
+        if (groupList == null || gid == 0) {
             return false;
         }
-        for(Group group:groupList){
-            if(group.getGid() == gid){
+        for (Group group : groupList) {
+            if (group.getGid() == gid) {
                 return true;
             }
         }

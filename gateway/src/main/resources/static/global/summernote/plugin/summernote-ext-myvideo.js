@@ -11,14 +11,14 @@
         factory(window.jQuery);
     }
 }(function ($) {
-    var myVideoPlugin = function (context) {
-        var self = this;
-        var options = context.options;
-        var lang = options.langInfo;
-        var ui = $.summernote.ui;
+    let myVideoPlugin = function (context) {
+        let self = this;
+        let options = context.options;
+        let lang = options.langInfo;
+        let ui = $.summernote.ui;
 
         context.memo('button.myvideo', function () {
-            var button = ui.button({
+            let button = ui.button({
                 contents: ui.icon(options.icons.video),
                 tooltip: lang.video.video,
                 click: function () {
@@ -33,7 +33,7 @@
         };
 
         this.createVideoDialog = function () {
-            var body = [
+            let body = [
                 '<div class="form-group note-form-group note-group-select-from-files">',
                 '<label class="note-form-label">' + lang.image.selectFromFiles + '</label>',
                 '<input class="note-image-input note-form-control note-input" type="file" name="files" accept="video/*"" />',
@@ -43,8 +43,8 @@
                 '<input class="note-video-url form-control note-form-control note-input" type="text" />',
                 '</div>'
             ].join('');
-            var buttonClass = 'btn btn-primary note-btn note-btn-primary note-video-btn';
-            var footer = "<input type=\"button\" href=\"#\" class=\"" + buttonClass + "\" value=\"" + lang.video.insert + "\" disabled>";
+            let buttonClass = 'btn btn-primary note-btn note-btn-primary note-video-btn';
+            let footer = "<input type=\"button\" href=\"#\" class=\"" + buttonClass + "\" value=\"" + lang.video.insert + "\" disabled>";
             this.$dialog = ui.dialog({
                 title: lang.video.insert,
                 fade: options.dialogsFade,
@@ -68,7 +68,7 @@
                     controls:true,
                     preload:'auto',
                     userActions: {
-                        doubleClick: videoDoubleClickHandler
+                        doubleClick: self.videoDoubleClickHandler
                     }
                 };
                 console.log(node);
@@ -80,15 +80,15 @@
             });
         };
 
-        function videoDoubleClickHandler(e) {
+        this.videoDoubleClickHandler = function(e) {
             console.log(e);
         }
 
         this.showVideoDialog = function () {
             return $.Deferred(function (deferred) {
-                var $videoInput = self.$dialog.find('.note-image-input');
-                var $videoUrl = self.$dialog.find('.note-video-url');
-                var $videoBtn = self.$dialog.find('.note-video-btn');
+                let $videoInput = self.$dialog.find('.note-image-input');
+                let $videoUrl = self.$dialog.find('.note-video-url');
+                let $videoBtn = self.$dialog.find('.note-video-btn');
                 ui.onDialogShown(self.$dialog, function () {
                     context.triggerEvent('dialog.shown');
                     $videoInput.replaceWith($videoInput.clone().on('change', function (event) {
@@ -99,7 +99,7 @@
                         deferred.resolve($videoUrl.val());
                     });
                     $videoUrl.on('keyup paste', function () {
-                        var url = $videoUrl.val();
+                        let url = $videoUrl.val();
                         ui.toggleBtn($videoBtn, url);
                     }).val('');
                 });
@@ -116,7 +116,7 @@
         };
 
         this.createVideoNode = function (id, data) {
-            var datatype = toString.call(data);
+            let datatype = toString.call(data);
             if (datatype == "[object String]") {
                 return self.createVideoNodeByUrl(id, data);
             } else if (datatype == "[object FileList]") {
@@ -155,12 +155,12 @@
             let qqRegExp2 = /\/\/v\.qq\.com\/x?\/?(page|cover).*?\/([^\/]+)\.html\??.*/;
             let qqMatch2 = url.match(qqRegExp2);
             if (ytMatch && ytMatch[1].length === 11) {
-                var youtubeId = ytMatch[1];
-                var start = 0;
+                let youtubeId = ytMatch[1];
+                let start = 0;
                 if (typeof ytMatch[2] !== 'undefined') {
-                    var ytMatchForStart = ytMatch[2].match(ytRegExpForStart);
+                    let ytMatchForStart = ytMatch[2].match(ytRegExpForStart);
                     if (ytMatchForStart) {
-                        for (var n = [3600, 60, 1], i = 0, r = n.length; i < r; i++) {
+                        for (let n = [3600, 60, 1], i = 0, r = n.length; i < r; i++) {
                             start += (typeof ytMatchForStart[i + 1] !== 'undefined' ? n[i] * parseInt(ytMatchForStart[i + 1], 10) : 0);
                         }
                     }
@@ -192,7 +192,7 @@
                     .attr('frameborder', 0)
                     .attr('src', '//player.youku.com/embed/' + youkuMatch[1]);
             } else if ((qqMatch && qqMatch[1].length) || (qqMatch2 && qqMatch2[2].length)) {
-                var vid = ((qqMatch && qqMatch[1].length) ? qqMatch[1] : qqMatch2[2]);
+                let vid = ((qqMatch && qqMatch[1].length) ? qqMatch[1] : qqMatch2[2]);
                 $video = $('<iframe webkitallowfullscreen mozallowfullscreen allowfullscreen>')
                     .attr('frameborder', 0)
                     .attr('src', 'http://v.qq.com/iframe/player.html?vid=' + vid + '&amp;auto=0');
@@ -202,7 +202,8 @@
             } else {
                 return false;
             }
-            $video.attr('width', '100%').attr('height', 'auto').attr("data-filename", "netfile");
+            $video.attr("id", id)
+                .attr('width', '100%').attr('height', 'auto').attr("data-filename", "netfile");
             $video.addClass('note-video-clip');
             return $video[0];
         };

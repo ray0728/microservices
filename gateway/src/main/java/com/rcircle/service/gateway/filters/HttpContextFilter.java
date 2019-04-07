@@ -1,11 +1,14 @@
 package com.rcircle.service.gateway.filters;
 
+import com.rcircle.service.gateway.clients.RemoteRequestWithTokenInterceptor;
+import com.rcircle.service.gateway.model.Account;
 import com.rcircle.service.gateway.utils.HttpContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Enumeration;
 
 @Component
@@ -26,6 +29,12 @@ public class HttpContextFilter implements Filter {
         while(headers.hasMoreElements()){
             header = headers.nextElement();
             HttpContextHolder.getContext().setValue(header, httpServletRequest.getHeader(header));
+            Principal principal = httpServletRequest.getUserPrincipal();
+            if(principal != null && principal instanceof Account){
+                if(((Account) principal).isAuthenticated()) {
+                    HttpContextHolder.getContext().setValue(RemoteRequestWithTokenInterceptor.ACCESSTOKEN, ((Account) principal).getToken().getAccess_token());
+                }
+            }
         }
         filterChain.doFilter(httpServletRequest, servletResponse);
     }
