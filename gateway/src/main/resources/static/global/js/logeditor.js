@@ -1,3 +1,5 @@
+var xhr_upload = [];
+var abort_upload = false;
 $(document).ready(function () {
     $('#summernote').summernote({
         placeholder: "Let's write",
@@ -57,8 +59,7 @@ $('#addcategory').click(function () {
     input.val("");
 });
 
-
-$('#uploadmodal').on('shown.bs.modal', function () {
+$('#uploadmodal').on('show.bs.modal', function () {
     let title = $("#logform").find('input[type="text"]');
     let files = $("#logform").find('video[class="vjs-tech"]');
     let header = $(this).find('h4[class="modal-title"]');
@@ -68,53 +69,65 @@ $('#uploadmodal').on('shown.bs.modal', function () {
         $('#uploadmodal').modal("hide");
     } else if (files.length > 0) {
         header.text("Upload Files");
-        content.html(dynamicsBody(files));
-        processUpload(0);
-    }else {
-        // $('#uploadmodal').modal("hide");
-        console.log("submit");
-        // $("#logform").submit();
+        content.html(dynamicsUploadFilesBody(files));
+    } else {
+        header.text("Create New Diary");
+        content.html(createBody());
     }
 });
 
-dynamicsBody = function (files) {
+$('#uploadmodal').on('shown.bs.modal', function () {
+    let header = $(this).find('h4[class="modal-title"]');
+    processUpload(0);
+});
+
+$('#uploadmodal').on('hide.bs.modal', function () {
+    abort_upload = true;
+    $.each(xhr_upload, function (index, filename) {
+        $.ajax({
+            url: "delete?filename=" + filename,
+            type: "Delete",
+            cache: false,
+            processData: false,
+            contentType: false
+        });
+    });
+});
+
+$('#uploadmodal').on('hidden.bs.modal', function () {
+    abort_upload = false;
+});
+
+createBody = function () {
     body = [];
-    body.push('<div class="table-responsive-md">');
-    body.push('<table class="table">');
-    body.push('<thead class="thead-light">');
-    body.push('<tr>');
-    body.push('<th>#</th>');
-    body.push('<th>File</th>');
-    body.push('<th>Status</th>');
-    body.push('</tr>');
-    body.push('</thead>');
-    body.push('<tbody>');
+    body.push('<div class="progress progresswithlabel" value="' + url + '">');
+    body.push('<div class="progress-bar progress-bar-striped bar" style="width:0%">');
+    body.push('</div>')
+    body.push('</div>')
+    return body.join('');
+};
+
+dynamicsUploadFilesBody = function (files) {
+    body = [];
     $.each(files, function (index, file) {
         let filename = file.getAttribute("data-filename");
         let url = file.src;
-        console.log(toString.call(url));
-        body.push('<tr class="table-warning">');
-        body.push('<td>' + (index + 1) + '</td>');
-        body.push('<td value=' + url + '>' + filename + '</td>');
-        body.push('<td >Waiting</td>');
-        body.push('</tr>')
+        body.push('<div class="progress progresswithlabel" value="' + url + '">');
+        body.push('<div class="progress-bar progress-bar-striped bar" style="width:0%">');
+        body.push('<span>' + filename + '</span>')
+        body.push('</div>')
+        body.push('</div>')
     });
-    body.push('</tbody>');
-    body.push('</table>');
-    body.push('<div class="progress">');
-    body.push('<div class="progress-bar progress-bar-striped progress-bar-animated" style="width:1%"></div>');
-    body.push('</div>');
     return body.join('');
 };
 
 
 processUpload = function (lid) {
-    let trlist = $('#uploadmodal').find('tr[class="table-warning"]');
+    let trlist = $('#uploadmodal').find('tr[class="progress progresswithlabel"]');
     $.each(trlist, function (index, row) {
-        let obj = $(row).find("td:eq(1)");
-        let progress = $(row).find("td:eq(2)");
-        let url = $(obj).attr("value");
-        let filename = $(obj).text();
+        let progress = $(row).find('div[class="progress-bar progress-bar-striped bar"]');
+        let url = $(row).attr("value");
+        let filename = $(row).find("span").text();
         let xhr = new XMLHttpRequest;
         xhr.responseType = 'blob';
         xhr.onload = function () {
@@ -134,7 +147,7 @@ processUpload = function (lid) {
     });
 };
 
-sliceUpload = function (lid, file, chunkSize) {
+sliceUpload = function (lid, file, chunkSize, progress) {
     let chunks = Math.ceil(file.size / chunkSize);
     let currentChunk = 0;
     let checksum;
@@ -171,15 +184,24 @@ sliceUpload = function (lid, file, chunkSize) {
                     start = currentChunk * chunkSize;
                     end = start + chunkSize >= file.size ? file.size : start + chunkSize;
                     filedata = blobSlice.call(file, start, end);
-                    fileReader.readAsBinaryString(filedata);
+                    if (!abort_upload) {
+                        fileReader.readAsBinaryString(filedata);
+                    }
                 } else if (res == "abort") {
                     console.log("abort upload");
+                    xhr_upload.splice(file.name, 1);
                 } else if (currentChunk + 1 < chunks) {
                     currentChunk++;
+                    progress.css('width:' + (currentChunk * 100 / chunks) + '%');
                     start = currentChunk * chunkSize;
                     end = start + chunkSize >= file.size ? file.size : start + chunkSize;
                     filedata = blobSlice.call(file, start, end);
-                    fileReader.readAsBinaryString(filedata);
+                    if (!abort_upload) {
+                        fileReader.readAsBinaryString(filedata);
+                    }
+                } else {
+                    progress.css('width:100%');
+                    xhr_upload.splice(file.name, 1);
                 }
             },
             error: function (res) {
@@ -188,6 +210,9 @@ sliceUpload = function (lid, file, chunkSize) {
         });
     };
     let filedata = blobSlice.call(file, start, end);
-    fileReader.readAsBinaryString(filedata);
+    if (!abort_upload) {
+        fileReader.readAsBinaryString(filedata);
+    }
+    xhr_upload.push(file.name);
 
 };

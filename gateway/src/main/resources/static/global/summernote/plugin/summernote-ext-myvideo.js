@@ -30,6 +30,7 @@
 
         this.initialize = function () {
             self.createVideoDialog();
+            self.createVideoPopover();
         };
 
         this.createVideoDialog = function () {
@@ -67,22 +68,39 @@
                     fluid:true,
                     controls:true,
                     preload:'auto',
-                    userActions: {
-                        doubleClick: self.videoDoubleClickHandler
-                    }
                 };
-                console.log(node);
-                console.log(nodeid);
-                videojs(nodeid, options);
+                videojs(nodeid, options, function () {
+                    this.on('touchstart', function () {
+                        self.updateVideoPopover(nodeid);
+                    });
+                });
                 ui.hideDialog(self.$dialog);
             }).fail(function () {
                 context.invoke('editor.restoreRange');
             });
         };
 
-        this.videoDoubleClickHandler = function(e) {
-            console.log(e);
-        }
+        this.createVideoPopover = function () {
+            this.$popover = ui.popover({
+                className: 'note-image-popover'
+            }).render().appendTo('body');
+            let content = this.$popover.find('.popover-content,.note-popover-content');
+            context.invoke('buttons.build', content, ['remove', ['removeMedia']]);
+        };
+
+        this.updateVideoPopover = function (id) {
+            let editable = context.layoutInfo.editable[0];
+            let block = $(editable).find('div[id="' + id + '"]');
+            let pos = $(block).offset();
+            let height = $(block).innerHeight();
+            let posEditor = $.summernote.dom.posFromPlaceholder(editable);
+            console.log(this.$popover._isShown);
+            this.$popover.css({
+                display: 'block',
+                left: pos.left,
+                top: Math.min(pos.top + height, posEditor.top)
+            });
+        };
 
         this.showVideoDialog = function () {
             return $.Deferred(function (deferred) {

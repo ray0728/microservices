@@ -29,4 +29,9 @@ public class RestPageController {
                               @RequestParam(name="checksum") String checksum) {
         return "";
     }
+
+    @DeleteMapping("/delete")
+    public String deleteFile(@RequestParam(name="filename")String filename){
+        return "";
+    }
 }
