@@ -15,31 +15,28 @@
 <body>
 <div th:include="public::topbar"></div>
 <div class="container">
-    <form id="logform" role="form" action="#" th:action="@{/log}" th:object="${logfile}" method="post">
-        <div class="d-flex mb-1">
-            <p class="font-weight-bold mr-1 my-auto" th:value="*{id}">Title</p>
-            <input type="text" class="flex-grow-1">
+    <div class="d-flex mb-1">
+        <p class="font-weight-bold mr-1 my-auto" th:value="${res_id}">Title</p>
+        <input type="text" class="flex-grow-1">
+    </div>
+    <div class="d-flex mb-1">
+        <p class="my-auto ml-auto mr-1 font-weight-bold">Category</p>
+        <select id="category">
+            <option th:each="category:${categories}" th:value="${category.cid}" th:text="${category.desc}"></option>
+        </select>
+        <button type="button" class="btn fa fa-plus" data-toggle="modal" data-target="#addLogType"></button>
+    </div>
+    <div id="summernote"></div>
+    <div class="mt-2 d-flex">
+        <div class="btn-group ml-auto">
+            <button type="button" class="btn btn-primary mr-1" data-toggle="modal" data-target="#previewmodal">
+                Preview
+            </button>
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#uploadmodal"
+                    data-backdrop="static">Publish
+            </button>
         </div>
-        <div class="d-flex mb-1">
-            <p class="my-auto ml-auto mr-1 font-weight-bold">Category</p>
-            <select id="category">
-                <option th:each="category:${categories}" th:value="${category.cid}" th:text="${category.desc}"></option>
-            </select>
-            <button type="button" class="btn fa fa-plus" data-toggle="modal" data-target="#addLogType"></button>
-        </div>
-        <div id="summernote"></div>
-        <div class="mt-2 d-flex">
-            <div class="btn-group ml-auto">
-                <button type="button" class="btn btn-primary mr-1" data-toggle="modal" data-target="#previewmodal">
-                    Preview
-                </button>
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#uploadmodal"
-                        data-backdrop="static">Publish
-                </button>
-            </div>
-        </div>
-        <input type="hidden" id="code" value="">
-    </form>
+    </div>
 </div>
 <div th:include="public::bottombar"></div>
 <div class="modal" id="addLogType">

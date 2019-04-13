@@ -36,19 +36,6 @@ $(document).ready(function () {
     });
 });
 
-
-$("#logform").submit(function (event) {
-    let title = $(this).find('input[type="text"]').val();
-    let category = $("#category").find(":selected").val();
-    let code = $('#summernote').summernote('code');
-    if ("" == title) {
-        $(this).find('input[type="text"]').css("border-color", "red");
-        event.preventDefault();
-    } else {
-        $(this).find('input[type="hidden"]').val(code);
-    }
-});
-
 $("#previewmodal").on('show.bs.modal', function () {
     let title = $("#logform").find('input[type="text"]').val();
     let code = $('#summernote').summernote('code');
@@ -76,13 +63,12 @@ $('#addcategory').click(function () {
 });
 
 $('#uploadmodal').on('show.bs.modal', function () {
-    let title = $("#logform").find('input[type="text"]');
-    let files = $("#logform").find('video[class="vjs-tech"]');
+    let titleobj = $.find('input[type="text"]');
+    let files = $("#summernote").find('video[class="vjs-tech"]');
     let header = $(this).find('h4[class="modal-title"]');
     let content = $(this).find('div[id="content"]');
-    if (title.val() == "") {
-        title.css("border-color", "red");
-        $('#uploadmodal').modal("hide");
+    if ($(titleobj).val() == "") {
+        $(titleobj).css("border-color", "red");
     } else if (files.length > 0) {
         header.text("Upload Files");
         content.html(dynamicsUploadFilesBody(files));
@@ -92,9 +78,51 @@ $('#uploadmodal').on('show.bs.modal', function () {
     }
 });
 
+createLog = function () {
+    let title = $($.find('input[type="text"]')).val();
+    let category = $("#category").find(":selected").val();
+    let formData = new FormData();
+    formData.append("title", title);
+    formData.append("category", category);
+    $.ajax({
+        url: "new",
+        data: formData,
+        type: "Post",
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (resid) {
+            console.log(resid);
+            autoDetect(resid);
+        },
+        error: function (res) {
+            console.log(res);
+            console.log(res);
+        }
+    });
+};
+
+autoDetect = function (resid) {
+    switch ($(this).find('h4[class="modal-title"]').text) {
+        case ("Upload Files"):
+            processUpload(resid);
+            break;
+        case ("Create New Diary"):
+            appendLog(resid);
+            break;
+    }
+};
+
 $('#uploadmodal').on('shown.bs.modal', function () {
-    let header = $(this).find('h4[class="modal-title"]');
-    processUpload(0);
+    let resid = $($('p:contains("Title")')[0]).val();
+    let titleobj = $.find('input[type="text"]');
+    if ($(titleobj).val() == "") {
+        $('#uploadmodal').modal('hide');
+    } else if (resid == 0 || resid == "") {
+        createLog();
+    } else {
+        autoDetect(resid);
+    }
 });
 
 $('#uploadmodal').on('hide.bs.modal', function () {
@@ -137,6 +165,25 @@ dynamicsUploadFilesBody = function (files) {
     return body.join('');
 };
 
+appendLog = function (lid) {
+    let formData = new FormData();
+    formData.append("resid", lid);
+    formData.append("log", $('#summernote').summernote('code'));
+    $.ajax({
+        url: "append",
+        data: formData,
+        type: "Post",
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function () {
+            $('#uploadmodal').modal("hide");
+        },
+        error: function (res) {
+            console.log(res);
+        }
+    });
+};
 
 processUpload = function (lid) {
     let trlist = $('#uploadmodal').find('tr[class="progress progresswithlabel"]');
