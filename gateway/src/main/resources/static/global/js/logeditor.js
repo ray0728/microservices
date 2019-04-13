@@ -2,6 +2,7 @@ var xhr_upload = [];
 var abort_upload = false;
 $(document).ready(function () {
     $('#summernote').summernote({
+        popatmouse: false,
         placeholder: "Let's write",
         height: 400,
         fontSizes: ['12', '14', '16', '18', '24', '36', '48'],
@@ -17,6 +18,21 @@ $(document).ready(function () {
         ],
         disableDragAndDrop: true,
         shortcut: false
+    });
+
+    $('#summernote').on('summernote.dialog.shown', function () {
+        console.log('dialog shown');
+        $(".note-video-popover").css('display', 'none');
+    });
+
+    $('#summernote').on('summernote.scroll', function () {
+        console.log('page scroll');
+        $(".note-video-popover").css('display', 'none');
+    });
+
+    $('#summernote').on('summernote.mousedown', function () {
+        console.log('mousedown');
+        $(".note-video-popover").css('display', 'none');
     });
 });
 
