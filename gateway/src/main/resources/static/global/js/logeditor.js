@@ -37,7 +37,7 @@ $(document).ready(function () {
 });
 
 $("#previewmodal").on('show.bs.modal', function () {
-    let title = $("#logform").find('input[type="text"]').val();
+    let title = $($.find('input[class="flex-grow-1 title"]')).val();
     let code = $('#summernote').summernote('code');
     let header = $(this).find('h4[class="modal-title"]');
     let content = $(this).find('div[id="content"]');
@@ -45,12 +45,12 @@ $("#previewmodal").on('show.bs.modal', function () {
     content.html(code);
 });
 
-$('#addcategory').click(function () {
-    let dialog = this.parent().parent();
-    let input = dialog.find('input[id="classifier"]');
-    let userdefcategory = input.val();
+$('#btnAddCategory').click(function () {
+    let dialog = $(this).parent().parent();
+    let input = dialog.find('input');
+    let userdefcategory = $(input).val();
     let shoudadd = true;
-    $("#category options").each(function () {
+    $("#category option").each(function () {
         if ($(this).text() == userdefcategory) {
             shoudadd = false;
         }
@@ -63,13 +63,10 @@ $('#addcategory').click(function () {
 });
 
 $('#uploadmodal').on('show.bs.modal', function () {
-    let titleobj = $.find('input[type="text"]');
     let files = $("#summernote").find('video[class="vjs-tech"]');
     let header = $(this).find('h4[class="modal-title"]');
     let content = $(this).find('div[id="content"]');
-    if ($(titleobj).val() == "") {
-        $(titleobj).css("border-color", "red");
-    } else if (files.length > 0) {
+    if (files.length > 0) {
         header.text("Upload Files");
         content.html(dynamicsUploadFilesBody(files));
     } else {
@@ -79,11 +76,11 @@ $('#uploadmodal').on('show.bs.modal', function () {
 });
 
 createLog = function () {
-    let title = $($.find('input[type="text"]')).val();
+    let title = $($.find('input[class="flex-grow-1 title"]')).val();
     let category = $("#category").find(":selected").val();
     let formData = new FormData();
     formData.append("title", title);
-    formData.append("category", category);
+    formData.append("type", category);
     $.ajax({
         url: "new",
         data: formData,
@@ -96,7 +93,6 @@ createLog = function () {
             autoDetect(resid);
         },
         error: function (res) {
-            console.log(res);
             console.log(res);
         }
     });
@@ -115,10 +111,21 @@ autoDetect = function (resid) {
 
 $('#uploadmodal').on('shown.bs.modal', function () {
     let resid = $($('p:contains("Title")')[0]).val();
-    let titleobj = $.find('input[type="text"]');
+    let titleobj = $.find('input[class="flex-grow-1 title"]');
+    let category = $("#category").find(":selected").val();
+    let error = false;
     if ($(titleobj).val() == "") {
+        $(titleobj).css("border-color", "red");
+        error = true;
+    }
+    if(typeof(category) == "undefined"){
+        $($('p:contains("Category")')[0]).css("color", "red");
+        error = true;
+    }
+    if(error){
         $('#uploadmodal').modal('hide');
-    } else if (resid == 0 || resid == "") {
+    }
+    if (resid == 0 || resid == "") {
         createLog();
     } else {
         autoDetect(resid);
@@ -144,7 +151,7 @@ $('#uploadmodal').on('hidden.bs.modal', function () {
 
 createBody = function () {
     body = [];
-    body.push('<div class="progress progresswithlabel" value="' + url + '">');
+    body.push('<div class="progress progresswithlabel">');
     body.push('<div class="progress-bar progress-bar-striped bar" style="width:0%">');
     body.push('</div>')
     body.push('</div>')
