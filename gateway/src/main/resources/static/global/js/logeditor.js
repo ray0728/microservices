@@ -63,7 +63,7 @@ $('#btnAddCategory').click(function () {
 });
 
 $('#uploadmodal').on('show.bs.modal', function () {
-    let files = $("#summernote").find('video[class="vjs-tech"]');
+    let files = $.find('video[class="vjs-tech"]');
     let header = $(this).find('h4[class="modal-title"]');
     let content = $(this).find('div[id="content"]');
     if (files.length > 0) {
@@ -115,17 +115,24 @@ $('#uploadmodal').on('shown.bs.modal', function () {
     let category = $("#category").find(":selected").val();
     let error = false;
     if ($(titleobj).val() == "") {
+        $($('p:contains("Title")')[0]).css("color", "red");
         $(titleobj).css("border-color", "red");
         error = true;
+    } else {
+        $($('p:contains("Title")')[0]).css("color", "");
+        $(titleobj).css("border-color", "");
     }
-    if(typeof(category) == "undefined"){
+    if (typeof (category) == "undefined") {
         $($('p:contains("Category")')[0]).css("color", "red");
+        $("#category").css("border-color", "red");
         error = true;
+    } else {
+        $($('p:contains("Category")')[0]).css("color", "");
+        $("#category").css("border-color", "");
     }
-    if(error){
+    if (error) {
         $('#uploadmodal').modal('hide');
-    }
-    if (resid == 0 || resid == "") {
+    } else if (resid == 0 || resid == "") {
         createLog();
     } else {
         autoDetect(resid);
@@ -163,7 +170,7 @@ dynamicsUploadFilesBody = function (files) {
     $.each(files, function (index, file) {
         let filename = file.getAttribute("data-filename");
         let url = file.src;
-        body.push('<div class="progress progresswithlabel" value="' + url + '">');
+        body.push('<div class="progress progresswithlabel mb-2" value="' + url + '">');
         body.push('<div class="progress-bar progress-bar-striped bar" style="width:0%">');
         body.push('<span>' + filename + '</span>')
         body.push('</div>')
@@ -193,7 +200,7 @@ appendLog = function (lid) {
 };
 
 processUpload = function (lid) {
-    let trlist = $('#uploadmodal').find('tr[class="progress progresswithlabel"]');
+    let trlist = $('#uploadmodal').find('tr[class="progress progresswithlabel mb-2"]');
     $.each(trlist, function (index, row) {
         let progress = $(row).find('div[class="progress-bar progress-bar-striped bar"]');
         let url = $(row).attr("value");
