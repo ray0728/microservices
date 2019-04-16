@@ -23,12 +23,6 @@ public class RestDiaryController {
         return "1";
     }
 
-    @PostMapping("append")
-    public String appendLog(@RequestParam(name = "resid", required = true) int id,
-                            @RequestParam(name = "log", required = true) String log) {
-        return "";
-    }
-
 
     @DeleteMapping("/delete")
     public String deleteFile(@RequestParam(name = "filename") String filename) {

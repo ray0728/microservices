@@ -181,8 +181,10 @@ dynamicsUploadFilesBody = function (files) {
 
 appendLog = function (lid) {
     let formData = new FormData();
+    let current_code = $('#summernote').summernote('code');
+    replaceVideoNode(current_code);
     formData.append("resid", lid);
-    formData.append("log", $('#summernote').summernote('code'));
+    formData.append("log", current_code);
     if (xhr_upload.length == 0) {
         $.ajax({
             url: "append",
@@ -199,6 +201,20 @@ appendLog = function (lid) {
             }
         });
     }
+};
+
+replaceVideoNode =function(code){
+    let videonodes = $(code).find('div.video-js');
+    $.each(videonodes, function (index, node) {
+        let id = node.attr("id");
+        let name = node.data("filename");
+        let origial_video = [
+            '<video controls class="video-js vjs-big-play-centered" id="'+ id +'">',
+            '<source src="' + name + '">',
+            '</video>'
+        ].join("");
+        node.replaceWith(origial_video);
+    });
 };
 
 processUpload = function (lid) {
