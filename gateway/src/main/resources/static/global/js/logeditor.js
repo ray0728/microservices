@@ -63,7 +63,7 @@ $('#btnAddCategory').click(function () {
 });
 
 $('#uploadmodal').on('show.bs.modal', function () {
-    let files = $.find('video[class="vjs-tech"]');
+    let files = $(".note-editable").find('video[class="vjs-tech"]');
     let header = $(this).find('h4[class="modal-title"]');
     let content = $(this).find('div[id="content"]');
     if (files.length > 0) {
@@ -99,7 +99,7 @@ createLog = function () {
 };
 
 autoDetect = function (resid) {
-    switch ($(this).find('h4[class="modal-title"]').text) {
+    switch ($('#uploadmodal').find('h4[class="modal-title"]').text()) {
         case ("Upload Files"):
             processUpload(resid);
             break;
@@ -124,11 +124,11 @@ $('#uploadmodal').on('shown.bs.modal', function () {
     }
     if (typeof (category) == "undefined") {
         $($('p:contains("Category")')[0]).css("color", "red");
-        $("#category").css("border-color", "red");
+        $('#category').css("border-color", "red");
         error = true;
     } else {
         $($('p:contains("Category")')[0]).css("color", "");
-        $("#category").css("border-color", "");
+        $('#category').css("border-color", "");
     }
     if (error) {
         $('#uploadmodal').modal('hide');
@@ -183,28 +183,30 @@ appendLog = function (lid) {
     let formData = new FormData();
     formData.append("resid", lid);
     formData.append("log", $('#summernote').summernote('code'));
-    $.ajax({
-        url: "append",
-        data: formData,
-        type: "Post",
-        cache: false,
-        processData: false,
-        contentType: false,
-        success: function () {
-            $('#uploadmodal').modal("hide");
-        },
-        error: function (res) {
-            console.log(res);
-        }
-    });
+    if (xhr_upload.length == 0) {
+        $.ajax({
+            url: "append",
+            data: formData,
+            type: "Post",
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function () {
+                $('#uploadmodal').modal("hide");
+            },
+            error: function (res) {
+                console.log(res);
+            }
+        });
+    }
 };
 
 processUpload = function (lid) {
-    let trlist = $('#uploadmodal').find('tr[class="progress progresswithlabel mb-2"]');
-    $.each(trlist, function (index, row) {
-        let progress = $(row).find('div[class="progress-bar progress-bar-striped bar"]');
-        let url = $(row).attr("value");
-        let filename = $(row).find("span").text();
+    let uploadlist = $('#uploadmodal').find('tr[class="progress progresswithlabel mb-2"]');
+    $.each(uploadlist, function (index, data) {
+        let progress = $(data).find('div[class="progress-bar progress-bar-striped bar"]');
+        let url = $(data).attr("value");
+        let filename = $(data).find("span").text();
         let xhr = new XMLHttpRequest;
         xhr.responseType = 'blob';
         xhr.onload = function () {
@@ -269,7 +271,7 @@ sliceUpload = function (lid, file, chunkSize, progress) {
                     xhr_upload.splice(file.name, 1);
                 } else if (currentChunk + 1 < chunks) {
                     currentChunk++;
-                    progress.css('width:' + (currentChunk * 100 / chunks) + '%');
+                    $(progress[0]).css('width:' + (currentChunk * 100 / chunks) + '%');
                     start = currentChunk * chunkSize;
                     end = start + chunkSize >= file.size ? file.size : start + chunkSize;
                     filedata = blobSlice.call(file, start, end);
@@ -277,8 +279,9 @@ sliceUpload = function (lid, file, chunkSize, progress) {
                         fileReader.readAsBinaryString(filedata);
                     }
                 } else {
-                    progress.css('width:100%');
+                    $(progress[0]).css('width:100%');
                     xhr_upload.splice(file.name, 1);
+                    appendLog(lid);
                 }
             },
             error: function (res) {
