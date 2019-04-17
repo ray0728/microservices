@@ -81,6 +81,7 @@ createLog = function () {
     let formData = new FormData();
     formData.append("title", title);
     formData.append("type", category);
+    formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     $.ajax({
         url: "new",
         data: formData,
@@ -185,6 +186,7 @@ appendLog = function (lid) {
     replaceVideoNode(current_code);
     formData.append("resid", lid);
     formData.append("log", current_code);
+    formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     if (xhr_upload.length == 0) {
         $.ajax({
             url: "append",
@@ -266,6 +268,7 @@ sliceUpload = function (lid, file, chunkSize, progress) {
         formData.append("file", filedata);
         formData.append("chunksize", chunkSize);
         formData.append("checksum", checksum);
+        formData.append("_csrf", $($.find('input[type="hidden"]')).val());
         $.ajax({
             url: "upload",
             data: formData,
