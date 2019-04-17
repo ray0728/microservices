@@ -61,3 +61,7 @@ progresswithlabel .bar {
     text-align: center;
     width: 100%;
 }
+
+.hiddendiv {
+    display: none;
+}

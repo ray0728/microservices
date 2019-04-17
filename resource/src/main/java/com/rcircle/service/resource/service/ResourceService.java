@@ -28,7 +28,7 @@ public class ResourceService {
                 String.valueOf(log.getUid()),
                 SimpleDate.getUTCTimeStr(),
                 String.valueOf(log.getId())));
-        resourceMapper.createLogDetial(logDetail);
+        resourceMapper.createLogDetail(logDetail);
         log.setDetial(logDetail);
         return log;
     }

@@ -32,6 +32,6 @@ public class DiaryController {
     @PostMapping("append")
     public String appendLog(@RequestParam(name = "resid", required = true) int id,
                             @RequestParam(name = "log", required = true) String log) {
-        return "";
+        return "redirect:/diary/list";
     }
 }

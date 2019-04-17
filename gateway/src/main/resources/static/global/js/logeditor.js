@@ -90,7 +90,6 @@ createLog = function () {
         processData: false,
         contentType: false,
         success: function (resid) {
-            console.log(resid);
             autoDetect(resid);
         },
         error: function (res) {
@@ -182,10 +181,10 @@ dynamicsUploadFilesBody = function (files) {
 
 appendLog = function (lid) {
     let formData = new FormData();
-    let current_code = $('#summernote').summernote('code');
-    replaceVideoNode(current_code);
+    $('div.hiddendiv').html($('#summernote').summernote('code'));
+    replaceVideoNode($('div.hiddendiv'));
     formData.append("resid", lid);
-    formData.append("log", current_code);
+    formData.append("log", $('div.hiddendiv').html());
     formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     if (xhr_upload.length == 0) {
         $.ajax({
@@ -205,22 +204,22 @@ appendLog = function (lid) {
     }
 };
 
-replaceVideoNode =function(code){
+replaceVideoNode = function (code) {
     let videonodes = $(code).find('div.video-js');
     $.each(videonodes, function (index, node) {
-        let id = node.attr("id");
-        let name = node.data("filename");
+        let id = $(node).attr('id');
+        let name = $(node).data('filename');
         let origial_video = [
-            '<video controls class="video-js vjs-big-play-centered" id="'+ id +'">',
+            '<video controls class="video-js vjs-big-play-centered" id="' + id + '">',
             '<source src="' + name + '">',
             '</video>'
         ].join("");
-        node.replaceWith(origial_video);
+        $(node).replaceWith(origial_video);
     });
 };
 
 processUpload = function (lid) {
-    let uploadlist = $('#uploadmodal').find('tr[class="progress progresswithlabel mb-2"]');
+    let uploadlist = $('#uploadmodal').find('div[class="progress progresswithlabel mb-2"]');
     $.each(uploadlist, function (index, data) {
         let progress = $(data).find('div[class="progress-bar progress-bar-striped bar"]');
         let url = $(data).attr("value");
@@ -290,7 +289,7 @@ sliceUpload = function (lid, file, chunkSize, progress) {
                     xhr_upload.splice(file.name, 1);
                 } else if (currentChunk + 1 < chunks) {
                     currentChunk++;
-                    $(progress[0]).css('width:' + (currentChunk * 100 / chunks) + '%');
+                    $(progress[0]).css('width', (currentChunk * 100 / chunks) + '%');
                     start = currentChunk * chunkSize;
                     end = start + chunkSize >= file.size ? file.size : start + chunkSize;
                     filedata = blobSlice.call(file, start, end);
@@ -298,7 +297,7 @@ sliceUpload = function (lid, file, chunkSize, progress) {
                         fileReader.readAsBinaryString(filedata);
                     }
                 } else {
-                    $(progress[0]).css('width:100%');
+                    $(progress[0]).css('width', '100%');
                     xhr_upload.splice(file.name, 1);
                     appendLog(lid);
                 }

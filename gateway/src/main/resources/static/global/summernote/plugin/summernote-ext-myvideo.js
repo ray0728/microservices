@@ -170,7 +170,6 @@
         };
 
         this.createVideoNodeByFile = function (id, file) {
-            console.log(file[0]);
             let video = $('<video controls>')
                 .attr("id", id)
                 .attr("data-filename", file[0].name);

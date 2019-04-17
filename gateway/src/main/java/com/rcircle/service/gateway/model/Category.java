@@ -3,15 +3,15 @@ package com.rcircle.service.gateway.model;
 import java.io.Serializable;
 
 public class Category implements Serializable {
-    private int id;
+    private int cid;
     private String desc;
 
-    public int getId() {
-        return id;
+    public int getCid() {
+        return cid;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCid(int cid) {
+        this.cid = cid;
     }
 
     public String getDesc() {

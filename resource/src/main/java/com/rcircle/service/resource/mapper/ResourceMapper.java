@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface ResourceMapper {
-    public int createLogDetial(LogDetail detial);
+    public int createLogDetail(LogDetail detial);
 
     public int createLog(Log log);
 
