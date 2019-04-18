@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class LogDetail implements Serializable {
     private int id;
     private int lid;
+    private String log;
     private String res_url;
 
     public int getId() {
@@ -29,5 +30,13 @@ public class LogDetail implements Serializable {
 
     public void setRes_url(String res_url) {
         this.res_url = res_url;
+    }
+
+    public String getLog() {
+        return log;
+    }
+
+    public void setLog(String log) {
+        this.log = log;
     }
 }

@@ -16,13 +16,13 @@ public class RestDiaryController {
 
     @PostMapping("/upload")
     public String uploadFiles(MultipartFile file,
-                              @RequestParam(name = "resid") int id,
+                              @RequestParam(name = "id") int id,
                               @RequestParam(name = "index") int index,
-                              @RequestParam(name = "count") int count,
-                              @RequestParam(name = "filename") String filename,
+                              @RequestParam(name = "total") int count,
+                              @RequestParam(name = "name") String filename,
                               @RequestParam(name = "chunksize") int chunksize,
                               @RequestParam(name = "checksum") String checksum) {
-        return "";
+        return resourceService.uploadFile(file, id, filename, index, count, chunksize, checksum);
     }
 
     @PostMapping("new")
@@ -33,6 +33,11 @@ public class RestDiaryController {
         return String.valueOf(logFile.getId());
     }
 
+
+    @GetMapping("resurl")
+    public String getFilesUrl(@RequestParam(name = "id") int id) {
+        return resourceService.getResUrl(id);
+    }
 
     @DeleteMapping("/delete")
     public String deleteFile(@RequestParam(name = "filename") String filename) {

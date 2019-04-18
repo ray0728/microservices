@@ -99,14 +99,22 @@ createLog = function () {
 };
 
 autoDetect = function (resid) {
-    switch ($('#uploadmodal').find('h4[class="modal-title"]').text()) {
-        case ("Upload Files"):
-            processUpload(resid);
-            break;
-        case ("Create New Diary"):
-            appendLog(resid);
-            break;
-    }
+    $.ajax({
+        url: "resurl?id=" + resid,
+        type: "Get",
+        cache: false,
+        contentType: false,
+        success: function (url) {
+            switch ($('#uploadmodal').find('h4[class="modal-title"]').text()) {
+                case ("Upload Files"):
+                    processUpload(resid, url);
+                    break;
+                case ("Create New Diary"):
+                    appendLog(resid, url);
+                    break;
+            }
+        }
+    });
 };
 
 $('#uploadmodal').on('shown.bs.modal', function () {
@@ -179,10 +187,10 @@ dynamicsUploadFilesBody = function (files) {
     return body.join('');
 };
 
-appendLog = function (lid) {
+appendLog = function (lid, url) {
     let formData = new FormData();
     $('div.hiddendiv').html($('#summernote').summernote('code'));
-    replaceVideoNode($('div.hiddendiv'));
+    replaceVideoNode($('div.hiddendiv'), url);
     formData.append("resid", lid);
     formData.append("log", $('div.hiddendiv').html());
     formData.append("_csrf", $($.find('input[type="hidden"]')).val());
@@ -204,21 +212,21 @@ appendLog = function (lid) {
     }
 };
 
-replaceVideoNode = function (code) {
+replaceVideoNode = function (code, url) {
     let videonodes = $(code).find('div.video-js');
     $.each(videonodes, function (index, node) {
         let id = $(node).attr('id');
         let name = $(node).data('filename');
         let origial_video = [
             '<video controls class="video-js vjs-big-play-centered" id="' + id + '">',
-            '<source src="' + name + '">',
+            '<source src="' + url + "/" + name + '">',
             '</video>'
         ].join("");
         $(node).replaceWith(origial_video);
     });
 };
 
-processUpload = function (lid) {
+processUpload = function (lid, url) {
     let uploadlist = $('#uploadmodal').find('div[class="progress progresswithlabel mb-2"]');
     $.each(uploadlist, function (index, data) {
         let progress = $(data).find('div[class="progress-bar progress-bar-striped bar"]');
@@ -235,7 +243,7 @@ processUpload = function (lid) {
                 sliceUpload(lid, new File([blobdata], filename, {
                     type: blobdata.type,
                     lastModified: Date.now()
-                }), 2097152, progress);
+                }), 2097152, progress, url);
             }
         };
         xhr.open('GET', url, true);
@@ -243,7 +251,7 @@ processUpload = function (lid) {
     });
 };
 
-sliceUpload = function (lid, file, chunkSize, progress) {
+sliceUpload = function (lid, file, chunkSize, progress, url) {
     let chunks = Math.ceil(file.size / chunkSize);
     let currentChunk = 0;
     let checksum;
@@ -260,10 +268,10 @@ sliceUpload = function (lid, file, chunkSize, progress) {
 
     fileReader.onloadend = function (e) {
         let formData = new FormData();
-        formData.append("resid", lid);
+        formData.append("id", lid);
         formData.append("index", currentChunk);
-        formData.append("count", chunks);
-        formData.append("filename", file.name);
+        formData.append("total", chunks);
+        formData.append("name", file.name);
         formData.append("file", filedata);
         formData.append("chunksize", chunkSize);
         formData.append("checksum", checksum);
@@ -299,7 +307,7 @@ sliceUpload = function (lid, file, chunkSize, progress) {
                 } else {
                     $(progress[0]).css('width', '100%');
                     xhr_upload.splice(file.name, 1);
-                    appendLog(lid);
+                    appendLog(lid, url);
                 }
             },
             error: function (res) {

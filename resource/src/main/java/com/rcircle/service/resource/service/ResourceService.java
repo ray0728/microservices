@@ -45,8 +45,13 @@ public class ResourceService {
         return ret;
     }
 
+
     public int changeLog(Log log) {
         return resourceMapper.changeLog(log);
+    }
+
+    public int changeLogDetail(Log log) {
+        return resourceMapper.changeLogDetail(log.getId(), log.getDetial().getLog(), log.getDetial().getRes_url());
     }
 
     public Reply createReply(Reply reply) {
@@ -101,23 +106,25 @@ public class ResourceService {
         return resourceMapper.getAllCategory(uid);
     }
 
-    public Category createNewCategory(int uid, String desc){
+    public Category createNewCategory(int uid, String desc) {
         Category newcategory = resourceMapper.getCategory(desc);
-        if(newcategory == null){
+        if (newcategory == null) {
             newcategory = new Category();
             newcategory.setDesc(desc);
             resourceMapper.createCategory(newcategory);
         }
         newcategory.setUid(uid);
-        resourceMapper.addUserDefCategory(newcategory);
+        if (resourceMapper.getAccountCategoryMapId(newcategory) == 0) {
+            resourceMapper.addUserDefCategory(newcategory);
+        }
         return newcategory;
     }
 
-    public int deleteUserDefCategory(int uid, int id){
+    public int deleteUserDefCategory(int uid, int id) {
         return resourceMapper.deleteUserDefCategory(id, uid);
     }
 
-    public int deleteCategory(int id, String desc){
+    public int deleteCategory(int id, String desc) {
         return resourceMapper.deleteCategory(id, desc);
     }
 

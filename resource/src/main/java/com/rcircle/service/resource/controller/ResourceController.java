@@ -74,7 +74,8 @@ public class ResourceController {
                             @RequestParam(name = "id", required = true) int id,
                             @RequestParam(name = "title", required = false, defaultValue = "") String title,
                             @RequestParam(name = "type", required = false, defaultValue = "0") int type,
-                            @RequestParam(name = "gid", required = false, defaultValue = "0") int gid) {
+                            @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
+                            @RequestParam(name = "log", required = false, defaultValue = "") String htmllog) {
         Account account = getOpAccount(principal);
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPDATE_RES, "Invalid request parameters.");
@@ -86,6 +87,7 @@ public class ResourceController {
         if (!title.isEmpty()) {
             log.setTitle(title);
         }
+
         if (type != 0) {
             log.setType(type);
         }
@@ -93,6 +95,10 @@ public class ResourceController {
             log.setGid(gid);
         }
         resourceService.changeLog(log);
+        if (!htmllog.isEmpty()) {
+            log.getDetial().setLog(htmllog);
+            resourceService.changeLogDetail(log);
+        }
         return JSONObject.toJSONString(log);
     }
 
@@ -112,11 +118,11 @@ public class ResourceController {
     }
 
     @PostMapping("upload")
-    public String uploadSplitFile(Principal principal, HttpServletRequest request,
+    public String uploadSplitFile(Principal principal, MultipartFile file,
                                   @RequestParam(name = "id", required = true) int id,
                                   @RequestParam(name = "name", required = true) String filename,
-                                  @RequestParam(name = "index", required = true) long index,
-                                  @RequestParam(name = "total", required = true) long total,
+                                  @RequestParam(name = "index", required = true) int index,
+                                  @RequestParam(name = "total", required = true) int total,
                                   @RequestParam(name = "chunksize") int chunkSize,
                                   @RequestParam(name = "checksum", required = true) String checksum) {
         String result = "";
@@ -128,16 +134,16 @@ public class ResourceController {
         if (log.getUid() != account.getUid()) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_UPLOAD_RES, "You don't have permission to access.");
         }
-        List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles(uploadFileLabel);
-        if (files.isEmpty()) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPLOAD_RES, "There are no files here.");
-        } else if (files.size() > 1) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPLOAD_RES, "There are too many files here.");
-        }
+
+//        if (files.isEmpty()) {
+//            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPLOAD_RES, "There are no files here.");
+//        } else if (files.size() > 1) {
+//            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPLOAD_RES, "There are too many files here.");
+//        }
         String saveDir = log.getDetial().getRes_url();
         //NetFile.getDirAbsolutePath(saveDirRoot, String.valueOf(account.getUid()), String.valueOf(id));
         try {
-            int err = NetFile.saveSplitFile(saveDir, filename, index, total, checksum, chunkSize, files.get(0));
+            int err = NetFile.saveSplitFile(saveDir, filename, index, total, checksum, chunkSize, file);
             if (err != 0) {
                 result = ErrInfo.assembleJson(ErrInfo.ErrType.MISMATCH, err, "checksum mismatch.");
             }
@@ -168,7 +174,8 @@ public class ResourceController {
 
     @GetMapping("files")
     public String getAllFileInfo(Principal principal,
-                                 @RequestParam(name = "id", required = true) int id) {
+                                 @RequestParam(name = "id", required = true) int id,
+                                 @RequestParam(name = "onlyurl", required = false, defaultValue = "false") boolean isOnlyUrl) {
         Account account = getOpAccount(principal);
         Log log = resourceService.getLogDetial(id);
         if (account == null || log == null) {
@@ -176,6 +183,9 @@ public class ResourceController {
         }
         if (log.getUid() != account.getUid()) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_GET_RES_FILES, "You don't have permission to access.");
+        }
+        if (isOnlyUrl) {
+            return log.getDetial().getRes_url();
         }
         List<FileInfo> fileInfoList;
         try {

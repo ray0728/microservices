@@ -49,9 +49,11 @@ public interface ResourceMapper {
 
     public int deleteUserDefCategory(@Param("id")int id, @Param("uid")int uid);
 
-//    public int getAccountCategoryMapId(Category category);
+    public int getAccountCategoryMapId(Category category);
 
     public Category getCategory(@Param("desc")String desc);
+
+    public int changeLogDetail(@Param("id")int id, @Param("log")String log, @Param("res_url")String res_url);
 
 //    public String getCategory(@Param("id")int id);
 
