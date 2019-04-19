@@ -53,20 +53,21 @@ public class ResourceController {
     @PostMapping("new")
     public String createNewLog(Principal principal,
                                @RequestParam(name = "title", required = true) String title,
-                               @RequestParam(name = "type", required = true) int type,
+                               @RequestParam(name = "type", required = true) String type,
                                @RequestParam(name = "gid", required = false, defaultValue = "0") int gid) {
         Account account = getOpAccount(principal);
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CREATE_NEW, "Invalid request parameters.");
         }
+        Category category = resourceService.createNewCategory(account.getUid(), type);
         Log log = new Log();
         log.setTitle(title);
-        log.setType(type);
+        log.setType(category.getCid());
         log.setGid(gid);
         log.setUid(account.getUid());
         log.setDate(SimpleDate.getUTCTime());
         resourceService.createLog(log);
-        return JSONObject.toJSONString(log);
+        return String.valueOf(log.getId());
     }
 
     @PutMapping("update")
@@ -156,7 +157,7 @@ public class ResourceController {
     @DeleteMapping("files")
     public String deleteFile(Principal principal,
                              @RequestParam(name = "id", required = true) int id,
-                             @RequestParam(name = "files", required = false, defaultValue = "all") String filesname) {
+                             @RequestParam(name = "name", required = false, defaultValue = "all") String filesname) {
         Account account = getOpAccount(principal);
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_RES_FILES, "Invalid request parameters.");

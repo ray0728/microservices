@@ -97,6 +97,15 @@
         WHERE id = #{id};
     </update>
 
+    <update id="changeLogDetail">
+        UPDATE t_log_detail
+        <set>
+            <if test="log != null">htmllog = #{log}</if>
+            <if test="res_url != null">res_url = #{res_url}</if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
     <select id="getLogById" resultMap="logMap">
         SELECT *
         FROM t_log
@@ -141,7 +150,8 @@
     <delete id="deleteCategory">
         DELETE
         FROM t_category
-        WHERE id = #{cid} AND `desc`=#{desc};
+        WHERE id = #{cid}
+          AND `desc` = #{desc};
     </delete>
 
     <insert id="addUserDefCategory" useGeneratedKeys="true" keyProperty="id" parameterType="Category">
@@ -152,7 +162,8 @@
     <delete id="deleteUserDefCategory">
         DELETE
         FROM t_account_category_map
-        WHERE id = #{id} AND uid = #{uid};
+        WHERE id = #{id}
+          AND uid = #{uid};
     </delete>
 
     <select id="getCategory" resultType="Category">
