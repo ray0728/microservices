@@ -83,7 +83,7 @@ createLog = function () {
     formData.append("type", category);
     formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     $.ajax({
-        url: "new",
+        url: "/res/new",
         data: formData,
         type: "Post",
         cache: false,
@@ -100,7 +100,7 @@ createLog = function () {
 
 autoDetect = function (resid) {
     $.ajax({
-        url: "resurl?id=" + resid,
+        url: "res/files?id=" + resid,
         type: "Get",
         cache: false,
         contentType: false,
@@ -151,7 +151,8 @@ $('#uploadmodal').on('hide.bs.modal', function () {
     abort_upload = true;
     $.each(xhr_upload, function (index, filename) {
         $.ajax({
-            url: "delete?filename=" + filename,
+            // TODO:missing log_id
+            url: "/res/files?name=" + filename,
             type: "Delete",
             cache: false,
             processData: false,
@@ -191,14 +192,14 @@ appendLog = function (lid, url) {
     let formData = new FormData();
     $('div.hiddendiv').html($('#summernote').summernote('code'));
     replaceVideoNode($('div.hiddendiv'), url);
-    formData.append("resid", lid);
+    formData.append("id", lid);
     formData.append("log", $('div.hiddendiv').html());
     formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     if (xhr_upload.length == 0) {
         $.ajax({
-            url: "append",
+            url: "/res/update",
             data: formData,
-            type: "Post",
+            type: "Put",
             cache: false,
             processData: false,
             contentType: false,
@@ -277,7 +278,7 @@ sliceUpload = function (lid, file, chunkSize, progress, url) {
         formData.append("checksum", checksum);
         formData.append("_csrf", $($.find('input[type="hidden"]')).val());
         $.ajax({
-            url: "upload",
+            url: "/res/upload",
             data: formData,
             type: "Post",
             cache: false,
