@@ -21,17 +21,14 @@ $(document).ready(function () {
     });
 
     $('#summernote').on('summernote.dialog.shown', function () {
-        console.log('dialog shown');
         $(".note-video-popover").css('display', 'none');
     });
 
     $('#summernote').on('summernote.scroll', function () {
-        console.log('page scroll');
         $(".note-video-popover").css('display', 'none');
     });
 
     $('#summernote').on('summernote.mousedown', function () {
-        console.log('mousedown');
         $(".note-video-popover").css('display', 'none');
     });
 });
@@ -83,17 +80,18 @@ createLog = function () {
     formData.append("type", category);
     formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     $.ajax({
-        url: "/res/new",
+        url: "/diary/api/res/new",
         data: formData,
         type: "Post",
         cache: false,
         processData: false,
         contentType: false,
         success: function (resid) {
+            console.log("post new:" + resid);
             autoDetect(resid);
         },
         error: function (res) {
-            console.log(res);
+            console.log("post new err:" + res);
         }
     });
 };
@@ -105,6 +103,7 @@ autoDetect = function (resid) {
         cache: false,
         contentType: false,
         success: function (url) {
+            console.log("get files:" + url);
             switch ($('#uploadmodal').find('h4[class="modal-title"]').text()) {
                 case ("Upload Files"):
                     processUpload(resid, url);
@@ -152,7 +151,7 @@ $('#uploadmodal').on('hide.bs.modal', function () {
     $.each(xhr_upload, function (index, filename) {
         $.ajax({
             // TODO:missing log_id
-            url: "/res/files?name=" + filename,
+            url: "/diary/api/res/files?name=" + filename,
             type: "Delete",
             cache: false,
             processData: false,
@@ -197,17 +196,18 @@ appendLog = function (lid, url) {
     formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     if (xhr_upload.length == 0) {
         $.ajax({
-            url: "/res/update",
+            url: "/diary/api/res/update",
             data: formData,
             type: "Put",
             cache: false,
             processData: false,
             contentType: false,
             success: function () {
+                console.log("put update");
                 $('#uploadmodal').modal("hide");
             },
             error: function (res) {
-                console.log(res);
+                console.log("put update err:" + res);
             }
         });
     }
@@ -278,15 +278,15 @@ sliceUpload = function (lid, file, chunkSize, progress, url) {
         formData.append("checksum", checksum);
         formData.append("_csrf", $($.find('input[type="hidden"]')).val());
         $.ajax({
-            url: "/res/upload",
+            url: "/diary/api/res/upload",
             data: formData,
             type: "Post",
             cache: false,
             processData: false,
             contentType: false,
             success: function (res) {
+                console.log("post upload:" + res);
                 if (res == "resend") {
-                    console.log("resend");
                     start = currentChunk * chunkSize;
                     end = start + chunkSize >= file.size ? file.size : start + chunkSize;
                     filedata = blobSlice.call(file, start, end);
@@ -294,7 +294,6 @@ sliceUpload = function (lid, file, chunkSize, progress, url) {
                         fileReader.readAsBinaryString(filedata);
                     }
                 } else if (res == "abort") {
-                    console.log("abort upload");
                     xhr_upload.splice(file.name, 1);
                 } else if (currentChunk + 1 < chunks) {
                     currentChunk++;
@@ -312,6 +311,7 @@ sliceUpload = function (lid, file, chunkSize, progress, url) {
                 }
             },
             error: function (res) {
+                console.log("post upload err:" + res);
                 console.log(res);
             }
         });
