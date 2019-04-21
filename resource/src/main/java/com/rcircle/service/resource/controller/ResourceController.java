@@ -70,7 +70,7 @@ public class ResourceController {
         return String.valueOf(log.getId());
     }
 
-    @PutMapping("update")
+    @PostMapping("update")
     public String updateLog(Principal principal,
                             @RequestParam(name = "id", required = true) int id,
                             @RequestParam(name = "title", required = false, defaultValue = "") String title,

@@ -100,8 +100,8 @@
     <update id="changeLogDetail">
         UPDATE t_log_detail
         <set>
-            <if test="log != null">htmllog = #{log}</if>
-            <if test="res_url != null">res_url = #{res_url}</if>
+            <if test="log != null">htmllog = #{log},</if>
+            <if test="res_url != null">res_url = #{res_url},</if>
         </set>
         WHERE id=#{id}
     </update>
@@ -169,13 +169,13 @@
     <select id="getCategory" resultType="Category">
         SELECT id AS cid,`desc`
         from t_category
-        WHERE `desc` = #{desc};
+        WHERE `desc` = #{desc}  LIMIT 1;
     </select>
 
-    <select id="getAccountCategoryMapId">
-        SELECT id
+    <select id="getAccountCategoryMapId" resultType="Category">
+        SELECT id, uid, type_id AS cid
         FROM t_account_category_map
         WHERE type_id = #{cid}
-          AND uid = #{uid};
+          AND uid = #{uid} LIMIT 1;
     </select>
 </mapper>

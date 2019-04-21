@@ -41,9 +41,10 @@ public class NetFile {
         } catch (FileNotFoundException e) {
             errcode = ErrInfo.CODE_CREATE_FILE_STREAM;
         } catch (IOException e) {
-            errcode = ErrInfo.CODE_SAVE_NETFILE;;
-        }finally {
-            if(fis != null) {
+            errcode = ErrInfo.CODE_SAVE_NETFILE;
+            ;
+        } finally {
+            if (fis != null) {
                 fis.close();
             }
         }
@@ -95,27 +96,28 @@ public class NetFile {
                 return pathname.isFile();
             }
         });
-
-        for (File file : files) {
-            if (fileInfoList == null) {
-                fileInfoList = new ArrayList<>();
-            }
-            info = new FileInfo();
-            info.setName(file.getName());
-            info.setSize(file.length());
-            try {
-                fis = new FileInputStream(file);
-                info.setChecksum(DigestUtils.md2Hex(fis));
-                fis.close();
-            }catch (IOException e){
-                info.setErrinfo(e.getMessage());
-            }finally {
-                if(fis != null) {
-                    fis.close();
+        if (files != null) {
+            for (File file : files) {
+                if (fileInfoList == null) {
+                    fileInfoList = new ArrayList<>();
                 }
-                fis = null;
+                info = new FileInfo();
+                info.setName(file.getName());
+                info.setSize(file.length());
+                try {
+                    fis = new FileInputStream(file);
+                    info.setChecksum(DigestUtils.md2Hex(fis));
+                    fis.close();
+                } catch (IOException e) {
+                    info.setErrinfo(e.getMessage());
+                } finally {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                    fis = null;
+                }
+                fileInfoList.add(info);
             }
-            fileInfoList.add(info);
         }
         return fileInfoList;
     }

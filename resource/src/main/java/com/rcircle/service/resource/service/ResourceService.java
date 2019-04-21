@@ -114,7 +114,7 @@ public class ResourceService {
             resourceMapper.createCategory(newcategory);
         }
         newcategory.setUid(uid);
-        if (resourceMapper.getAccountCategoryMapId(newcategory) == 0) {
+        if (resourceMapper.getAccountCategoryMapId(newcategory) == null) {
             resourceMapper.addUserDefCategory(newcategory);
         }
         return newcategory;
