@@ -27,20 +27,10 @@ public class ResourceService {
         return JSON.parseObject(ret, Category.class);
     }
 
-    @HystrixCommand(fallbackMethod = "buildFallbackCreateNewLog", threadPoolKey = "ResThreadPool")
-    public LogFile createNewLog(String title, int type, int gid) {
-        String ret = remoteResourceClient.createNewLog(title, type, gid);
-        return JSON.parseObject(ret, LogFile.class);
-    }
-
-    @HystrixCommand(fallbackMethod = "buildFallbackGetResUrl", threadPoolKey = "ResThreadPool")
-    public String getResUrl(int id) {
-        return remoteResourceClient.getAllFileInfo(id, true);
-    }
-
-
-    public String updateLog(int id, String title, int type, int gid, String log){
-        return remoteResourceClient.updateLog(id, title, type, gid, log);
+    @HystrixCommand(fallbackMethod = "buildFallbackGetAllDiaries", threadPoolKey = "DirayThreadPool")
+    public List<LogFile> getAllDiaries(){
+        String ret = remoteResourceClient.getAllDiaries(0,0);
+        return JSON.parseArray(ret, LogFile.class);
     }
 
     public List<Category> buildFallbackGetAllCategory(Throwable throwable) {
@@ -51,12 +41,7 @@ public class ResourceService {
         return null;
     }
 
-    public LogFile buildFallbackCreateNewLog(String title, int type, int gid, Throwable throwable) {
+    public List<LogFile> buildFallbackGetAllDiaries(){
         return null;
     }
-
-    public String buildFallbackGetResUrl(int id, Throwable throwable) {
-        return null;
-    }
-
 }

@@ -87,7 +87,6 @@ createLog = function () {
         processData: false,
         contentType: false,
         success: function (resid) {
-            console.log("post new:" + resid);
             autoDetect(resid);
         },
         error: function (res) {
@@ -97,10 +96,8 @@ createLog = function () {
 };
 
 autoDetect = function (resid) {
-    console.log(resid);
     $.get("/diary/api/res/files?id=" + resid + "&onlyurl=true", function(url, status){
         if(status != "success"){
-            console.log(status);
             return;
         }
         switch ($('#uploadmodal').find('h4[class="modal-title"]').text()) {
@@ -186,7 +183,6 @@ dynamicsUploadFilesBody = function (files) {
 };
 
 appendLog = function (lid, url) {
-
     $('div.hiddendiv').html($('#summernote').summernote('code'));
     replaceVideoNode($('div.hiddendiv'), url);
     if (xhr_upload.length == 0) {
@@ -196,8 +192,8 @@ appendLog = function (lid, url) {
             _csrf:$($.find('input[type="hidden"]')).val()
         }, function (data, status) {
             if(status == "success"){
-                console.log("post update");
                 $('#uploadmodal').modal("hide");
+                window.location.href = "/diary/list";
             }else{
                 console.log("post update err:" +  status);
             }
@@ -277,7 +273,6 @@ sliceUpload = function (lid, file, chunkSize, progress, url) {
             processData: false,
             contentType: false,
             success: function (res) {
-                console.log("post upload:" + res);
                 if (res == "resend") {
                     start = currentChunk * chunkSize;
                     end = start + chunkSize >= file.size ? file.size : start + chunkSize;
@@ -304,7 +299,6 @@ sliceUpload = function (lid, file, chunkSize, progress, url) {
             },
             error: function (res) {
                 console.log("post upload err:" + res);
-                console.log(res);
             }
         });
     };
