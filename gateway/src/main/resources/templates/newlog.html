@@ -22,7 +22,7 @@
     <div class="d-flex mb-1">
         <p class="my-auto ml-auto mr-1 font-weight-bold">Category</p>
         <select id="category">
-            <option th:each="category:${categories}" th:value="${category.cid}" th:text="${category.desc}"></option>
+            <option th:each="category:${categories}" th:value="${category.desc}" th:text="${category.desc}"></option>
         </select>
         <button type="button" class="btn fa fa-plus" data-toggle="modal" data-target="#addLogType"></button>
     </div>

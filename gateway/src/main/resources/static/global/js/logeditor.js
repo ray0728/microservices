@@ -97,21 +97,19 @@ createLog = function () {
 };
 
 autoDetect = function (resid) {
-    $.ajax({
-        url: "res/files?id=" + resid,
-        type: "Get",
-        cache: false,
-        contentType: false,
-        success: function (url) {
-            console.log("get files:" + url);
-            switch ($('#uploadmodal').find('h4[class="modal-title"]').text()) {
-                case ("Upload Files"):
-                    processUpload(resid, url);
-                    break;
-                case ("Create New Diary"):
-                    appendLog(resid, url);
-                    break;
-            }
+    console.log(resid);
+    $.get("/diary/api/res/files?id=" + resid + "&onlyurl=true", function(url, status){
+        if(status != "success"){
+            console.log(status);
+            return;
+        }
+        switch ($('#uploadmodal').find('h4[class="modal-title"]').text()) {
+            case ("Upload Files"):
+                processUpload(resid, url);
+                break;
+            case ("Create New Diary"):
+                appendLog(resid, url);
+                break;
         }
     });
 };
@@ -188,26 +186,20 @@ dynamicsUploadFilesBody = function (files) {
 };
 
 appendLog = function (lid, url) {
-    let formData = new FormData();
+
     $('div.hiddendiv').html($('#summernote').summernote('code'));
     replaceVideoNode($('div.hiddendiv'), url);
-    formData.append("id", lid);
-    formData.append("log", $('div.hiddendiv').html());
-    formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     if (xhr_upload.length == 0) {
-        $.ajax({
-            url: "/diary/api/res/update",
-            data: formData,
-            type: "Put",
-            cache: false,
-            processData: false,
-            contentType: false,
-            success: function () {
-                console.log("put update");
+        $.post("/diary/api/res/update", {
+            id:lid,
+            log:$('div.hiddendiv').html(),
+            _csrf:$($.find('input[type="hidden"]')).val()
+        }, function (data, status) {
+            if(status == "success"){
+                console.log("post update");
                 $('#uploadmodal').modal("hide");
-            },
-            error: function (res) {
-                console.log("put update err:" + res);
+            }else{
+                console.log("post update err:" +  status);
             }
         });
     }
