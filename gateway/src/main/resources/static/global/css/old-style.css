@@ -1,0 +1,67 @@
+.lead {
+    color: #586069;
+}
+
+.icon-color-gray {
+    color: gray;
+}
+
+.errinfo {
+    color: red;
+    font-style: italic;
+}
+
+.horizon-ul {
+    list-style: none;
+    display: inline-block;
+    padding: 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    float: left;
+}
+
+.horizon-ul li {
+    display: inline-block;
+}
+
+.horizon-ul li a {
+    color: gray;
+    text-decoration: none;
+    padding-right: 5px;
+}
+
+.horizon-ul li a:hover {
+    color: dodgerblue;
+}
+
+.float-right {
+    float: right;
+    align-items: revert;
+}
+
+.modal-div {
+    max-height: 50%;
+    overflow-y: auto
+}
+
+.progresswithlabel {
+    position: relative;
+}
+
+progresswithlabel .bar {
+    z-index: 1;
+    position: absolute;
+}
+
+.progresswithlabel span {
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    color: black;
+    text-align: center;
+    width: 100%;
+}
+
+.hiddendiv {
+    display: none;
+}
