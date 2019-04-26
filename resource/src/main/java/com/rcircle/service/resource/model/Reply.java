@@ -8,8 +8,6 @@ public class Reply implements Serializable {
     private int uid;
     private String desc;
     private long date;
-    private int like_num = 0;
-    private int unlike_num = 0;
 
     public int getId() {
         return id;
@@ -49,21 +47,5 @@ public class Reply implements Serializable {
 
     public void setDate(long date) {
         this.date = date;
-    }
-
-    public int getLike_num() {
-        return like_num;
-    }
-
-    public void setLike_num(int like_num) {
-        this.like_num = like_num;
-    }
-
-    public int getUnlike_num() {
-        return unlike_num;
-    }
-
-    public void setUnlike_num(int unlike_num) {
-        this.unlike_num = unlike_num;
     }
 }

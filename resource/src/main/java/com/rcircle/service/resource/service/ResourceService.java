@@ -1,16 +1,14 @@
 package com.rcircle.service.resource.service;
 
 import com.rcircle.service.resource.mapper.ResourceMapper;
-import com.rcircle.service.resource.model.Category;
-import com.rcircle.service.resource.model.Log;
-import com.rcircle.service.resource.model.LogDetail;
-import com.rcircle.service.resource.model.Reply;
+import com.rcircle.service.resource.model.*;
 import com.rcircle.service.resource.utils.NetFile;
 import com.rcircle.service.resource.utils.SimpleDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -30,6 +28,12 @@ public class ResourceService {
                 String.valueOf(log.getId())));
         resourceMapper.createLogDetail(logDetail);
         log.setDetial(logDetail);
+        Iterator<Tag> iter = log.getTags().iterator();
+        while (iter.hasNext()) {
+            Tag tag = iter.next();
+            createTag(tag);
+            resourceMapper.addTagForLog(log.getId(), tag);
+        }
         return log;
     }
 
@@ -41,6 +45,11 @@ public class ResourceService {
         log.getReplyList().clear();
         resourceMapper.deleteLogDetial(log.getDetial().getId());
         int ret = resourceMapper.deleteLog(log.getId());
+        Iterator<Tag> iter = log.getTags().iterator();
+        while(iter.hasNext()) {
+            Tag tag = iter.next();
+            resourceMapper.deleteTagFromLog(tag.getMid(), tag.getId(), log.getId());
+        }
         log.reset();
         return ret;
     }
@@ -126,6 +135,20 @@ public class ResourceService {
 
     public int deleteCategory(int id, String desc) {
         return resourceMapper.deleteCategory(id, desc);
+    }
+
+    public List<Tag> getAllTags(int uid) {
+        return resourceMapper.getAllTags(uid);
+    }
+
+    public Tag createTag(Tag tag) {
+        Tag tmp  = resourceMapper.getTag(tag.getDesc());
+        if(tmp == null) {
+            resourceMapper.createTag(tag);
+        }else{
+            tag.setId(tmp.getId());
+        }
+        return tag;
     }
 
 }

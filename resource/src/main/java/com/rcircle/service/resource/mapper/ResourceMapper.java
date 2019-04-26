@@ -1,9 +1,6 @@
 package com.rcircle.service.resource.mapper;
 
-import com.rcircle.service.resource.model.Category;
-import com.rcircle.service.resource.model.Log;
-import com.rcircle.service.resource.model.LogDetail;
-import com.rcircle.service.resource.model.Reply;
+import com.rcircle.service.resource.model.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -55,6 +52,17 @@ public interface ResourceMapper {
 
     public int changeLogDetail(@Param("id")int id, @Param("log")String log, @Param("res_url")String res_url);
 
+    public List<Tag> getTags(@Param("id")int id);
+
+    public int createTag(Tag log);
+
+    public int addTagForLog(@Param("lid")int lid, Tag tag);
+
+    public int deleteTagFromLog(@Param("id")int id, @Param("tid")int tid, @Param("lid")int lid);
+
+    public List<Tag> getAllTags(@Param("uid")int uid);
+
+    public Tag getTag(@Param("desc")String desc);
 //    public String getCategory(@Param("id")int id);
 
 

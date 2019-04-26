@@ -54,7 +54,8 @@ public class ResourceController {
     public String createNewLog(Principal principal,
                                @RequestParam(name = "title", required = true) String title,
                                @RequestParam(name = "type", required = true) String type,
-                               @RequestParam(name = "gid", required = false, defaultValue = "0") int gid) {
+                               @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
+                               @RequestParam(name="tags", required = false, defaultValue = "")String[] tags) {
         Account account = getOpAccount(principal);
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CREATE_NEW, "Invalid request parameters.");
@@ -66,6 +67,11 @@ public class ResourceController {
         log.setGid(gid);
         log.setUid(account.getUid());
         log.setDate(SimpleDate.getUTCTime());
+        for(String desc:tags){
+            Tag tag = new Tag();
+            tag.setDesc(desc);
+            log.addTag(tag);
+        }
         resourceService.createLog(log);
         return String.valueOf(log.getId());
     }

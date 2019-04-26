@@ -1,6 +1,7 @@
 package com.rcircle.service.resource.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Log implements Serializable {
@@ -13,9 +14,8 @@ public class Log implements Serializable {
     private long date;
     private int gid;
     private int type;
-    private int like_num;
-    private int unlike_num;
     private int status;
+    private List<Tag> tags;
 
     private LogDetail detail;
 
@@ -69,22 +69,6 @@ public class Log implements Serializable {
         this.type = type;
     }
 
-    public int getLike_num() {
-        return like_num;
-    }
-
-    public void setLike_num(int like_num) {
-        this.like_num = like_num;
-    }
-
-    public int getUnlike_num() {
-        return unlike_num;
-    }
-
-    public void setUnlike_num(int unlike_num) {
-        this.unlike_num = unlike_num;
-    }
-
     public LogDetail getDetial() {
         return detail;
     }
@@ -107,6 +91,21 @@ public class Log implements Serializable {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public void addTag(Tag tag){
+        if(tags == null){
+            tags = new ArrayList<>();
+        }
+        tags.add(tag);
     }
 
     public void reset(){

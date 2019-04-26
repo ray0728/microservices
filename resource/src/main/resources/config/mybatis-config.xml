@@ -17,5 +17,6 @@
         <typeAlias type="com.rcircle.service.resource.model.LogDetail" alias="LogDetail"/>
         <typeAlias type="com.rcircle.service.resource.model.Reply" alias="Reply"/>
         <typeAlias type="com.rcircle.service.resource.model.Category" alias="Category"/>
+        <typeAlias type="com.rcircle.service.resource.model.Tag" alias="Tag"/>
     </typeAliases>
 </configuration>
