@@ -95,18 +95,8 @@
                                     <li><a href="/">Home</a></li>
                                     <li><a href="#">Blog</a>
                                         <ul class="dropdown">
-                                            <li th:each="category:${categories}"><a href="#"
-                                                                                    th:text="${category.name}"></a>
-                                                <ul th:unless="${category.children == null}" class="dropdown">
-                                                    <li th:each="child:${category.children}"><a href="#"
-                                                                                                th:text="${child.name}"></a>
-                                                        <ul th:unless="${child.children == null}" class="dropdown">
-                                                            <li th:each="child:${category.children}"><a href="#"
-                                                                                                        th:text="${child.name}"></a>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                </ul>
+                                            <li th:each="category:${categories}"><a th:href="${'cate/' + category.cid}"
+                                                                                    th:text="${category.desc}"></a>
                                             </li>
                                         </ul>
                                     </li>
