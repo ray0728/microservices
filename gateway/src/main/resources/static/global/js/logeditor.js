@@ -4,7 +4,7 @@ $(document).ready(function () {
     $('#summernote').summernote({
         popatmouse: false,
         placeholder: "Let's write",
-        height: 400,
+        height: $(window).height()/3,
         fontSizes: ['12', '14', '16', '18', '24', '36', '48'],
         toolbar: [
             ['fontname', ['fontname']],
@@ -33,18 +33,28 @@ $(document).ready(function () {
     });
 });
 
-$("#previewmodal").on('show.bs.modal', function () {
-    let title = $($.find('input[class="flex-grow-1 title"]')).val();
-    let code = $('#summernote').summernote('code');
-    let header = $(this).find('h4[class="modal-title"]');
-    let content = $(this).find('div[id="content"]');
-    header.text(title);
-    content.html(code);
+$("#extmodal").on('show.bs.modal', function (e) {
+    let header = $(this).find('h5[class="title"]');
+    let content = $(this).find('div[class="modal-div"]');
+    if ($(e.relatedTarget).text() == "Publish") {
+        let files = $(".note-editable").find('video[class="vjs-tech"]');
+        if (files.length > 0) {
+            header.text("Upload Files");
+            content.html(dynamicsUploadFilesBody(files));
+        } else {
+            header.text("Create New Diary");
+            content.html(createBody());
+        }
+    } else {
+        let title = $($.find('input[class="flex-grow-1 title"]')).val();
+        let code = $('#summernote').summernote('code');
+        header.text(title);
+        content.html(code);
+    }
 });
 
-$('#btnAddCategory').click(function () {
-    let dialog = $(this).parent().parent();
-    let input = dialog.find('input');
+$('#addLogType').on('hidden.bs.modal', function () {
+    let input = $(this).find('input');
     let userdefcategory = $(input).val();
     let shoudadd = true;
     $("#category option").each(function () {
@@ -57,19 +67,6 @@ $('#btnAddCategory').click(function () {
         $('#category').append(newoption);
     }
     input.val("");
-});
-
-$('#uploadmodal').on('show.bs.modal', function () {
-    let files = $(".note-editable").find('video[class="vjs-tech"]');
-    let header = $(this).find('h4[class="modal-title"]');
-    let content = $(this).find('div[id="content"]');
-    if (files.length > 0) {
-        header.text("Upload Files");
-        content.html(dynamicsUploadFilesBody(files));
-    } else {
-        header.text("Create New Diary");
-        content.html(createBody());
-    }
 });
 
 createLog = function () {
@@ -96,11 +93,11 @@ createLog = function () {
 };
 
 autoDetect = function (resid) {
-    $.get("/diary/api/res/files?id=" + resid + "&onlyurl=true", function(url, status){
-        if(status != "success"){
+    $.get("/diary/api/res/files?id=" + resid + "&onlyurl=true", function (url, status) {
+        if (status != "success") {
             return;
         }
-        switch ($('#uploadmodal').find('h4[class="modal-title"]').text()) {
+        switch ($('#extmodal').find('h5[class="title"]').text()) {
             case ("Upload Files"):
                 processUpload(resid, url);
                 break;
@@ -111,52 +108,58 @@ autoDetect = function (resid) {
     });
 };
 
-$('#uploadmodal').on('shown.bs.modal', function () {
-    let resid = $($('p:contains("Title")')[0]).val();
-    let titleobj = $.find('input[class="flex-grow-1 title"]');
-    let category = $("#category").find(":selected").val();
-    let error = false;
-    if ($(titleobj).val() == "") {
-        $($('p:contains("Title")')[0]).css("color", "red");
-        $(titleobj).css("border-color", "red");
-        error = true;
-    } else {
-        $($('p:contains("Title")')[0]).css("color", "");
-        $(titleobj).css("border-color", "");
-    }
-    if (typeof (category) == "undefined") {
-        $($('p:contains("Category")')[0]).css("color", "red");
-        $('#category').css("border-color", "red");
-        error = true;
-    } else {
-        $($('p:contains("Category")')[0]).css("color", "");
-        $('#category').css("border-color", "");
-    }
-    if (error) {
-        $('#uploadmodal').modal('hide');
-    } else if (resid == 0 || resid == "") {
-        createLog();
-    } else {
-        autoDetect(resid);
+$('#extmodal').on('shown.bs.modal', function (e) {
+    if ($(e.relatedTarget).text() == "Publish") {
+        let resid = $($('p:contains("Title")')[0]).val();
+        let titleobj = $.find('input[class="flex-grow-1 title"]');
+        let category = $("#category").find(":selected").val();
+        let error = false;
+        if ($(titleobj).val() == "") {
+            $($('p:contains("Title")')[0]).css("color", "red");
+            $(titleobj).css("border-color", "red");
+            error = true;
+        } else {
+            $($('p:contains("Title")')[0]).css("color", "");
+            $(titleobj).css("border-color", "");
+        }
+        if (typeof (category) == "undefined") {
+            $($('p:contains("Category")')[0]).css("color", "red");
+            $('#category').css("border-color", "red");
+            error = true;
+        } else {
+            $($('p:contains("Category")')[0]).css("color", "");
+            $('#category').css("border-color", "");
+        }
+        if (error) {
+            $('#extmodal').modal('hide');
+        } else if (resid == 0 || resid == "") {
+            createLog();
+        } else {
+            autoDetect(resid);
+        }
     }
 });
 
-$('#uploadmodal').on('hide.bs.modal', function () {
-    abort_upload = true;
-    $.each(xhr_upload, function (index, filename) {
-        $.ajax({
-            // TODO:missing log_id
-            url: "/diary/api/res/files?name=" + filename,
-            type: "Delete",
-            cache: false,
-            processData: false,
-            contentType: false
+$('#extmodal').on('hide.bs.modal', function (e) {
+    if ($(e.relatedTarget).text() == "Publish") {
+        abort_upload = true;
+        $.each(xhr_upload, function (index, filename) {
+            $.ajax({
+                // TODO:missing log_id
+                url: "/diary/api/res/files?name=" + filename,
+                type: "Delete",
+                cache: false,
+                processData: false,
+                contentType: false
+            });
         });
-    });
+    }
 });
 
-$('#uploadmodal').on('hidden.bs.modal', function () {
-    abort_upload = false;
+$('#extmodal').on('hidden.bs.modal', function (e) {
+    if ($(e.relatedTarget).text() == "Publish") {
+        abort_upload = false;
+    }
 });
 
 createBody = function () {
@@ -187,15 +190,15 @@ appendLog = function (lid, url) {
     replaceVideoNode($('div.hiddendiv'), url);
     if (xhr_upload.length == 0) {
         $.post("/diary/api/res/update", {
-            id:lid,
-            log:$('div.hiddendiv').html(),
-            _csrf:$($.find('input[type="hidden"]')).val()
+            id: lid,
+            log: $('div.hiddendiv').html(),
+            _csrf: $($.find('input[type="hidden"]')).val()
         }, function (data, status) {
-            if(status == "success"){
-                $('#uploadmodal').modal("hide");
+            if (status == "success") {
+                $('#extmodal').modal("hide");
                 window.location.href = "/diary/list";
-            }else{
-                console.log("post update err:" +  status);
+            } else {
+                console.log("post update err:" + status);
             }
         });
     }
@@ -216,7 +219,7 @@ replaceVideoNode = function (code, url) {
 };
 
 processUpload = function (lid, url) {
-    let uploadlist = $('#uploadmodal').find('div[class="progress progresswithlabel mb-2"]');
+    let uploadlist = $('#extmodal').find('div[class="progress progresswithlabel mb-2"]');
     $.each(uploadlist, function (index, data) {
         let progress = $(data).find('div[class="progress-bar progress-bar-striped bar"]');
         let url = $(data).attr("value");
