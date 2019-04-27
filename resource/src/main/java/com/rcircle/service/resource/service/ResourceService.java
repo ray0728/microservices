@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -91,13 +92,21 @@ public class ResourceService {
         return reply;
     }
 
-    public Log getLogDetial(int id) {
+    public Log getLog(int id) {
         return resourceMapper.getLogById(id);
     }
 
 
-    public List<Log> getLogs(int uid, int type, int gid, String title, int status) {
-        return resourceMapper.getLogs(uid, type, gid, title, status);
+    public List<Log> getLogs(int uid, int type, int gid, String title, int status, int offset, int count){
+        List<Log> logs =  resourceMapper.getLogs(uid, type, gid, title, status, offset, count);
+        Iterator<Log> iter = logs.iterator();
+        while(iter.hasNext()){
+            Log log = iter.next();
+            try {
+                log.getDetial().setFiles(NetFile.getFilesInfo(log.getDetial().getRes_url()));
+            }catch (IOException e){}
+        }
+        return logs;
     }
 
     public List<Reply> getReplies(int lid) {

@@ -2,9 +2,12 @@ package com.rcircle.service.resource.utils;
 
 import com.rcircle.service.resource.model.FileInfo;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,6 +99,7 @@ public class NetFile {
                 return pathname.isFile();
             }
         });
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
         if (files != null) {
             for (File file : files) {
                 if (fileInfoList == null) {
@@ -104,6 +108,8 @@ public class NetFile {
                 info = new FileInfo();
                 info.setName(file.getName());
                 info.setSize(file.length());
+                info.setMime(fileNameMap.getContentTypeFor(file.getAbsolutePath()));
+                info.setPath(file.getAbsolutePath());
                 try {
                     fis = new FileInputStream(file);
                     info.setChecksum(DigestUtils.md2Hex(fis));

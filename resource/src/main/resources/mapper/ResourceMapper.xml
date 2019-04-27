@@ -122,6 +122,7 @@
                 </otherwise>
             </choose>
         </where>
+        LIMIT #{offset},#{count}
     </select>
 
     <select id="getLogById" resultMap="logMap">

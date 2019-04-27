@@ -9,15 +9,23 @@ import com.rcircle.service.resource.utils.NetFile;
 import com.rcircle.service.resource.utils.SimpleDate;
 import com.rcircle.service.resource.model.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -87,7 +95,7 @@ public class ResourceController {
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPDATE_RES, "Invalid request parameters.");
         }
-        Log log = resourceService.getLogDetial(id);
+        Log log = resourceService.getLog(id);
         if (log.getUid() != account.getUid()) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_UPDATE_RES, "You don't have permission to access.");
         }
@@ -116,7 +124,7 @@ public class ResourceController {
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_RES, "Invalid request parameters.");
         }
-        Log log = resourceService.getLogDetial(id);
+        Log log = resourceService.getLog(id);
         if (log.getUid() != account.getUid()) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_DELETE_RES, "You don't have permission to access.");
         }
@@ -137,7 +145,7 @@ public class ResourceController {
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPLOAD_RES, "Invalid request parameters.");
         }
-        Log log = resourceService.getLogDetial(id);
+        Log log = resourceService.getLog(id);
         if (log.getUid() != account.getUid()) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_UPLOAD_RES, "You don't have permission to access.");
         }
@@ -168,7 +176,7 @@ public class ResourceController {
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_RES_FILES, "Invalid request parameters.");
         }
-        Log log = resourceService.getLogDetial(id);
+        Log log = resourceService.getLog(id);
         if (log.getUid() != account.getUid()) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_DELETE_RES_FILES, "You don't have permission to access.");
         }
@@ -179,36 +187,12 @@ public class ResourceController {
         return "";
     }
 
-    @GetMapping("files")
-    public String getAllFileInfo(Principal principal,
-                                 @RequestParam(name = "id", required = true) int id,
-                                 @RequestParam(name = "onlyurl", required = false, defaultValue = "false") boolean isOnlyUrl) {
-        Account account = getOpAccount(principal);
-        Log log = resourceService.getLogDetial(id);
-        if (account == null || log == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_GET_RES_FILES, "Invalid request parameters.");
-        }
-        if (log.getUid() != account.getUid()) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_GET_RES_FILES, "You don't have permission to access.");
-        }
-        if (isOnlyUrl) {
-            return log.getDetial().getRes_url();
-        }
-        List<FileInfo> fileInfoList;
-        try {
-            fileInfoList = NetFile.getFilesInfo(log.getDetial().getRes_url());
-        } catch (IOException e) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_GET_RES_FILES, e.getMessage());
-        }
-        return JSONObject.toJSONString(fileInfoList);
-    }
-
     @PostMapping("reply")
     public String createNewReply(Principal principal,
                                  @RequestParam(name = "id", required = true) int id,
                                  @RequestParam(name = "msg", required = true) String msg) {
         Account account = getOpAccount(principal);
-        Log log = resourceService.getLogDetial(id);
+        Log log = resourceService.getLog(id);
         if (account == null || log == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CREATE_REPLY, "Invalid request parameters.");
         }
@@ -224,7 +208,7 @@ public class ResourceController {
     @DeleteMapping("reply")
     public String deleteReply(Principal principal, int lid, int rid) {
         Account account = getOpAccount(principal);
-        Log log = resourceService.getLogDetial(lid);
+        Log log = resourceService.getLog(lid);
         if (account == null || log == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_REPLY, "Invalid request parameters.");
         }
@@ -251,7 +235,9 @@ public class ResourceController {
                               @RequestParam(name = "type", required = false, defaultValue = "0") int type,
                               @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
                               @RequestParam(name = "title", required = false, defaultValue = "") String title,
-                              @RequestParam(name = "status", required = false, defaultValue = "0") int status
+                              @RequestParam(name = "status", required = false, defaultValue = "0") int status,
+                              @RequestParam(name = "offset", required = false, defaultValue = "0")int offset,
+                              @RequestParam(name="count", required = false, defaultValue = "5")int count
     ) {
         int uid = 0;
         if (principal != null) {
@@ -260,8 +246,51 @@ public class ResourceController {
                 uid = account.getUid();
             }
         }
-        List<Log> logs = resourceService.getLogs(uid, type, gid, title, status);
+        List<Log> logs = resourceService.getLogs(uid, type, gid, title, status, offset, count);
         return JSONObject.toJSONString(logs);
+    }
+
+    @GetMapping("img/{lid}/{name}")
+    @ResponseBody
+    public ResponseEntity getImageFile(Principal principal, @PathVariable("lid") Integer logid, @PathVariable("name") String name) {
+        int uid = 0;
+        String errinfo = null;
+        Account account;
+        if (principal != null) {
+            account = getOpAccount(principal);
+            if (account != null) {
+                uid = account.getUid();
+            }
+        }
+        Log log = resourceService.getLog(logid);
+        if(log.getGid()!=0 && uid != 0 && !isBelongGid(log.getGid())){
+            errinfo = ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_GET_RES_FILES, "You don't have permission to access.");
+        }
+        if(log.getGid() != 0 &&  uid == 0){
+            errinfo =  ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_GET_RES_FILES, "You don't have permission to access.");
+        }
+        if(errinfo == null) {
+            try {
+                Iterator<FileInfo> iter = log.getDetial().getFiles().iterator();
+                while(iter.hasNext()){
+                    FileInfo fileInfo = iter.next();
+                    if(fileInfo.getName().equals(name)){
+                        MediaType mediaType = MediaType.parseMediaType(fileInfo.getMime());
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.setContentType(mediaType);
+                        File file = new File(fileInfo.getPath());
+                        FileInputStream inputStream = new FileInputStream(file);
+                        byte[] bytes = new byte[inputStream.available()];
+                        inputStream.read(bytes, 0, inputStream.available());
+                        inputStream.close();
+                        return new ResponseEntity(bytes, headers, HttpStatus.OK);
+                    }
+                }
+            } catch (Exception e) {
+                errinfo = e.getMessage();
+            }
+        }
+        return ResponseEntity.status(404).body(errinfo);
     }
 
     private boolean isBelongGid(int gid) {

@@ -7,6 +7,8 @@ public class FileInfo implements Serializable {
     private long size;
     private String checksum;
     private String errinfo;
+    private String mime;
+    private String path;
 
     public String getName() {
         return name;
@@ -38,5 +40,21 @@ public class FileInfo implements Serializable {
 
     public void setErrinfo(String errinfo) {
         this.errinfo = errinfo;
+    }
+
+    public String getMime() {
+        return mime;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setMime(String mime) {
+        this.mime = mime;
     }
 }
