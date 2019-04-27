@@ -4,7 +4,7 @@ $(document).ready(function () {
     $('#summernote').summernote({
         popatmouse: false,
         placeholder: "Let's write",
-        height: $(window).height()/3,
+        height: $(window).height() / 3,
         fontSizes: ['12', '14', '16', '18', '24', '36', '48'],
         toolbar: [
             ['fontname', ['fontname']],
@@ -42,7 +42,7 @@ $("#extmodal").on('show.bs.modal', function (e) {
             header.text("Upload Files");
             content.html(dynamicsUploadFilesBody(files));
         } else {
-            header.text("Create New Diary");
+            header.text("Create New Blog");
             content.html(createBody());
         }
     } else {
@@ -79,7 +79,7 @@ createLog = function () {
     formData.append("tags", tags);
     formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     $.ajax({
-        url: "/diary/api/res/new",
+        url: "/blog/api/res/new",
         data: formData,
         type: "Post",
         cache: false,
@@ -95,19 +95,14 @@ createLog = function () {
 };
 
 autoDetect = function (resid) {
-    $.get("/diary/api/res/files?id=" + resid + "&onlyurl=true", function (url, status) {
-        if (status != "success") {
-            return;
-        }
-        switch ($('#extmodal').find('h5[class="title"]').text()) {
-            case ("Upload Files"):
-                processUpload(resid, url);
-                break;
-            case ("Create New Diary"):
-                appendLog(resid, url);
-                break;
-        }
-    });
+    switch ($('#extmodal').find('h5[class="title"]').text()) {
+        case ("Upload Files"):
+            processUpload(resid);
+            break;
+        case ("Create New Blog"):
+            appendLog(resid);
+            break;
+    }
 };
 
 $('#extmodal').on('shown.bs.modal', function (e) {
@@ -148,7 +143,7 @@ $('#extmodal').on('hide.bs.modal', function (e) {
         $.each(xhr_upload, function (index, filename) {
             $.ajax({
                 // TODO:missing log_id
-                url: "/diary/api/res/files?name=" + filename,
+                url: "/blog/api/res/files?name=" + filename,
                 type: "Delete",
                 cache: false,
                 processData: false,
@@ -187,18 +182,18 @@ dynamicsUploadFilesBody = function (files) {
     return body.join('');
 };
 
-appendLog = function (lid, url) {
+appendLog = function (lid) {
     $('div.hiddendiv').html($('#summernote').summernote('code'));
-    replaceVideoNode($('div.hiddendiv'), url);
+    replaceVideoNode($('div.hiddendiv'), lid);
     if (xhr_upload.length == 0) {
-        $.post("/diary/api/res/update", {
+        $.post("/blog/api/res/update", {
             id: lid,
             log: $('div.hiddendiv').html(),
             _csrf: $($.find('input[type="hidden"]')).val()
         }, function (data, status) {
             if (status == "success") {
                 $('#extmodal').modal("hide");
-                window.location.href = "/diary/list";
+                window.location.href = "/blog/list";
             } else {
                 console.log("post update err:" + status);
             }
@@ -206,21 +201,21 @@ appendLog = function (lid, url) {
     }
 };
 
-replaceVideoNode = function (code, url) {
+replaceVideoNode = function (code, lid) {
     let videonodes = $(code).find('div.video-js');
     $.each(videonodes, function (index, node) {
         let id = $(node).attr('id');
         let name = $(node).data('filename');
         let origial_video = [
             '<video controls class="video-js vjs-big-play-centered" id="' + id + '">',
-            '<source src="' + url + "/" + name + '">',
+            '<source src="/blog/api/res/video/' + lid + '/' + name + '">',
             '</video>'
         ].join("");
         $(node).replaceWith(origial_video);
     });
 };
 
-processUpload = function (lid, url) {
+processUpload = function (lid) {
     let uploadlist = $('#extmodal').find('div[class="progress progresswithlabel mb-2"]');
     $.each(uploadlist, function (index, data) {
         let progress = $(data).find('div[class="progress-bar progress-bar-striped bar"]');
@@ -237,7 +232,7 @@ processUpload = function (lid, url) {
                 sliceUpload(lid, new File([blobdata], filename, {
                     type: blobdata.type,
                     lastModified: Date.now()
-                }), 2097152, progress, url);
+                }), 2097152, progress);
             }
         };
         xhr.open('GET', url, true);
@@ -245,7 +240,7 @@ processUpload = function (lid, url) {
     });
 };
 
-sliceUpload = function (lid, file, chunkSize, progress, url) {
+sliceUpload = function (lid, file, chunkSize, progress) {
     let chunks = Math.ceil(file.size / chunkSize);
     let currentChunk = 0;
     let checksum;
@@ -271,7 +266,7 @@ sliceUpload = function (lid, file, chunkSize, progress, url) {
         formData.append("checksum", checksum);
         formData.append("_csrf", $($.find('input[type="hidden"]')).val());
         $.ajax({
-            url: "/diary/api/res/upload",
+            url: "/blog/api/res/upload",
             data: formData,
             type: "Post",
             cache: false,
@@ -299,7 +294,7 @@ sliceUpload = function (lid, file, chunkSize, progress, url) {
                 } else {
                     $(progress[0]).css('width', '100%');
                     xhr_upload.splice(file.name, 1);
-                    appendLog(lid, url);
+                    appendLog(lid);
                 }
             },
             error: function (res) {

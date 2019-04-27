@@ -28,8 +28,8 @@ public class ResourceService {
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackGetAllDiaries", threadPoolKey = "DirayThreadPool")
-    public List<LogFile> getAllDiaries(){
-        String ret = remoteResourceClient.getAllDiaries(0,0);
+    public List<LogFile> getAllDiaries(int type, int gid, String title, int status, int offset, int count) {
+        String ret = remoteResourceClient.getAllDiaries(type, gid, title, status, offset, count);
         return JSON.parseArray(ret, LogFile.class);
     }
 
@@ -41,7 +41,7 @@ public class ResourceService {
         return null;
     }
 
-    public List<LogFile> buildFallbackGetAllDiaries(){
+    public List<LogFile> buildFallbackGetAllDiaries() {
         return null;
     }
 }

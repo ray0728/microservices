@@ -26,6 +26,7 @@ public class HomeController {
     public String showHomePage(Principal principal, ModelMap mm) {
         mm.addAttribute("title", "RC - LifeStyle - Blog");
         mm.addAttribute("categories", resourceService.getAllCategoryForCurrentUser());
+        mm.addAttribute("logs", resourceService.getAllDiaries(0, 0, null, 0, 0, 5));
         return "index";
     }
 

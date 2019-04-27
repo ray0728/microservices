@@ -12,8 +12,8 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Controller
-@RequestMapping("/diary")
-public class DiaryController {
+@RequestMapping("/blog")
+public class BlogController {
     @Resource
     private ResourceService resourceService;
 
@@ -29,7 +29,7 @@ public class DiaryController {
 
     @GetMapping("list")
     public String showAllLog(ModelMap mm) {
-        List<LogFile> logFiles = resourceService.getAllDiaries();
+        List<LogFile> logFiles = resourceService.getAllDiaries(0,0,null, 0, 0, 5);
         mm.addAttribute("title", "All Diaries");
         mm.addAttribute("diaries", logFiles);
         return "loglist";

@@ -15,6 +15,13 @@ public interface RemoteResourceClient {
     public String addNewCategory(@RequestParam(name = "desc", required = true) String desc);
 
     @GetMapping("/res/list")
-    public String getAllDiaries(@RequestParam(name = "type", required = false, defaultValue = "0") int type,
-                              @RequestParam(name = "gid", required = false, defaultValue = "0") int gid);
+    public String getAllDiaries(@RequestParam(name = "type") int type,
+                                @RequestParam(name = "gid") int gid,
+                                @RequestParam(name = "title") String title,
+                                @RequestParam(name = "status") int status,
+                                @RequestParam(name = "offset")int offset,
+                                @RequestParam(name = "count") int count);
+
+    @GetMapping("/res/files")
+    public String getAllFileInfo(@RequestParam(name = "id") int id);
 }
