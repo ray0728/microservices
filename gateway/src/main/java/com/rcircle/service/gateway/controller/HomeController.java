@@ -2,6 +2,7 @@ package com.rcircle.service.gateway.controller;
 
 import com.rcircle.service.gateway.model.Account;
 import com.rcircle.service.gateway.services.AccountService;
+import com.rcircle.service.gateway.services.ResourceService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,14 +18,14 @@ import java.security.Principal;
 public class HomeController {
     @Resource
     AccountService accountService;
+    @Resource
+    private ResourceService resourceService;
 
-    @GetMapping("")
+
+    @GetMapping(value = {"", "home"})
     public String showHomePage(Principal principal, ModelMap mm) {
-        if (principal != null) {
-            mm.addAttribute("title", "RC - Welcome," + principal.getName());
-        } else {
-            mm.addAttribute("title", "RC - Welcome");
-        }
+        mm.addAttribute("title", "RC - LifeStyle - Blog");
+        mm.addAttribute("categories", resourceService.getAllCategoryForCurrentUser());
         return "index";
     }
 

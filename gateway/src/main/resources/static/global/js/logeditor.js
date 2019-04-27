@@ -73,8 +73,10 @@ createLog = function () {
     let title = $($.find('input[class="flex-grow-1 title"]')).val();
     let category = $("#category").find(":selected").val();
     let formData = new FormData();
+    let tags = $($.find('input[class="flex-grow-1"]')).val().split(";");
     formData.append("title", title);
     formData.append("type", category);
+    formData.append("tags", tags);
     formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     $.ajax({
         url: "/diary/api/res/new",
