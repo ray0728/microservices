@@ -22,47 +22,47 @@ public interface ResourceMapper {
 
     public int changeLog(Log log);
 
-    public int getLogStatus(@Param("id")int id);
+    public int getLogStatus(@Param("id") int id);
 
     public int changeLogStatus(@Param("id") int id, @Param("status") int status);
 
     public Log getLogById(@Param("id") int lid);
 
-    public List<Log> getLogsByUid(@Param("uid") int uid);
+    public List<Log> getLogs(@Param("uid") int uid, @Param("type") int type, @Param("gid") int gid,
+                             @Param("title") String title, @Param("status") int status);
 
-    public List<Log> getPublicLogsByType(@Param("type") int type);
 
-    public List<Log> getGroupLogsByType(@Param("type") int type, @Param("gid") int gid);
+    public List<Reply> getLogReplies(@Param("id") int lid);
 
-    public List<Reply> getLogReplies(@Param("id")int lid);
+    public List<Category> getAllCategory(@Param("uid") int uid);
 
-    public List<Category> getAllCategory(@Param("uid")int uid);
+    public List<Category> getAllPublicCategory();
 
     public int createCategory(Category category);
 
     public int addUserDefCategory(Category category);
 
-    public int deleteCategory(@Param("cid")int cid, @Param("desc")String desc);
+    public int deleteCategory(@Param("cid") int cid, @Param("desc") String desc);
 
-    public int deleteUserDefCategory(@Param("id")int id, @Param("uid")int uid);
+    public int deleteUserDefCategory(@Param("id") int id, @Param("uid") int uid);
 
     public Category getAccountCategoryMapId(Category category);
 
-    public Category getCategory(@Param("desc")String desc);
+    public Category getCategory(@Param("desc") String desc);
 
-    public int changeLogDetail(@Param("id")int id, @Param("log")String log, @Param("res_url")String res_url);
+    public int changeLogDetail(@Param("id") int id, @Param("log") String log, @Param("res_url") String res_url);
 
-    public List<Tag> getTags(@Param("id")int id);
+    public List<Tag> getTags(@Param("id") int id);
 
     public int createTag(Tag log);
 
-    public int addTagForLog(@Param("lid")int lid, Tag tag);
+    public int addTagForLog(@Param("lid") int lid, Tag tag);
 
-    public int deleteTagFromLog(@Param("id")int id, @Param("tid")int tid, @Param("lid")int lid);
+    public int deleteTagFromLog(@Param("id") int id, @Param("tid") int tid, @Param("lid") int lid);
 
-    public List<Tag> getAllTags(@Param("uid")int uid);
+    public List<Tag> getAllTags(@Param("uid") int uid);
 
-    public Tag getTag(@Param("desc")String desc);
+    public Tag getTag(@Param("desc") String desc);
 //    public String getCategory(@Param("id")int id);
 
 

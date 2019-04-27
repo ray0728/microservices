@@ -55,7 +55,7 @@ public class ResourceController {
                                @RequestParam(name = "title", required = true) String title,
                                @RequestParam(name = "type", required = true) String type,
                                @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
-                               @RequestParam(name="tags", required = false, defaultValue = "")String[] tags) {
+                               @RequestParam(name = "tags", required = false, defaultValue = "") String[] tags) {
         Account account = getOpAccount(principal);
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CREATE_NEW, "Invalid request parameters.");
@@ -67,7 +67,7 @@ public class ResourceController {
         log.setGid(gid);
         log.setUid(account.getUid());
         log.setDate(SimpleDate.getUTCTime());
-        for(String desc:tags){
+        for (String desc : tags) {
             Tag tag = new Tag();
             tag.setDesc(desc);
             log.addTag(tag);
@@ -249,20 +249,18 @@ public class ResourceController {
     @GetMapping("list")
     public String getResource(Principal principal,
                               @RequestParam(name = "type", required = false, defaultValue = "0") int type,
-                              @RequestParam(name = "gid", required = false, defaultValue = "0") int gid) {
-        Account account = getOpAccount(principal);
-        List<Log> logs;
-        if (account == null && type != 0) {
-            logs = resourceService.getPublicLogsByType(type);
-        } else if (account == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_GET_RES, "You don't have permission to access.");
-        } else if (type != 0 && isBelongGid(gid)) {
-            logs = resourceService.getGroupLogsByType(type, gid);
-        } else if (type != 0) {
-            logs = resourceService.getPublicLogsByType(type);
-        } else {
-            logs = resourceService.getLogsByUid(account.getUid());
+                              @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
+                              @RequestParam(name = "title", required = false, defaultValue = "") String title,
+                              @RequestParam(name = "status", required = false, defaultValue = "0") int status
+    ) {
+        int uid = 0;
+        if (principal != null) {
+            Account account = getOpAccount(principal);
+            if (account != null) {
+                uid = account.getUid();
+            }
         }
+        List<Log> logs = resourceService.getLogs(uid, type, gid, title, status);
         return JSONObject.toJSONString(logs);
     }
 

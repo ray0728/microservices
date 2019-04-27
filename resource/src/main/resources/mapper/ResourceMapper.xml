@@ -35,7 +35,7 @@
     <select id="getLogStatus">
         SELECT status
         FROM t_log
-        WHERE id = #{id}
+        WHERE id = #{id} LIMIT 1
     </select>
 
     <select id="getLogReplies" resultType="Reply">
@@ -56,13 +56,13 @@
     </insert>
 
     <insert id="createLog" useGeneratedKeys="true" keyProperty="id" parameterType="Log">
-        INSERT INTO t_log(uid, title, date, gid, type)
-        VALUES (#{uid}, #{title}, #{date}, #{gid}, #{type}, 0, 0);
+        INSERT INTO t_log(uid, title, date, gid, type, status)
+        VALUES (#{uid}, #{title}, #{date}, #{gid}, #{type}, 0);
     </insert>
 
     <insert id="createReply" useGeneratedKeys="true" keyProperty="id" parameterType="Reply">
         INSERT INTO t_reply(lid, uid, desc, date)
-        VALUES (#{lid}, #{uid}, #{desc}, #{date}, 0, 0);
+        VALUES (#{lid}, #{uid}, #{desc}, #{date});
     </insert>
 
     <delete id="deleteLog">
@@ -103,30 +103,31 @@
         WHERE id=#{id}
     </update>
 
+    <select id="getLogs" resultMap="logMap">
+        SELECT * FROM t_log
+        <where>
+            <if test="uid != 0">uid = #{uid}</if>
+            <if test="type != 0">AND type = #{type}</if>
+            <choose>
+                <when test="gid != 0">AND gid = #{gid}</when>
+                <otherwise>AND gid = 0</otherwise>
+            </choose>
+            <if test="title != null">AND title LIKE #{title}</if>
+            <choose>
+                <when test="status != 0">
+                    AND status = #{status}
+                </when>
+                <otherwise>
+                    AND status = 0
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
     <select id="getLogById" resultMap="logMap">
         SELECT *
         FROM t_log
-        WHERE id = #{id};
-    </select>
-
-    <select id="getLogsByUid" resultMap="logMap">
-        SELECT *
-        FROM t_log
-        WHERE uid = #{uid};
-    </select>
-
-    <select id="getPublicLogsByType" resultMap="logMap">
-        SELECT *
-        FROM t_log
-        WHERE type = #{type};
-    </select>
-
-    <select id="getGroupLogsByType" resultMap="logMap">
-        SELECT * FROM t_log
-        <where>
-            <if test="gid != 0">gid=#{gid}</if>
-            <if test="type != 0">and type = #{type}</if>
-        </where>
+        WHERE id = #{id} LIMIT 1;
     </select>
 
     <select id="getAllCategory" resultType="Category">
@@ -137,6 +138,15 @@
         FROM t_category
                  INNER JOIN t_account_category_map ON t_category.id = t_account_category_map.type_id
         WHERE t_account_category_map.uid = #{uid};
+    </select>
+
+    <select id="getAllPublicCategory" resultType="Category">
+        SELECT t_category.id AS cid, t_category.desc
+        FROM t_log
+                 JOIN t_category
+        WHERE gid = 0
+          AND t_category.id = t_log.type
+        GROUP BY t_category.id;
     </select>
 
     <insert id="createCategory" useGeneratedKeys="true" keyProperty="cid" parameterType="Category" keyColumn="id">

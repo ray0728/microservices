@@ -46,7 +46,7 @@ public class ResourceService {
         resourceMapper.deleteLogDetial(log.getDetial().getId());
         int ret = resourceMapper.deleteLog(log.getId());
         Iterator<Tag> iter = log.getTags().iterator();
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
             Tag tag = iter.next();
             resourceMapper.deleteTagFromLog(tag.getMid(), tag.getId(), log.getId());
         }
@@ -95,16 +95,9 @@ public class ResourceService {
         return resourceMapper.getLogById(id);
     }
 
-    public List<Log> getLogsByUid(int uid) {
-        return resourceMapper.getLogsByUid(uid);
-    }
 
-    public List<Log> getPublicLogsByType(int type) {
-        return resourceMapper.getPublicLogsByType(type);
-    }
-
-    public List<Log> getGroupLogsByType(int type, int gid) {
-        return resourceMapper.getGroupLogsByType(type, gid);
+    public List<Log> getLogs(int uid, int type, int gid, String title, int status) {
+        return resourceMapper.getLogs(uid, type, gid, title, status);
     }
 
     public List<Reply> getReplies(int lid) {
@@ -112,6 +105,9 @@ public class ResourceService {
     }
 
     public List<Category> getAllCategory(int uid) {
+        if (uid == 0) {
+            return resourceMapper.getAllPublicCategory();
+        }
         return resourceMapper.getAllCategory(uid);
     }
 
@@ -142,10 +138,10 @@ public class ResourceService {
     }
 
     public Tag createTag(Tag tag) {
-        Tag tmp  = resourceMapper.getTag(tag.getDesc());
-        if(tmp == null) {
+        Tag tmp = resourceMapper.getTag(tag.getDesc());
+        if (tmp == null) {
             resourceMapper.createTag(tag);
-        }else{
+        } else {
             tag.setId(tmp.getId());
         }
         return tag;

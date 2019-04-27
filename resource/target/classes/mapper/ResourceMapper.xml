@@ -8,11 +8,10 @@
         <result column="date" property="date"/>
         <result column="gid" property="gid"/>
         <result column="type" property="type"/>
-        <result column="like_num" property="like_num"/>
-        <result column="unlike_num" property="unlike_num"/>
         <result column="status" property="status"/>
         <association property="detail" column="id" select="getLogDetail"/>
         <collection property="replyList" column="id" select="getLogReplies"/>
+        <collection property="tags" column="id" select="getTags"/>
     </resultMap>
     <resultMap id="logDetailMap" type="LogDetail">
         <id column="id" property="id"/>
@@ -25,8 +24,6 @@
         <result column="uid" property="uid"/>
         <result column="desc" property="desc"/>
         <result column="date" property="date"/>
-        <result column="like_num" property="like_num"/>
-        <result column="unlike_num" property="unlike_num"/>
     </resultMap>
 
     <update id="changeLogStatus">
@@ -59,12 +56,12 @@
     </insert>
 
     <insert id="createLog" useGeneratedKeys="true" keyProperty="id" parameterType="Log">
-        INSERT INTO t_log(uid, title, date, gid, type, like_num, unlike_num)
+        INSERT INTO t_log(uid, title, date, gid, type)
         VALUES (#{uid}, #{title}, #{date}, #{gid}, #{type}, 0, 0);
     </insert>
 
     <insert id="createReply" useGeneratedKeys="true" keyProperty="id" parameterType="Reply">
-        INSERT INTO t_reply(lid, uid, desc, date, like_num, unlike_num)
+        INSERT INTO t_reply(lid, uid, desc, date)
         VALUES (#{lid}, #{uid}, #{desc}, #{date}, 0, 0);
     </insert>
 
@@ -142,6 +139,10 @@
         WHERE t_account_category_map.uid = #{uid};
     </select>
 
+    <select id="getAllPublicCategory" resultType="Category">
+        SELECT t_category.id AS cid, t_category.desc FROM t_log JOIN t_category WHERE gid=0 AND t_category.id = t_log.type GROUP BY t_category.id;
+    </select>
+
     <insert id="createCategory" useGeneratedKeys="true" keyProperty="cid" parameterType="Category" keyColumn="id">
         INSERT INTO t_category(`desc`)
         VALUES (#{desc});
@@ -169,7 +170,7 @@
     <select id="getCategory" resultType="Category">
         SELECT id AS cid,`desc`
         from t_category
-        WHERE `desc` = #{desc}  LIMIT 1;
+        WHERE `desc` = #{desc} LIMIT 1;
     </select>
 
     <select id="getAccountCategoryMapId" resultType="Category">
@@ -177,5 +178,47 @@
         FROM t_account_category_map
         WHERE type_id = #{cid}
           AND uid = #{uid} LIMIT 1;
+    </select>
+
+    <select id="getTags" resultType="Tag">
+        SELECT t_tag.id, t_tag.desc, t_tag_log_map.id AS mid
+        FROM t_tag
+                 JOIN t_tag_log_map
+        WHERE t_tag_log_map.lid = #{id}
+          AND t_tag_log_map.tid = t_tag.id;
+    </select>
+
+    <select id="getAllTags" resultType="Tag">
+        SELECT t_tag.id, t_tag.desc
+        FROM t_tag
+                 JOIN t_tag_log_map
+                 JOIN t_log
+        WHERE t_log.uid = #{uid}
+          AND t_tag_log_map.tid = t_tag.id
+          AND t_tag_log_map.lid = t_log.id;
+    </select>
+
+    <insert id="createTag" useGeneratedKeys="true" keyProperty="id" parameterType="Tag">
+        INSERT INTO t_tag(`desc`)
+        VALUES (#{desc});
+    </insert>
+
+    <insert id="addTagForLog" useGeneratedKeys="true" keyProperty="mid" parameterType="Tag">
+        INSERT INTO t_tag_log_map(tid, lid)
+        VALUES (#{tag.id}, #{lid});
+    </insert>
+
+    <delete id="deleteTagFromLog">
+        DELETE
+        FROM t_tag_log_map
+        WHERE id = #{id}
+          AND tid = #{tid}
+          AND lid = #{lid};
+    </delete>
+
+    <select id="getTag" resultType="Tag">
+        SELECT *
+        FROM t_tag
+        WHERE `desc` = #{desc};
     </select>
 </mapper>

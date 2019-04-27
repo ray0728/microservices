@@ -26,11 +26,16 @@ public class CategoryController {
 
     @GetMapping("/list")
     public String getAllCategorys(Principal principal){
-        Account op = getOpAccount(principal);
-        if (op == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_GET_ALL_CATEGORY_FOR_ACCOUNT, "Invalid request parameters.");
+        List list = null;
+        if(principal != null) {
+            Account op = getOpAccount(principal);
+            if (op != null) {
+                list = resourceService.getAllCategory(op.getUid());
+            }
         }
-        List list = resourceService.getAllCategory(op.getUid());
+        if(list == null){
+            list = resourceService.getAllCategory(0);
+        }
         return JSONObject.toJSONString(list);
     }
 
