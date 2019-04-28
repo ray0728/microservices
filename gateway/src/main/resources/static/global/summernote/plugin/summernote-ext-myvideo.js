@@ -58,8 +58,8 @@
                 "<h5 class=\"title\">" + lang.video.insert + "</h5>",
                 // '<div class="newsletterForm">',
                 '<label for="select_file" class="btn original-btn">' + lang.image.selectFromFiles + '</label>',
-                '<input id="select_file" type="file" accept="video/*" class="hidden">',
-                '<label class="note-form-label">' + lang.video.url + ' <small class="text-muted">' + lang.video.providers + '</small></label>',
+                '<input id="select_file" type="file" accept="video/*" class="hidden"/>',
+                '<h6 class="note-form-label">' + lang.video.url + ' <small class="text-muted">' + lang.video.providers + '</small></h6>',
                 '<input class="note-video-url form-control note-form-control note-input" type="text" />',
                 '<button type="button" class="btn original-btn" data-dismiss="modal" disabled>' + lang.video.insert + '</button>',
                 // '</div>',
@@ -69,25 +69,6 @@
                 '</div>'
             ];
             this.$dialog = dialog.html(body.join("")).appendTo('body');
-
-            // let body = [
-            //     '<div class="subscribe-newsletter-area">',
-            //     '<label class="note-form-label">' + lang.image.selectFromFiles + '</label>',
-            //     '<input class="note-image-input note-form-control note-input" type="file" name="files" accept="video/*"" />',
-            //     '</div>',
-            //     '<div class="form-group note-form-group row-fluid">',
-            //     "<label class=\"note-form-label\">" + lang.video.url + " <small class=\"text-muted\">" + lang.video.providers + "</small></label>",
-            //     '<input class="note-video-url form-control note-form-control note-input" type="text" />',
-            //     '</div>'
-            // ].join('');
-            // let buttonClass = 'btn btn-primary note-btn note-btn-primary note-video-btn';
-            // let footer = "<input type=\"button\" href=\"#\" class=\"" + buttonClass + "\" value=\"" + lang.video.insert + "\" disabled>";
-            // this.$dialog = ui.dialog({
-            //     title: lang.video.insert,
-            //     fade: options.dialogsFade,
-            //     body: body,
-            //     footer: footer
-            // }).render().appendTo('body');
         };
 
         this.show = function () {
@@ -147,6 +128,7 @@
         };
 
         this.removeVideoNode = function (id) {
+            console.log(id);
             let editable = context.layoutInfo.editable[0];
             let block = $(editable).find('div[id="' + id + '"]');
             $(block).remove();
@@ -278,6 +260,7 @@
             return video[0];
         };
     };
+
     $.extend($.summernote.plugins, {
         'myvideo': myVideoPlugin
     });
