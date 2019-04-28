@@ -31,6 +31,7 @@ $(document).ready(function () {
     $('#summernote').on('summernote.mousedown', function () {
         $(".note-video-popover").css('display', 'none');
     });
+    $(".card-header").css("z-index", "auto");
 });
 
 $("#extmodal").on('show.bs.modal', function (e) {
