@@ -13,7 +13,7 @@ $(document).ready(function () {
             ['color', ['color']],
             ['para', ['ul', 'ol', 'paragraph']],
             ['height', ['height']],
-            ['insert', ['picture', 'myvideo', 'link', 'table', 'hr']],
+            ['insert', ['myimage', 'myvideo', 'link', 'table', 'hr']],
             ['misc', ['fullscreen', 'undo', 'redo']]
         ],
         disableDragAndDrop: true,
@@ -38,7 +38,7 @@ $("#extmodal").on('show.bs.modal', function (e) {
     let header = $(this).find('h5[class="title"]');
     let content = $(this).find('div[class="modal-div"]');
     if ($(e.relatedTarget).text() == "Publish") {
-        let files = $(".note-editable").find('video[class="vjs-tech"]');
+        let files = $(".note-editable").find('video, img');
         if (files.length > 0) {
             header.text("Upload Files");
             content.html(dynamicsUploadFilesBody(files));
@@ -172,7 +172,7 @@ createBody = function () {
 dynamicsUploadFilesBody = function (files) {
     body = [];
     $.each(files, function (index, file) {
-        let filename = file.getAttribute("data-filename");
+        let filename = $(file).data("filename");
         let url = file.src;
         body.push('<div class="progress progresswithlabel mb-2" value="' + url + '">');
         body.push('<div class="progress-bar progress-bar-striped bar" style="width:0%">');
@@ -184,12 +184,12 @@ dynamicsUploadFilesBody = function (files) {
 };
 
 appendLog = function (lid) {
-    $('div.hiddendiv').html($('#summernote').summernote('code'));
-    replaceVideoNode($('div.hiddendiv'), lid);
+    $('#summernote').summernote('code');
+    let code = replaceNode($('#summernote').summernote('code'), lid);
     if (xhr_upload.length == 0) {
         $.post("/blog/api/res/update", {
             id: lid,
-            log: $('div.hiddendiv').html(),
+            log: code,
             _csrf: $($.find('input[type="hidden"]')).val()
         }, function (data, status) {
             if (status == "success") {
@@ -202,8 +202,11 @@ appendLog = function (lid) {
     }
 };
 
-replaceVideoNode = function (code, lid) {
-    let videonodes = $(code).find('div.video-js');
+replaceNode = function (code, lid) {
+    let block = $('<div>');
+    block.html(code);
+    let videonodes = $(block).find('div.video-js');
+    let imagenodes = $(block).find('img');
     $.each(videonodes, function (index, node) {
         let id = $(node).attr('id');
         let name = $(node).data('filename');
@@ -214,6 +217,16 @@ replaceVideoNode = function (code, lid) {
         ].join("");
         $(node).replaceWith(origial_video);
     });
+
+    $.each(imagenodes, function (index, node) {
+        let width = $(node).css('width');
+        let name = $(node).data('filename');
+        let origial_img = $('<img>');
+        origial_img.css('width', width);
+        origial_img.attr('src', '/blog/api/res/img/' + lid + "/" + name);
+        $(node).replaceWith(origial_img);
+    });
+    return node;
 };
 
 processUpload = function (lid) {

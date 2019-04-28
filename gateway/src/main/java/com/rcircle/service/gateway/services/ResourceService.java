@@ -41,7 +41,7 @@ public class ResourceService {
         return null;
     }
 
-    public List<LogFile> buildFallbackGetAllDiaries() {
+    public List<LogFile> buildFallbackGetAllDiaries(int type, int gid, String title, int status, int offset, int count, Throwable throwable) {
         return null;
     }
 }
