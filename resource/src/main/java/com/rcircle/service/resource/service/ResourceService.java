@@ -93,7 +93,9 @@ public class ResourceService {
     }
 
     public Log getLog(int id) {
-        return resourceMapper.getLogById(id);
+        Log log =  resourceMapper.getLogById(id);
+        log.getDetial().setFiles(NetFile.getFilesInfo(log.getDetial().getRes_url()));
+        return log;
     }
 
 
@@ -102,9 +104,7 @@ public class ResourceService {
         Iterator<Log> iter = logs.iterator();
         while(iter.hasNext()){
             Log log = iter.next();
-            try {
-                log.getDetial().setFiles(NetFile.getFilesInfo(log.getDetial().getRes_url()));
-            }catch (IOException e){}
+            log.getDetial().setFiles(NetFile.getFilesInfo(log.getDetial().getRes_url()));
         }
         return logs;
     }

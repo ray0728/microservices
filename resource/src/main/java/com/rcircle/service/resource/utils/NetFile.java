@@ -88,7 +88,7 @@ public class NetFile {
         return absolutePath;
     }
 
-    public static List<FileInfo> getFilesInfo(String dir) throws IOException {
+    public static List<FileInfo> getFilesInfo(String dir){
         List<FileInfo> fileInfoList = null;
         FileInfo info = null;
         FileInputStream fis = null;
@@ -107,21 +107,21 @@ public class NetFile {
                 }
                 info = new FileInfo();
                 info.setName(file.getName());
-                info.setSize(file.length());
+//                info.setSize(file.length());
                 info.setMime(fileNameMap.getContentTypeFor(file.getAbsolutePath()));
                 info.setPath(file.getAbsolutePath());
-                try {
-                    fis = new FileInputStream(file);
-                    info.setChecksum(DigestUtils.md2Hex(fis));
-                    fis.close();
-                } catch (IOException e) {
-                    info.setErrinfo(e.getMessage());
-                } finally {
-                    if (fis != null) {
-                        fis.close();
-                    }
-                    fis = null;
-                }
+//                try {
+//                    fis = new FileInputStream(file);
+////                    info.setChecksum(DigestUtils.md2Hex(fis));
+//                    fis.close();
+//                } catch (IOException e) {
+//                    info.setErrinfo(e.getMessage());
+//                } finally {
+//                    if (fis != null) {
+//                        fis.close();
+//                    }
+//                    fis = null;
+//                }
                 fileInfoList.add(info);
             }
         }

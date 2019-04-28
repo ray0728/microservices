@@ -132,6 +132,7 @@ public class ResourceController {
         return "";
     }
 
+
     @PostMapping("upload")
     public String uploadSplitFile(Principal principal, MultipartFile file,
                                   @RequestParam(name = "id", required = true) int id,
@@ -274,6 +275,9 @@ public class ResourceController {
                 Iterator<FileInfo> iter = log.getDetial().getFiles().iterator();
                 while(iter.hasNext()){
                     FileInfo fileInfo = iter.next();
+                    if(fileInfo.getMime() == null || !fileInfo.getMime().toLowerCase().startsWith("image")){
+                        continue;
+                    }
                     if(fileInfo.getName().equals(name)){
                         MediaType mediaType = MediaType.parseMediaType(fileInfo.getMime());
                         HttpHeaders headers = new HttpHeaders();
