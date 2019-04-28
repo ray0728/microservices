@@ -44,24 +44,50 @@
         };
 
         this.createVideoDialog = function () {
+            let dialog = $('<div>');
+            dialog.addClass("modal fade");
+            dialog.attr("tabindex", "-1");
             let body = [
-                '<div class="form-group note-form-group note-group-select-from-files">',
-                '<label class="note-form-label">' + lang.image.selectFromFiles + '</label>',
-                '<input class="note-image-input note-form-control note-input" type="file" name="files" accept="video/*"" />',
-                '</div>',
-                '<div class="form-group note-form-group row-fluid">',
-                "<label class=\"note-form-label\">" + lang.video.url + " <small class=\"text-muted\">" + lang.video.providers + "</small></label>",
+                '<div class="subscribe-newsletter-area">',
+                '<div class="modal-dialog modal-dialog-centered" role="document">',
+                '<div class="modal-content">',
+                '<button type="button" class="close" data-dismiss="modal" aria-label="Close">',
+                '<spanaria-hidden="true">&times;</span>',
+                '</button>',
+                '<div class="modal-body">',
+                "<h5 class=\"title\">" + lang.video.insert + "</h5>",
+                // '<div class="newsletterForm">',
+                '<label for="select_file" class="btn original-btn">' + lang.image.selectFromFiles + '</label>',
+                '<input id="select_file" type="file" accept="video/*" class="hidden">',
+                '<label class="note-form-label">' + lang.video.url + ' <small class="text-muted">' + lang.video.providers + '</small></label>',
                 '<input class="note-video-url form-control note-form-control note-input" type="text" />',
+                '<button type="button" class="btn original-btn" data-dismiss="modal" disabled>' + lang.video.insert + '</button>',
+                // '</div>',
+                '</div>',
+                '</div>',
+                '</div>',
                 '</div>'
-            ].join('');
-            let buttonClass = 'btn btn-primary note-btn note-btn-primary note-video-btn';
-            let footer = "<input type=\"button\" href=\"#\" class=\"" + buttonClass + "\" value=\"" + lang.video.insert + "\" disabled>";
-            this.$dialog = ui.dialog({
-                title: lang.video.insert,
-                fade: options.dialogsFade,
-                body: body,
-                footer: footer
-            }).render().appendTo('body');
+            ];
+            this.$dialog = dialog.html(body.join("")).appendTo('body');
+
+            // let body = [
+            //     '<div class="subscribe-newsletter-area">',
+            //     '<label class="note-form-label">' + lang.image.selectFromFiles + '</label>',
+            //     '<input class="note-image-input note-form-control note-input" type="file" name="files" accept="video/*"" />',
+            //     '</div>',
+            //     '<div class="form-group note-form-group row-fluid">',
+            //     "<label class=\"note-form-label\">" + lang.video.url + " <small class=\"text-muted\">" + lang.video.providers + "</small></label>",
+            //     '<input class="note-video-url form-control note-form-control note-input" type="text" />',
+            //     '</div>'
+            // ].join('');
+            // let buttonClass = 'btn btn-primary note-btn note-btn-primary note-video-btn';
+            // let footer = "<input type=\"button\" href=\"#\" class=\"" + buttonClass + "\" value=\"" + lang.video.insert + "\" disabled>";
+            // this.$dialog = ui.dialog({
+            //     title: lang.video.insert,
+            //     fade: options.dialogsFade,
+            //     body: body,
+            //     footer: footer
+            // }).render().appendTo('body');
         };
 
         this.show = function () {
@@ -121,7 +147,6 @@
         };
 
         this.removeVideoNode = function (id) {
-            console.log(id);
             let editable = context.layoutInfo.editable[0];
             let block = $(editable).find('div[id="' + id + '"]');
             $(block).remove();
@@ -130,30 +155,31 @@
 
         this.showVideoDialog = function () {
             return $.Deferred(function (deferred) {
-                let videoInput = self.$dialog.find('.note-image-input');
+                let videoInput = self.$dialog.find('input[type="file"]');
                 let videoUrl = self.$dialog.find('.note-video-url');
-                let videoBtn = self.$dialog.find('.note-video-btn');
+                let insertBtn = self.$dialog.find('button:contains("' + lang.video.insert + '")');
                 ui.onDialogShown(self.$dialog, function () {
                     context.triggerEvent('dialog.shown');
                     videoInput.replaceWith(videoInput.clone().on('change', function (event) {
                         deferred.resolve(event.target.files || event.target.value);
                     }).val(''));
-                    videoBtn.click(function (event) {
+                    insertBtn.click(function (event) {
                         event.preventDefault();
                         deferred.resolve(videoUrl.val());
                     });
                     videoUrl.on('keyup paste', function () {
                         let url = videoUrl.val();
-                        ui.toggleBtn(videoBtn, url);
+                        ui.toggleBtn(insertBtn, url);
                     }).val('');
                 });
                 ui.onDialogHidden(self.$dialog, function () {
                     videoInput.off('change');
                     videoUrl.off('input');
-                    videoBtn.off('click');
+                    insertBtn.off('click');
                     if (deferred.state() === 'pending') {
                         deferred.reject();
                     }
+                    deferred.resolve(videoUrl.val());
                 });
                 ui.showDialog(self.$dialog);
             })
