@@ -49,7 +49,7 @@
                 '<label for="select_file_img" class="btn original-btn">' + lang.image.selectFromFiles + '</label>',
                 '<input id="select_file_img" type="file" accept="image/*" class="hidden" multiple="multiple"/>',
                 '<h6 class="note-form-label">' + lang.image.url + '</h6>',
-                '<input class="note-video-url form-control note-form-control note-input" type="text" />',
+                '<input class="note-image-url form-control note-form-control note-input" type="text" />',
                 '<button type="button" class="btn original-btn" data-dismiss="modal" disabled>' + lang.image.insert + '</button>',
                 // '</div>',
                 '</div>',
@@ -62,35 +62,24 @@
 
         this.show = function () {
             context.invoke('editor.saveRange');
-            self.showVideoDialog().then(function (data) {
+            self.showImageDialog().then(function (data) {
                 context.invoke('editor.restoreRange');
-                if (typeof data === 'string') {
-                    if (options.callbacks.onImageLinkInsert) {
-                        context.triggerEvent('image.link.insert', data);
-                    }
-                    else {
-                        context.invoke('editor.insertImage', data);
-                    }
+                let node = self.createImageNode(data);
+                if (node) {
+                    context.invoke('editor.insertNode', node);
                 }
-                else {
-                    if (options.callbacks.onImageUpload) {
-                        context.triggerEvent('image.upload', data);
-                    }
-                    else {
-                        context.invoke('editor.insertImagesAsDataURL', data);
-                    }
-                }
+                context.invoke('editor.insertParagraph');
                 ui.hideDialog(self.$dialog);
             }).fail(function () {
                 context.invoke('editor.restoreRange');
             });
         };
 
-        this.showVideoDialog = function () {
+        this.showImageDialog = function () {
             return $.Deferred(function (deferred) {
                 let videoInput = self.$dialog.find('input[type="file"]');
-                let videoUrl = self.$dialog.find('.note-video-url');
-                let insertBtn = self.$dialog.find('button:contains("' + lang.video.insert + '")');
+                let videoUrl = self.$dialog.find('.note-image-url');
+                let insertBtn = self.$dialog.find('button:contains("' + lang.image.insert + '")');
                 ui.onDialogShown(self.$dialog, function () {
                     context.triggerEvent('dialog.shown');
                     videoInput.replaceWith(videoInput.clone().on('change', function (event) {
@@ -116,6 +105,29 @@
                 });
                 ui.showDialog(self.$dialog);
             })
+        };
+
+        this.createImageNode = function(data){
+            let datatype = toString.call(data);
+            let block = null;
+            if (datatype == "[object FileList]") {
+                block = $('<div>')
+                $.each(data, function (index, file) {
+                    let image = $('<img>')
+                        .css("width", "100%")
+                        .attr("data-filename", file.name)
+                        .attr("src", URL.createObjectURL(file));
+                    $(block).append(image);
+                });
+            }else if(datatype == "[object String]"){
+                block=  $('<img>')
+                    .css("width", "100%")
+                    .attr("src", data);
+            }
+            if(block != null){
+                return block[0];
+            }
+            return false;
         };
     };
 
