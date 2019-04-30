@@ -32,6 +32,7 @@ $(document).ready(function () {
         $(".note-video-popover").css('display', 'none');
     });
     $(".card-header").css("z-index", "auto");
+    $.base64.utf8encode = true;
 });
 
 $("#extmodal").on('show.bs.modal', function (e) {
@@ -174,11 +175,13 @@ dynamicsUploadFilesBody = function (files) {
     $.each(files, function (index, file) {
         let filename = $(file).data("filename");
         let url = file.src;
-        body.push('<div class="progress progresswithlabel mb-2" value="' + url + '">');
-        body.push('<div class="progress-bar progress-bar-striped bar" style="width:0%">');
-        body.push('<span>' + filename + '</span>')
-        body.push('</div>')
-        body.push('</div>')
+        if (url.indexOf("blob") == 0) {
+            body.push('<div class="progress progresswithlabel mb-2" value="' + url + '">');
+            body.push('<div class="progress-bar progress-bar-striped bar" style="width:0%">');
+            body.push('<span>' + filename + '</span>');
+            body.push('</div>');
+            body.push('</div>');
+        }
     });
     return body.join('');
 };
@@ -186,6 +189,7 @@ dynamicsUploadFilesBody = function (files) {
 appendLog = function (lid) {
     $('#summernote').summernote('code');
     let code = replaceNode($('#summernote').summernote('code'), lid);
+    console.log(code);
     if (xhr_upload.length == 0) {
         $.post("/blog/api/res/update", {
             id: lid,
@@ -209,10 +213,9 @@ replaceNode = function (code, lid) {
     let imagenodes = $(block).find('img');
     $.each(videonodes, function (index, node) {
         let id = $(node).attr('id');
-        let name = $(node).data('filename');
         let origial_video = [
             '<video controls class="video-js vjs-big-play-centered" id="' + id + '">',
-            '<source src="/blog/api/res/video/' + lid + '/' + name + '">',
+            '<source src="/blog/api/res/video/' + lid + '/' + $.base64.encode($(node).data('filename')) + '">',
             '</video>'
         ].join("");
         $(node).replaceWith(origial_video);
@@ -220,13 +223,14 @@ replaceNode = function (code, lid) {
 
     $.each(imagenodes, function (index, node) {
         let width = $(node).css('width');
-        let name = $(node).data('filename');
-        let origial_img = $('<img>');
-        origial_img.css('width', width);
-        origial_img.attr('src', '/blog/api/res/img/' + lid + "/" + name);
-        $(node).replaceWith(origial_img);
+        if ($(node).attr('src').indexOf("blob") == 0) {
+            let origial_img = $('<img>');
+            origial_img.css('width', width);
+            origial_img.attr('src', '/blog/api/res/img/' + lid + "/" + $.base64.encode($(node).data('filename')));
+            $(node).replaceWith(origial_img);
+        }
     });
-    return node;
+    return block[0];
 };
 
 processUpload = function (lid) {
@@ -274,7 +278,7 @@ sliceUpload = function (lid, file, chunkSize, progress) {
         formData.append("id", lid);
         formData.append("index", currentChunk);
         formData.append("total", chunks);
-        formData.append("name", file.name);
+        formData.append("name", $.base64.encode(file.name));
         formData.append("file", filedata);
         formData.append("chunksize", chunkSize);
         formData.append("checksum", checksum);
