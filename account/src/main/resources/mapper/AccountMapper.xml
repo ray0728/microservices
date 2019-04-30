@@ -21,26 +21,29 @@
                 username = #{username}
             </if>
         </where>
+        LIMIT 1;
     </select>
 
     <insert id="create" useGeneratedKeys="true" keyProperty="uid" parameterType="Account">
         INSERT INTO
-        t_account
-        (username,password,email,first_time,status)
+            t_account
+            (username, password, email, first_time, status)
         VALUES
-        (#{username}, #{password}, #{email}, #{firsttime},#{status})
+            (#{username}, #{password}, #{email}, #{firsttime}, #{status})
     </insert>
 
     <update id="setAccountStatus">
         UPDATE t_account
         SET
-        status = #{status}
+            status = #{status}
         WHERE
-        id = #{uid}
+            id = #{uid}
     </update>
 
     <delete id="deleteAccount">
-        DELETE FROM t_account WHERE id=#{uid};
+        DELETE
+        FROM t_account
+        WHERE id = #{uid};
     </delete>
 
     <select id="getAllRoleMapSpecialAccount" resultType="AccountRoleMap">
@@ -62,32 +65,37 @@
 
     <insert id="addRoleForAccount">
         INSERT INTO
-        t_account_role_map
-        (uid, rid)
+            t_account_role_map
+            (uid, rid)
         VALUES
-        (#{uid}, #{rid})
+            (#{uid}, #{rid})
     </insert>
 
     <delete id="deleteRoleMap">
-        DELETE FROM t_account_role_map WHERE id = #{id}
+        DELETE
+        FROM t_account_role_map
+        WHERE id = #{id}
     </delete>
 
     <update id="updateLoginTime" parameterType="Account">
-        UPDATE t_account SET
-         login_times=#{times}, last_login=#{lastlogin}
-         WHERE id = #{uid}
+        UPDATE t_account
+        SET
+            login_times=#{times},
+            last_login=#{lastlogin}
+        WHERE id = #{uid}
     </update>
 
     <select id="getAllUsername" resultType="String">
-        SELECT username FROM t_account
+        SELECT username
+        FROM t_account
     </select>
 
     <select id="getAccountRoles" resultType="Authority">
         SELECT t_role.id, t_role.description
         FROM t_account_role_map
-        INNER JOIN t_role
-        ON t_account_role_map.rid = t_role.id
-        AND t_account_role_map.uid = #{id}
+                 INNER JOIN t_role
+                            ON t_account_role_map.rid = t_role.id
+                                AND t_account_role_map.uid = #{id}
     </select>
 
     <select id="getDetialByUid" resultMap="AccountDetial">
@@ -98,11 +106,13 @@
                 id = #{uid}
             </if>
         </where>
+        LIMIT 1;
     </select>
 
     <update id="changePassword" parameterType="Account">
-        UPDATE t_account SET
-        password=#{password}
+        UPDATE t_account
+        SET
+            password=#{password}
         WHERE id = #{uid}
     </update>
 </mapper>

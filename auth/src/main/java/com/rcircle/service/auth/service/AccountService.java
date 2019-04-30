@@ -24,11 +24,14 @@ public class AccountService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String accountinfo = getAccountInfo(username);
-        List<Account> accountList = JSON.parseArray(accountinfo, Account.class);
-        if (accountList == null||accountList.isEmpty()) {
+        Account account = null;
+        if(accountinfo != null) {
+            account = JSON.parseObject(accountinfo, Account.class);
+        }
+        if (account == null) {
             throw new UsernameNotFoundException(username);
         }
-        return accountList.get(0).translat();
+        return account.translat();
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackAccountInfo", threadPoolKey = "AccountInfoThreadPool")

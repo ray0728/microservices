@@ -142,15 +142,21 @@ public class AccountController {
     }
 
     @GetMapping("info")
-    public String getInfo(HttpServletRequest request, @RequestParam(name = "username", required = true) String username) {
-        List<Account> accounts = mAccountService.getAccountByUsername(username);
-        String securityFlag = request.getHeader("rc-account-security");
-        if(accounts != null && securityFlag == null){
-            for(Account account:accounts){
-                account.setPassword("******");
-            }
+    public String getInfo(HttpServletRequest request,
+                          @RequestParam(name = "username", required = false, defaultValue = "") String username,
+                          @RequestParam(name = "uid", required = false, defaultValue = "0") int uid) {
+        Account account = null;
+        if (uid != 0) {
+            account = mAccountService.getAccountByUid(uid);
+        } else if (!username.isEmpty()) {
+            account = mAccountService.getAccountByUsername(username);
         }
-        return JSONObject.toJSONString(accounts);
+
+        String securityFlag = request.getHeader("rc-account-security");
+        if (account != null && securityFlag == null) {
+            account.setPassword("******");
+        }
+        return account == null ? null : JSONObject.toJSONString(account);
     }
 
     @PutMapping("refresh")

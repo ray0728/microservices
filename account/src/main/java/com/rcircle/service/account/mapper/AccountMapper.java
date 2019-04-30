@@ -23,7 +23,7 @@ public interface AccountMapper {
 
     public int addRoleForAccount(@Param("uid") long uid, @Param("rid") int rid);
 
-    public List<Account> getDetialByName(@Param("username")String username);
+    public Account getDetialByName(@Param("username")String username);
 
     public Account getDetialByUid(@Param("uid")long uid);
 

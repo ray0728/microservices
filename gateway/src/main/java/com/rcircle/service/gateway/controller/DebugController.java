@@ -25,6 +25,6 @@ public class DebugController {
     public String createLog(ModelMap mm){
         mm.addAttribute("title","Create new log");
         mm.addAttribute("logfile", new LogFile());
-        return "newlog";
+        return "log_edit";
     }
 }

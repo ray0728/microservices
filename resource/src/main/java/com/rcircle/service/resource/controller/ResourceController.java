@@ -43,7 +43,7 @@ public class ResourceController {
     private AccountService accountService;
 
     private Account getOpAccount(Principal principal) {
-        return accountService.loadUserByUsername(principal.getName());
+        return accountService.loadUser(0, principal.getName());
     }
 
     private List<Group> getAllGroupBelongOpAccount() {
@@ -248,6 +248,11 @@ public class ResourceController {
             }
         }
         List<Log> logs = resourceService.getLogs(uid, type, gid, title, status, offset, count);
+        Iterator<Log> iter = logs.iterator();
+        while (iter.hasNext()){
+            Log log = iter.next();
+            log.setAuthor(accountService.getAccountInfo(log.getUid(), null));
+        }
         return JSONObject.toJSONString(logs);
     }
 

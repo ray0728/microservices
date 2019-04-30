@@ -16,31 +16,17 @@ public class AccountService {
     @Autowired
     private RemoteAccountFeignClient remoteAccountFeignClient;
 
-    public Account loadUserByUsername(String username) {
-        String accountinfo = getAccountInfo(username);
+    public Account loadUser(int uid, String username) {
+        String accountinfo = getAccountInfo(uid, username);
         if (accountinfo.equals("Invalid resources.")) {
             return null;
         }
-        List<Account> accountList = JSON.parseArray(accountinfo, Account.class);
-        if (accountList == null || accountList.isEmpty()) {
-            return null;
-        }
-        return accountList.get(0);
+        return JSON.parseObject(accountinfo, Account.class);
     }
 
-    @HystrixCommand(fallbackMethod = "buildFallbackAccountInfo",
-            threadPoolKey = "AccountInfoThreadPool",
-            threadPoolProperties =
-                    {@HystrixProperty(name = "coreSize", value = "30"),
-                            @HystrixProperty(name = "maxQueueSize", value = "10")},
-            commandProperties = {
-                    @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "10"),
-                    @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "75"),
-                    @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "7000"),
-                    @HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "15000"),
-                    @HystrixProperty(name = "metrics.rollingStats.numBuckets", value = "5")})
-    public String getAccountInfo(String username) {
-        return remoteAccountFeignClient.getInfo(username);
+    @HystrixCommand(fallbackMethod = "buildFallbackAccountInfo", threadPoolKey = "AccountThreadPool")
+    public String getAccountInfo(int uid, String username) {
+        return remoteAccountFeignClient.getInfo(username, uid);
     }
 
     @HystrixCommand(//fallbackMethod = "buildFallbackAccountInfo",
@@ -59,7 +45,7 @@ public class AccountService {
 //        return  accountRestTemplateClient.getGroupInfo();
     }
 
-    private String buildFallbackAccountInfo() {
+    private String buildFallbackAccountInfo(int uid, String username, Throwable throwable) {
         return "Invalid resources.";
     }
 }

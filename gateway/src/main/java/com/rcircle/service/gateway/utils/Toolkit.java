@@ -3,11 +3,16 @@ package com.rcircle.service.gateway.utils;
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
 public class Toolkit {
     private static final char[] up_alpha_letter = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
     private static final char[] down_alpha_letter = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+    private static final String[] month_map = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
     public static String randomString(int length) {
         Random random = new Random();
@@ -70,4 +75,15 @@ public class Toolkit {
     }
 
 
+    public static int getYearFom(long localDate) {
+        return Integer.parseInt(String.valueOf(localDate).substring(0, 4));
+    }
+
+    public static String getMonthFrom(long localDate) {
+        return month_map[Integer.parseInt(String.valueOf(localDate).substring(4, 6)) - 1];
+    }
+
+    public static int getDayFrom(long localDate) {
+        return Integer.parseInt(String.valueOf(localDate).substring(6, 8));
+    }
 }

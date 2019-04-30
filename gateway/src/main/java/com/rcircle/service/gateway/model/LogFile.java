@@ -1,7 +1,10 @@
 package com.rcircle.service.gateway.model;
 
+import com.rcircle.service.gateway.utils.Toolkit;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class LogFile implements Serializable {
@@ -101,16 +104,46 @@ public class LogFile implements Serializable {
         this.tags = tags;
     }
 
-    public void addTag(Tag tag){
-        if(tags == null){
+    public void addTag(Tag tag) {
+        if (tags == null) {
             tags = new ArrayList<>();
         }
         tags.add(tag);
     }
 
-    public void reset(){
+    public void reset() {
         id = 0;
         title = null;
         replyList.clear();
+    }
+
+    public String getMonth() {
+        return Toolkit.getMonthFrom(date);
+    }
+
+    public int getYear() {
+        return Toolkit.getYearFom(date);
+    }
+
+    public int getDay() {
+        return Toolkit.getDayFrom(date);
+    }
+
+    public int getComments_num() {
+        return replyList == null ? 0 : replyList.size();
+    }
+
+    public String getCover() {
+        List<FileInfo> files = detail.getFiles();
+        if(files == null){
+            return null;
+        }
+        Iterator<FileInfo> iter = files.iterator();
+        while (iter.hasNext()){
+            FileInfo file = iter.next();
+            if(file.isImage()){
+                return String.format("/blog/api/res/img/%d/%s", id, file.getName());
+            }
+        }
     }
 }

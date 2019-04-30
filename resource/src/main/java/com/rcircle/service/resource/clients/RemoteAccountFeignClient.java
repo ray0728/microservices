@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "service-account", configuration = HttpContextInterceptor.class)
 public interface RemoteAccountFeignClient {
     @RequestMapping(method = RequestMethod.GET, value = "/account/info")
-    public String getInfo(@RequestParam(name = "username", required = true) String username);
+    public String getInfo(@RequestParam(name = "username") String username, @RequestParam(name = "uid") int uid);
 
     @RequestMapping(method = RequestMethod.GET, value = "/group/info")
     public String getGroupsInfo();

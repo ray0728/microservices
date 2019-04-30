@@ -21,7 +21,7 @@ public class CategoryController {
     private AccountService accountService;
 
     private Account getOpAccount(Principal principal) {
-        return accountService.loadUserByUsername(principal.getName());
+        return accountService.loadUser(0, principal.getName());
     }
 
     @GetMapping("/list")

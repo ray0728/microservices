@@ -21,7 +21,7 @@ public class AccountService {
 
     public long createAccount(Account account) {
         long uid = 0;
-        if (mapper.getDetialByName(account.getUsername()).isEmpty()) {
+        if (mapper.getDetialByName(account.getUsername()) == null) {
             account.setPassword(Password.crypt(account.getPassword()));
             account.setFirsttime(SimpleDate.getUTCTime());
             mapper.create(account);
@@ -30,20 +30,15 @@ public class AccountService {
         return uid;
     }
 
-    public List<Account> getAccountByUsername(String username) {
+    public Account getAccountByUsername(String username) {
         return mapper.getDetialByName(username);
     }
 
     public Account getOpAccount(String username){
-        Account account = null;
         if(username == null || username.isEmpty()){
-            return account;
+            return null;
         }
-        List<Account> opAccountList = getAccountByUsername(username);
-        if (opAccountList != null && opAccountList.size() > 0) {
-            account = opAccountList.get(0);
-        }
-        return account;
+        return getAccountByUsername(username);
     }
 
     public Account getAccountByUid(long uid) {

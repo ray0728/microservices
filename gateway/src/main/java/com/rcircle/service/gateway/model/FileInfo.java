@@ -48,4 +48,8 @@ public class FileInfo implements Serializable {
     public void setMime(String mime) {
         this.mime = mime;
     }
+
+    public boolean isImage(){
+        return mime.toLowerCase().startsWith("image");
+    }
 }

@@ -21,7 +21,8 @@
     <!-- Hero Slides Area -->
     <div class="hero-slides owl-carousel">
         <!-- Single Slide -->
-        <div th:each="hero:${band}" class="single-hero-slide bg-img" th:style="${'background-image: url('+ hero.url +');'}">
+        <div th:each="hero:${band}" class="single-hero-slide bg-img"
+             th:style="${'background-image: url('+ hero.url +');'}">
             <div class="container h-100">
                 <div class="row h-100 align-items-center">
                     <div class="col-12">
@@ -29,7 +30,8 @@
                             <div class="post-tag">
                                 <a href="#" data-animation="fadeInUp" th:text="${hero.tag}"></a>
                             </div>
-                            <h2 data-animation="fadeInUp" data-delay="250ms"><a href="#" th:text="${hero.title}"></a></h2>
+                            <h2 data-animation="fadeInUp" data-delay="250ms"><a href="#" th:text="${hero.title}"></a>
+                            </h2>
                         </div>
                     </div>
                 </div>
@@ -61,7 +63,7 @@
                     <img src="/global/img/blog-img/1.jpg" alt="">
                     <!-- Catagory Title -->
                     <div class="catagory-title">
-                        <a href="#">Lifestyle posts</a>
+                        <a href="/blog/list">Lifestyle posts</a>
                     </div>
                 </div>
             </div>
@@ -85,9 +87,9 @@
                     <div th:if="${log.isHoriz}" class="row align-items-center">
                         <div class="col-12 col-md-6">
                             <div class="single-blog-thumbnail">
-                                <img th:src="${log.img_url}" alt="">
+                                <img th:src="${log.cover}" alt="">
                                 <div class="post-date">
-                                    <a href="#" th:utext="${log.day + '<span>' + log.month +'</span>'}"></a>
+                                    <a href="#" th:utext="${'<span>' + log.year + '</span>' + log.day + '<span>' + log.month +'</span>'}"></a>
                                 </div>
                             </div>
                         </div>
@@ -108,9 +110,9 @@
                     <div th:unless="${log.isHoriz}" class="row">
                         <div class="col-12">
                             <div class="single-blog-thumbnail">
-                                <img th:src="${log.img_url}" alt="">
+                                <img th:src="${log.cover}" alt="">
                                 <div class="post-date">
-                                    <a href="#" th:utext="${log.day + '<span>' + log.month +'</span>'}"></a>
+                                    <a href="#" th:utext="${'<span>' + log.year + '</span>' + log.day + '<span>' + log.month +'</span>'}"></a>
                                 </div>
                             </div>
                         </div>

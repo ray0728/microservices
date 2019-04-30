@@ -30,10 +30,6 @@ public class HomeController {
         return "index";
     }
 
-    @GetMapping("securedPage")
-    public String showSecuredPage() {
-        return "securePage";
-    }
 
     @GetMapping("join")
     public String signup(ModelMap mm) {
@@ -49,9 +45,7 @@ public class HomeController {
             mm.addAttribute("errinfo", ret);
             return "sign_up";
         }
-        mm.clear();
-        mm.addAttribute("title", "RC - Welcome");
-        return "index";
+        return "redirect:/home/";
     }
 
     @GetMapping("login")

@@ -24,7 +24,7 @@ public class BlogController {
         mm.addAttribute("logfile", new LogFile());
         mm.addAttribute("categories", categories);
         mm.addAttribute("lid", 0);
-        return "newlog";
+        return "log_edit";
     }
 
     @GetMapping("list")
@@ -32,6 +32,6 @@ public class BlogController {
         List<LogFile> logFiles = resourceService.getAllDiaries(0,0,null, 0, 0, 5);
         mm.addAttribute("title", "All Diaries");
         mm.addAttribute("diaries", logFiles);
-        return "loglist";
+        return "log_list";
     }
 }
