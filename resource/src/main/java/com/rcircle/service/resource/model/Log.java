@@ -16,6 +16,7 @@ public class Log implements Serializable {
     private int type;
     private int status;
     private String author;
+    private String category;
     private List<Tag> tags;
 
     private LogDetail detail;
@@ -121,5 +122,13 @@ public class Log implements Serializable {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

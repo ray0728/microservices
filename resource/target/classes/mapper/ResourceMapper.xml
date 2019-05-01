@@ -112,15 +112,8 @@
                 <when test="gid != 0">AND gid = #{gid}</when>
                 <otherwise>AND gid = 0</otherwise>
             </choose>
-            <if test="title != null">AND title LIKE #{title}</if>
-            <choose>
-                <when test="status != 0">
-                    AND status = #{status}
-                </when>
-                <otherwise>
-                    AND status = 0
-                </otherwise>
-            </choose>
+            <if test="title != ''">AND title LIKE #{title}</if>
+            <if test="status != 0">AND status = #{status}</if>
         </where>
         LIMIT #{offset},#{count}
     </select>
