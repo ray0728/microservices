@@ -7,8 +7,8 @@
         <result column="title" property="title"/>
         <result column="date" property="date"/>
         <result column="gid" property="gid"/>
-        <result column="type" property="type"/>
         <result column="status" property="status"/>
+        <association property="category" column="{id=type, desc=title}" select="getCategory"/>
         <association property="detail" column="id" select="getLogDetail"/>
         <collection property="replyList" column="id" select="getLogReplies"/>
         <collection property="tags" column="id" select="getTags"/>
@@ -57,7 +57,7 @@
 
     <insert id="createLog" useGeneratedKeys="true" keyProperty="id" parameterType="Log">
         INSERT INTO t_log(uid, title, date, gid, type, status)
-        VALUES (#{uid}, #{title}, #{date}, #{gid}, #{type}, 0);
+        VALUES (#{uid}, #{title}, #{date}, #{gid}, #{category.cid}, 0);
     </insert>
 
     <insert id="createReply" useGeneratedKeys="true" keyProperty="id" parameterType="Reply">
@@ -89,7 +89,7 @@
             <if test="title != null">title = #{title},</if>
             <if test="date != 0">date = #{date},</if>
             <if test="gid !=  0">gid = #{gid},</if>
-            <if test="type != null">type = #{type},</if>
+            <if test="category != null">type = #{category.cid},</if>
         </set>
         WHERE id = #{id};
     </update>
@@ -167,10 +167,16 @@
           AND uid = #{uid};
     </delete>
 
-    <select id="getCategory" resultType="Category">
+    <select id="getCategory" resultType="Category" parameterType="Map">
         SELECT id AS cid,`desc`
         from t_category
-        WHERE `desc` = #{desc} LIMIT 1;
+        <where>
+            <choose>
+                <when test="id != 0">id = #{id}</when>
+                <when test="desc != ''">`desc` = #{desc}</when>
+            </choose>
+        </where>
+        LIMIT 1;
     </select>
 
     <select id="getAccountCategoryMapId" resultType="Category">

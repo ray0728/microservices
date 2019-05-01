@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface ResourceMapper {
@@ -30,8 +31,8 @@ public interface ResourceMapper {
 
     public List<Log> getLogs(@Param("uid") int uid, @Param("type") int type,
                              @Param("gid") int gid, @Param("title") String title,
-                             @Param("status") int status, @Param("offset")int offset,
-                             @Param("count")int count);
+                             @Param("status") int status, @Param("offset") int offset,
+                             @Param("count") int count);
 
 
     public List<Reply> getLogReplies(@Param("id") int lid);
@@ -50,7 +51,7 @@ public interface ResourceMapper {
 
     public Category getAccountCategoryMapId(Category category);
 
-    public Category getCategory(@Param("desc") String desc);
+    public Category getCategory(Map<String, Object> params);
 
     public int changeLogDetail(@Param("id") int id, @Param("log") String log, @Param("res_url") String res_url);
 

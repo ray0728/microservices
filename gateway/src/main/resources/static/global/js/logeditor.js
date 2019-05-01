@@ -109,7 +109,7 @@ autoDetect = function (resid) {
 
 $('#extmodal').on('shown.bs.modal', function (e) {
     if ($(e.relatedTarget).text() == "Publish") {
-        let resid = $($('p:contains("Title")')[0]).val();
+        let resid = $($('h6:contains("Title")')[0]).val();
         let titleobj = $.find('input[class="flex-grow-1 title"]');
         let category = $("#category").find(":selected").val();
         let error = false;
@@ -189,18 +189,24 @@ dynamicsUploadFilesBody = function (files) {
 appendLog = function (lid) {
     $('#summernote').summernote('code');
     let code = replaceNode($('#summernote').summernote('code'), lid);
-    console.log(code);
+    let formData = new FormData();
+    formData.append("id", lid);
+    formData.append("log", $(code).html());
+    formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     if (xhr_upload.length == 0) {
-        $.post("/blog/api/res/update", {
-            id: lid,
-            log: code,
-            _csrf: $($.find('input[type="hidden"]')).val()
-        }, function (data, status) {
-            if (status == "success") {
+        $.ajax({
+            url: "/blog/api/res/update",
+            data: formData,
+            type: "Post",
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (resid) {
                 $('#extmodal').modal("hide");
                 window.location.href = "/blog/list";
-            } else {
-                console.log("post update err:" + status);
+            },
+            error: function (res) {
+                console.log("post new err:" + res);
             }
         });
     }

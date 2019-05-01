@@ -8,6 +8,8 @@ public class Category implements Serializable {
     private int cid;
     private String desc;
 
+
+
     public int getId() {
         return id;
     }

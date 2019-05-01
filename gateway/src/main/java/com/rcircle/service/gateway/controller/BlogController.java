@@ -23,7 +23,7 @@ public class BlogController {
         mm.addAttribute("title","Create New Diary");
         mm.addAttribute("logfile", new LogFile());
         mm.addAttribute("categories", categories);
-        mm.addAttribute("lid", 0);
+        mm.addAttribute("res_id", 0);
         return "log_edit";
     }
 

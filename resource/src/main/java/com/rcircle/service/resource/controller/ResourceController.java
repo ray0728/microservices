@@ -68,10 +68,9 @@ public class ResourceController {
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CREATE_NEW, "Invalid request parameters.");
         }
-        Category category = resourceService.createNewCategory(account.getUid(), type);
         Log log = new Log();
         log.setTitle(title);
-        log.setType(category.getCid());
+        log.setCategory(type);
         log.setGid(gid);
         log.setUid(account.getUid());
         log.setDate(SimpleDate.getUTCTime());
@@ -88,7 +87,7 @@ public class ResourceController {
     public String updateLog(Principal principal,
                             @RequestParam(name = "id", required = true) int id,
                             @RequestParam(name = "title", required = false, defaultValue = "") String title,
-                            @RequestParam(name = "type", required = false, defaultValue = "0") int type,
+                            @RequestParam(name = "type", required = false, defaultValue = "") String category,
                             @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
                             @RequestParam(name = "log", required = false, defaultValue = "") String htmllog) {
         Account account = getOpAccount(principal);
@@ -103,8 +102,8 @@ public class ResourceController {
             log.setTitle(title);
         }
 
-        if (type != 0) {
-            log.setType(type);
+        if (category != "") {
+            log.setCategory(category);
         }
         if (gid != 0) {
             log.setGid(gid);
@@ -280,9 +279,6 @@ public class ResourceController {
                 Iterator<FileInfo> iter = log.getDetial().getFiles().iterator();
                 while(iter.hasNext()){
                     FileInfo fileInfo = iter.next();
-                    if(fileInfo.getMime() == null || !fileInfo.getMime().toLowerCase().startsWith("image")){
-                        continue;
-                    }
                     if(fileInfo.getName().equals(name)){
                         MediaType mediaType = MediaType.parseMediaType(fileInfo.getMime());
                         HttpHeaders headers = new HttpHeaders();

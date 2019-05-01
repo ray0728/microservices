@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ResourceService {
@@ -20,6 +22,10 @@ public class ResourceService {
     private ResourceMapper resourceMapper;
 
     public Log createLog(Log log) {
+        Category category = createNewCategory(log.getUid(), log.getCategory().getDesc());
+        log.getCategory().setCid(category.getCid());
+        log.getCategory().setId(category.getId());
+        log.getCategory().setUid(category.getUid());
         resourceMapper.createLog(log);
         LogDetail logDetail = new LogDetail();
         logDetail.setLid(log.getId());
@@ -57,6 +63,9 @@ public class ResourceService {
 
 
     public int changeLog(Log log) {
+        Category category = createNewCategory(log.getUid(), log.getCategory().getDesc());
+        log.getCategory().setCid(category.getCid());
+        log.getCategory().setId(category.getId());
         return resourceMapper.changeLog(log);
     }
 
@@ -121,7 +130,10 @@ public class ResourceService {
     }
 
     public Category createNewCategory(int uid, String desc) {
-        Category newcategory = resourceMapper.getCategory(desc);
+        Map<String, Object> params = new HashMap<>();
+        params.putIfAbsent("id", 0);
+        params.putIfAbsent("desc", desc);
+        Category newcategory = resourceMapper.getCategory(params);
         if (newcategory == null) {
             newcategory = new Category();
             newcategory.setDesc(desc);

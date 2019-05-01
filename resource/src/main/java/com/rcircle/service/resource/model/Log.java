@@ -13,10 +13,9 @@ public class Log implements Serializable {
     private int uid;
     private long date;
     private int gid;
-    private int type;
     private int status;
     private String author;
-    private String category;
+    private Category category;
     private List<Tag> tags;
 
     private LogDetail detail;
@@ -61,14 +60,6 @@ public class Log implements Serializable {
 
     public void setGid(int scope) {
         this.gid = scope;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public LogDetail getDetial() {
@@ -124,11 +115,18 @@ public class Log implements Serializable {
         this.author = author;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public void setCategory(String desc){
+        if(category == null){
+            category = new Category();
+        }
+        category.setDesc(desc);
     }
 }
