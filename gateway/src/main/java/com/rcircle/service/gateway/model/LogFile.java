@@ -145,5 +145,6 @@ public class LogFile implements Serializable {
                 return String.format("/blog/api/res/img/%d/%s", id, file.getName());
             }
         }
+        return "/img/blog-img/7.jpg";
     }
 }

@@ -84,7 +84,7 @@
             <div class="col-12 col-lg-9">
                 <div class="single-blog-area blog-style-2 mb-50 wow fadeInUp" th:each="log,state:${logs}"
                      th:data-wow-delay="${'0.' + state.index+ 's'}">
-                    <div th:if="${log.isHoriz}" class="row align-items-center">
+                    <div th:if="${state.index != 2}" class="row align-items-center">
                         <div class="col-12 col-md-6">
                             <div class="single-blog-thumbnail">
                                 <img th:src="${log.cover}" alt="">
@@ -107,7 +107,7 @@
                             </div>
                         </div>
                     </div>
-                    <div th:unless="${log.isHoriz}" class="row">
+                    <div th:unless="${state.index == 2}" class="row">
                         <div class="col-12">
                             <div class="single-blog-thumbnail">
                                 <img th:src="${log.cover}" alt="">
@@ -120,7 +120,7 @@
                             <!-- Blog Content -->
                             <div class="single-blog-content mt-50">
                                 <div class="line"></div>
-                                <a href="#" class="post-tag" th:text="${log.tag}"></a>
+                                <a href="#" class="post-tag" th:text="${log.category}"></a>
                                 <h4><a href="#" class="post-headline" th:text="${log.title}"></a></h4>
                                 <p th:text="${log.desc}"></p>
                                 <div class="post-meta">
