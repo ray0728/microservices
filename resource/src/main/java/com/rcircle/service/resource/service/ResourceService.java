@@ -27,6 +27,16 @@ public class ResourceService {
         log.getCategory().setId(category.getId());
         log.getCategory().setUid(category.getUid());
         resourceMapper.createLog(log);
+        Iterator<Tag> iter = log.getTags().iterator();
+        while (iter.hasNext()) {
+            Tag tag = iter.next();
+            createTag(tag);
+            resourceMapper.addTagForLog(log.getId(), tag);
+        }
+        return log;
+    }
+
+    public Log createLogDetail(Log log){
         LogDetail logDetail = new LogDetail();
         logDetail.setLid(log.getId());
         logDetail.setRes_url(NetFile.getDirAbsolutePath(saveDirRoot,
@@ -35,12 +45,6 @@ public class ResourceService {
                 String.valueOf(log.getId())));
         resourceMapper.createLogDetail(logDetail);
         log.setDetial(logDetail);
-        Iterator<Tag> iter = log.getTags().iterator();
-        while (iter.hasNext()) {
-            Tag tag = iter.next();
-            createTag(tag);
-            resourceMapper.addTagForLog(log.getId(), tag);
-        }
         return log;
     }
 
@@ -102,18 +106,33 @@ public class ResourceService {
     }
 
     public Log getLog(int id) {
-        Log log =  resourceMapper.getLogById(id);
-        log.getDetial().setFiles(NetFile.getFilesInfo(log.getDetial().getRes_url()));
+        Log log = resourceMapper.getLogById(id);
+        copyResFileToLog(log, "img");
+        copyResFileToLog(log, "video");
         return log;
     }
 
+    private void copyResFileToLog(Log log, String subdir){
+        if (log.getDetial() == null) {
+            return;
+        }
+        Map<String, String> files = NetFile.getFilesInfo(log.getDetial().getRes_url(), subdir);
+        if(files == null){
+            return;
+        }
+        for (Map.Entry<String, String> entry : files.entrySet()) {
+            log.getDetial().addResFile(entry.getKey(), entry.getValue());
+        }
+    }
 
-    public List<Log> getLogs(int uid, int type, int gid, String title, int status, int offset, int count){
-        List<Log> logs =  resourceMapper.getLogs(uid, type, gid, title, status, offset, count);
+
+    public List<Log> getLogs(int uid, int type, int gid, String title, int status, int offset, int count) {
+        List<Log> logs = resourceMapper.getLogs(uid, type, gid, title, status, offset, count);
         Iterator<Log> iter = logs.iterator();
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             Log log = iter.next();
-            log.getDetial().setFiles(NetFile.getFilesInfo(log.getDetial().getRes_url()));
+            copyResFileToLog(log, "img");
+            copyResFileToLog(log, "video");
         }
         return logs;
     }

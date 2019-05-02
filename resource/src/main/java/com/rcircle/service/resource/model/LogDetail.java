@@ -1,14 +1,15 @@
 package com.rcircle.service.resource.model;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LogDetail implements Serializable {
     private int id;
     private int lid;
     private String log;
     private String res_url;
-    private List<FileInfo> files;
+    private Map<String, String> files;
 
     public int getId() {
         return id;
@@ -42,11 +43,17 @@ public class LogDetail implements Serializable {
         this.log = log;
     }
 
-    public List<FileInfo> getFiles() {
+    public Map<String, String> getFiles() {
+        if(files == null){
+            files = new HashMap<>();
+        }
         return files;
     }
 
-    public void setFiles(List<FileInfo> files) {
-        this.files = files;
+    public void addResFile(String name, String path) {
+        if(files == null){
+            files = new HashMap<>();
+        }
+        files.putIfAbsent(name, path);
     }
 }

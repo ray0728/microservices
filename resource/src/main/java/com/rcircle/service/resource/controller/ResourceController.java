@@ -27,6 +27,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/res")
@@ -110,6 +111,9 @@ public class ResourceController {
         }
         resourceService.changeLog(log);
         if (!htmllog.isEmpty()) {
+            if(log.getDetial() == null){
+                resourceService.createLogDetail(log);
+            }
             log.getDetial().setLog(htmllog);
             resourceService.changeLogDetail(log);
         }
@@ -132,31 +136,58 @@ public class ResourceController {
     }
 
 
-    @PostMapping("upload")
-    public String uploadSplitFile(Principal principal, MultipartFile file,
-                                  @RequestParam(name = "id", required = true) int id,
-                                  @RequestParam(name = "name", required = true) String filename,
+    @PostMapping("img/{lid}/{name}")
+    public String uploadImageFile(Principal principal, MultipartFile file,
+                                  @PathVariable("lid") int id,
+                                  @PathVariable("name") String filename,
                                   @RequestParam(name = "index", required = true) int index,
                                   @RequestParam(name = "total", required = true) int total,
                                   @RequestParam(name = "chunksize") int chunkSize,
                                   @RequestParam(name = "checksum", required = true) String checksum) {
-        String result = "";
+
+        Log log = resourceService.getLog(id);
+        String ret = verifyAccount(principal, log);
+        if (ret != null) {
+            return ret;
+        }
+        return saveClientFile(log, "img", filename, index, total, checksum, chunkSize, file);
+    }
+
+
+    @PostMapping("video/{lid}/{name}")
+    public String uploadVideoFile(Principal principal, MultipartFile file,
+                                  @PathVariable("lid") int id,
+                                  @PathVariable("name") String filename,
+                                  @RequestParam(name = "index", required = true) int index,
+                                  @RequestParam(name = "total", required = true) int total,
+                                  @RequestParam(name = "chunksize") int chunkSize,
+                                  @RequestParam(name = "checksum", required = true) String checksum) {
+        Log log = resourceService.getLog(id);
+        String ret = verifyAccount(principal, log);
+        if (ret != null) {
+            return ret;
+        }
+        return saveClientFile(log, "video", filename, index, total, checksum, chunkSize, file);
+    }
+
+
+    private String verifyAccount(Principal principal, Log log) {
         Account account = getOpAccount(principal);
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPLOAD_RES, "Invalid request parameters.");
         }
-        Log log = resourceService.getLog(id);
         if (log.getUid() != account.getUid()) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_UPLOAD_RES, "You don't have permission to access.");
         }
+        return null;
+    }
 
-//        if (files.isEmpty()) {
-//            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPLOAD_RES, "There are no files here.");
-//        } else if (files.size() > 1) {
-//            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPLOAD_RES, "There are too many files here.");
-//        }
-        String saveDir = log.getDetial().getRes_url();
-        //NetFile.getDirAbsolutePath(saveDirRoot, String.valueOf(account.getUid()), String.valueOf(id));
+    private String saveClientFile(Log log, String savetype, String filename, int index, int total, String checksum, int chunkSize, MultipartFile file) {
+        String result = "";
+        if(log.getDetial() == null){
+            resourceService.createLogDetail(log);
+        }
+        String saveDir = NetFile.getDirAbsolutePath(log.getDetial().getRes_url(), savetype);
         try {
             int err = NetFile.saveSplitFile(saveDir, filename, index, total, checksum, chunkSize, file);
             if (err != 0) {
@@ -236,8 +267,8 @@ public class ResourceController {
                               @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
                               @RequestParam(name = "title", required = false, defaultValue = "") String title,
                               @RequestParam(name = "status", required = false, defaultValue = "0") int status,
-                              @RequestParam(name = "offset", required = false, defaultValue = "0")int offset,
-                              @RequestParam(name="count", required = false, defaultValue = "5")int count
+                              @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
+                              @RequestParam(name = "count", required = false, defaultValue = "5") int count
     ) {
         int uid = 0;
         if (principal != null) {
@@ -248,7 +279,7 @@ public class ResourceController {
         }
         List<Log> logs = resourceService.getLogs(uid, type, gid, title, status, offset, count);
         Iterator<Log> iter = logs.iterator();
-        while (iter.hasNext()){
+        while (iter.hasNext()) {
             Log log = iter.next();
             log.setAuthor(accountService.getAccountInfo(log.getUid(), null));
         }
@@ -257,7 +288,7 @@ public class ResourceController {
 
     @GetMapping("img/{lid}/{name}")
     @ResponseBody
-    public ResponseEntity getImageFile(Principal principal, @PathVariable("lid") Integer logid, @PathVariable("name") String name) {
+    public ResponseEntity getImageFile(Principal principal, @PathVariable("lid") int logid, @PathVariable("name") String name) {
         int uid = 0;
         String errinfo = null;
         Account account;
@@ -268,22 +299,20 @@ public class ResourceController {
             }
         }
         Log log = resourceService.getLog(logid);
-        if(log.getGid()!=0 && uid != 0 && !isBelongGid(log.getGid())){
+        if (log.getGid() != 0 && uid != 0 && !isBelongGid(log.getGid())) {
             errinfo = ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_GET_RES_FILES, "You don't have permission to access.");
         }
-        if(log.getGid() != 0 &&  uid == 0){
-            errinfo =  ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_GET_RES_FILES, "You don't have permission to access.");
+        if (log.getGid() != 0 && uid == 0) {
+            errinfo = ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_GET_RES_FILES, "You don't have permission to access.");
         }
-        if(errinfo == null) {
+        if (errinfo == null) {
             try {
-                Iterator<FileInfo> iter = log.getDetial().getFiles().iterator();
-                while(iter.hasNext()){
-                    FileInfo fileInfo = iter.next();
-                    if(fileInfo.getName().equals(name)){
-                        MediaType mediaType = MediaType.parseMediaType(fileInfo.getMime());
+                for (Map.Entry<String, String> entry : log.getDetial().getFiles().entrySet()) {
+                    if (entry.getKey().equals(name) && entry.getValue().contains("/img/")) {
+                        MediaType mediaType = MediaType.parseMediaType("image/jpg");
                         HttpHeaders headers = new HttpHeaders();
                         headers.setContentType(mediaType);
-                        File file = new File(fileInfo.getPath());
+                        File file = new File(entry.getValue());
                         FileInputStream inputStream = new FileInputStream(file);
                         byte[] bytes = new byte[inputStream.available()];
                         inputStream.read(bytes, 0, inputStream.available());

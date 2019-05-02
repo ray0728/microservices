@@ -252,7 +252,6 @@ processUpload = function (lid) {
                 let blobdata = xhr.response;
                 blobdata.name = filename;
                 blobdata.lastModifiedDate = $.now();
-                progress.text = "uploading";
                 sliceUpload(lid, new File([blobdata], filename, {
                     type: blobdata.type,
                     lastModified: Date.now()
@@ -281,16 +280,14 @@ sliceUpload = function (lid, file, chunkSize, progress) {
 
     fileReader.onloadend = function (e) {
         let formData = new FormData();
-        formData.append("id", lid);
         formData.append("index", currentChunk);
         formData.append("total", chunks);
-        formData.append("name", $.base64.encode(file.name));
         formData.append("file", filedata);
         formData.append("chunksize", chunkSize);
         formData.append("checksum", checksum);
         formData.append("_csrf", $($.find('input[type="hidden"]')).val());
         $.ajax({
-            url: "/blog/api/res/upload",
+            url: "/blog/api/res/" + ((filedata.type.indexOf("video") == 0)? "video/":"img/") + lid + "/" + $.base64.encode(file.name),
             data: formData,
             type: "Post",
             cache: false,

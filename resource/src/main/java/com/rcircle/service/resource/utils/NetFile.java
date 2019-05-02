@@ -1,15 +1,13 @@
 package com.rcircle.service.resource.utils;
 
-import com.rcircle.service.resource.model.FileInfo;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.net.FileNameMap;
-import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NetFile {
 
@@ -88,41 +86,16 @@ public class NetFile {
         return absolutePath;
     }
 
-    public static List<FileInfo> getFilesInfo(String dir){
-        List<FileInfo> fileInfoList = null;
-        FileInfo info = null;
-        FileInputStream fis = null;
-        File root = new File(dir);
-        File[] files = root.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.isFile();
-            }
-        });
-        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+    public static Map<String, String> getFilesInfo(String dir, String subdir){
+        Map<String, String> fileInfoList = null;
+        File root = new File(dir, subdir);
+        File[] files = root.listFiles(pathname -> pathname.isFile());
         if (files != null) {
             for (File file : files) {
                 if (fileInfoList == null) {
-                    fileInfoList = new ArrayList<>();
+                    fileInfoList = new HashMap<>();
                 }
-                info = new FileInfo();
-                info.setName(file.getName());
-//                info.setSize(file.length());
-                info.setMime(fileNameMap.getContentTypeFor(file.getAbsolutePath()));
-                info.setPath(file.getAbsolutePath());
-//                try {
-//                    fis = new FileInputStream(file);
-////                    info.setChecksum(DigestUtils.md2Hex(fis));
-//                    fis.close();
-//                } catch (IOException e) {
-//                    info.setErrinfo(e.getMessage());
-//                } finally {
-//                    if (fis != null) {
-//                        fis.close();
-//                    }
-//                    fis = null;
-//                }
-                fileInfoList.add(info);
+                fileInfoList.putIfAbsent(file.getName(), file.getAbsolutePath());
             }
         }
         return fileInfoList;
