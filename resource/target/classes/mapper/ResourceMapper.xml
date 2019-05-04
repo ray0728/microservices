@@ -45,9 +45,9 @@
     </select>
 
     <select id="getLogDetail" resultType="LogDetail">
-        SELECT *
+        SELECT id, lid, htmllog AS log, res_url
         FROM t_log_detail
-        WHERE lid = #{id}
+        WHERE lid = #{id} LIMIT 1;
     </select>
 
     <insert id="createLogDetail" useGeneratedKeys="true" keyProperty="id" parameterType="LogDetail">
@@ -115,7 +115,7 @@
             <if test="title != ''">AND title LIKE #{title}</if>
             <if test="status != 0">AND status = #{status}</if>
         </where>
-        LIMIT #{offset},#{count}
+        ORDER BY id LIMIT #{offset},#{count}
     </select>
 
     <select id="getLogById" resultMap="logMap">
@@ -197,11 +197,16 @@
     <select id="getAllTags" resultType="Tag">
         SELECT t_tag.id, t_tag.desc
         FROM t_tag
-                 JOIN t_tag_log_map
-                 JOIN t_log
-        WHERE t_log.uid = #{uid}
-          AND t_tag_log_map.tid = t_tag.id
-          AND t_tag_log_map.lid = t_log.id;
+        JOIN t_tag_log_map
+        JOIN t_log
+        <where>
+            <choose>
+                <when test="uid !=0">(t_log.uid = #{uid} OR t_log.gid = 0)</when>
+                <otherwise>t_log.gid = 0</otherwise>
+            </choose>
+            AND t_tag_log_map.tid = t_tag.id
+            AND t_tag_log_map.lid = t_log.id;
+        </where>
     </select>
 
     <insert id="createTag" useGeneratedKeys="true" keyProperty="id" parameterType="Tag">

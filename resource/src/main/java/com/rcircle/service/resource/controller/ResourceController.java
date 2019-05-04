@@ -111,10 +111,10 @@ public class ResourceController {
         }
         resourceService.changeLog(log);
         if (!htmllog.isEmpty()) {
-            if(log.getDetial() == null){
+            if(log.getDetail() == null){
                 resourceService.createLogDetail(log);
             }
-            log.getDetial().setLog(htmllog);
+            log.getDetail().setLog(htmllog);
             resourceService.changeLogDetail(log);
         }
         return JSONObject.toJSONString(log);
@@ -184,10 +184,10 @@ public class ResourceController {
 
     private String saveClientFile(Log log, String savetype, String filename, int index, int total, String checksum, int chunkSize, MultipartFile file) {
         String result = "";
-        if(log.getDetial() == null){
+        if(log.getDetail() == null){
             resourceService.createLogDetail(log);
         }
-        String saveDir = NetFile.getDirAbsolutePath(log.getDetial().getRes_url(), savetype);
+        String saveDir = NetFile.getDirAbsolutePath(log.getDetail().getRes_url(), savetype);
         try {
             int err = NetFile.saveSplitFile(saveDir, filename, index, total, checksum, chunkSize, file);
             if (err != 0) {
@@ -214,7 +214,7 @@ public class ResourceController {
         if (log == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_RES_FILES, "There are no logfile existes.");
         }
-        NetFile.deleteFiles(log.getDetial().getRes_url(), Arrays.asList(filesname.split(";")));
+        NetFile.deleteFiles(log.getDetail().getRes_url(), Arrays.asList(filesname.split(";")));
         return "";
     }
 
@@ -278,10 +278,14 @@ public class ResourceController {
             }
         }
         List<Log> logs = resourceService.getLogs(uid, type, gid, title, status, offset, count);
+
         Iterator<Log> iter = logs.iterator();
         while (iter.hasNext()) {
             Log log = iter.next();
-            log.setAuthor(accountService.getAccountInfo(log.getUid(), null));
+            String info = accountService.getAccountInfo(log.getUid(), null);
+            if(!info.startsWith("Invalid resources")) {
+                log.setAuthor(JSONObject.parseObject(info, Account.class).getUsername());
+            }
         }
         return JSONObject.toJSONString(logs);
     }
@@ -307,7 +311,7 @@ public class ResourceController {
         }
         if (errinfo == null) {
             try {
-                for (Map.Entry<String, String> entry : log.getDetial().getFiles().entrySet()) {
+                for (Map.Entry<String, String> entry : log.getDetail().getFiles().entrySet()) {
                     if (entry.getKey().equals(name) && entry.getValue().contains("/img/")) {
                         MediaType mediaType = MediaType.parseMediaType("image/jpg");
                         HttpHeaders headers = new HttpHeaders();

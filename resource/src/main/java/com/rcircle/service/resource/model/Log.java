@@ -62,11 +62,11 @@ public class Log implements Serializable {
         this.gid = scope;
     }
 
-    public LogDetail getDetial() {
+    public LogDetail getDetail() {
         return detail;
     }
 
-    public void setDetial(LogDetail detial) {
+    public void setDetail(LogDetail detial) {
         this.detail = detial;
     }
 
@@ -87,6 +87,9 @@ public class Log implements Serializable {
     }
 
     public List<Tag> getTags() {
+        if(tags == null){
+            tags = new ArrayList<>();
+        }
         return tags;
     }
 

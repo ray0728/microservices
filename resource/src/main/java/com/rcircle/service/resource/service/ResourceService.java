@@ -44,7 +44,7 @@ public class ResourceService {
                 SimpleDate.getUTCTimeStr(),
                 String.valueOf(log.getId())));
         resourceMapper.createLogDetail(logDetail);
-        log.setDetial(logDetail);
+        log.setDetail(logDetail);
         return log;
     }
 
@@ -54,7 +54,7 @@ public class ResourceService {
             resourceMapper.deleteReply(reply.getId());
         }
         log.getReplyList().clear();
-        resourceMapper.deleteLogDetial(log.getDetial().getId());
+        resourceMapper.deleteLogDetial(log.getDetail().getId());
         int ret = resourceMapper.deleteLog(log.getId());
         Iterator<Tag> iter = log.getTags().iterator();
         while (iter.hasNext()) {
@@ -74,7 +74,7 @@ public class ResourceService {
     }
 
     public int changeLogDetail(Log log) {
-        return resourceMapper.changeLogDetail(log.getId(), log.getDetial().getLog(), log.getDetial().getRes_url());
+        return resourceMapper.changeLogDetail(log.getId(), log.getDetail().getLog(), log.getDetail().getRes_url());
     }
 
     public Reply createReply(Reply reply) {
@@ -113,15 +113,15 @@ public class ResourceService {
     }
 
     private void copyResFileToLog(Log log, String subdir){
-        if (log.getDetial() == null) {
+        if (log.getDetail() == null) {
             return;
         }
-        Map<String, String> files = NetFile.getFilesInfo(log.getDetial().getRes_url(), subdir);
+        Map<String, String> files = NetFile.getFilesInfo(log.getDetail().getRes_url(), subdir);
         if(files == null){
             return;
         }
         for (Map.Entry<String, String> entry : files.entrySet()) {
-            log.getDetial().addResFile(entry.getKey(), entry.getValue());
+            log.getDetail().addResFile(entry.getKey(), entry.getValue());
         }
     }
 
