@@ -287,7 +287,7 @@ sliceUpload = function (lid, file, chunkSize, progress) {
         formData.append("checksum", checksum);
         formData.append("_csrf", $($.find('input[type="hidden"]')).val());
         $.ajax({
-            url: "/blog/api/res/" + ((filedata.type.indexOf("video") == 0)? "video/":"img/") + lid + "/" + $.base64.encode(file.name),
+            url: "/blog/api/res/" + ((file.type.indexOf("video") == 0)? "video/":"img/") + lid + "/" + $.base64.encode(file.name),
             data: formData,
             type: "Post",
             cache: false,

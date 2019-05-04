@@ -8,11 +8,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Toolkit {
     private static final char[] up_alpha_letter = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
     private static final char[] down_alpha_letter = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
     private static final String[] month_map = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+    private static final String regEx_script = "<script[^>]*?>[\\s\\S]*?<\\/script>";
+    private static final String regEx_style = "<style[^>]*?>[\\s\\S]*?<\\/style>";
+    private static final String regEx_html = "<[^>]+>";
+    private static final String regEx_space = "\\s*|\t|\r|\n";
 
     public static String randomString(int length) {
         Random random = new Random();
@@ -85,5 +91,20 @@ public class Toolkit {
 
     public static int getDayFrom(long localDate) {
         return Integer.parseInt(String.valueOf(localDate).substring(6, 8));
+    }
+
+    private static String delHTMLTag(String htmlStr, String regex) {
+        Pattern p_script = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher m_script = p_script.matcher(htmlStr);
+        return m_script.replaceAll("");
+    }
+
+    public static String getTextFromHtml(String htmlStr){
+        htmlStr = delHTMLTag(htmlStr, regEx_script);
+        htmlStr = delHTMLTag(htmlStr, regEx_style);
+        htmlStr = delHTMLTag(htmlStr, regEx_html);
+        htmlStr = delHTMLTag(htmlStr, regEx_space);
+
+        return htmlStr.replaceAll("&nbsp;", "");
     }
 }

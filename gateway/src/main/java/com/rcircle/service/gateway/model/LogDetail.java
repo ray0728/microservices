@@ -1,14 +1,17 @@
 package com.rcircle.service.gateway.model;
 
+import com.rcircle.service.gateway.utils.Toolkit;
+
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LogDetail implements Serializable {
     private int id;
     private int lid;
     private String log;
     private String res_url;
-    private List<FileInfo> files;
+    private Map<String, String> files;
 
     public int getId() {
         return id;
@@ -38,15 +41,24 @@ public class LogDetail implements Serializable {
         return log;
     }
 
+    public String getDesc(int maxnum) {
+        String htmllog = "";
+        if (log != null) {
+            htmllog = Toolkit.getTextFromHtml(log);
+            htmllog = htmllog.substring(0, maxnum > htmllog.length() ? htmllog.length() : maxnum);
+        }
+        return htmllog;
+    }
+
     public void setLog(String log) {
         this.log = log;
     }
 
-    public List<FileInfo> getFiles() {
+    public Map<String, String> getFiles() {
+        if (files == null) {
+            files = new HashMap<>();
+        }
         return files;
     }
 
-    public void setFiles(List<FileInfo> files) {
-        this.files = files;
-    }
 }

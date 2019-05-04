@@ -89,7 +89,7 @@
                             <div class="single-blog-thumbnail">
                                 <img th:src="${log.cover}" alt="">
                                 <div class="post-date">
-                                    <a href="#" th:utext="${'<span>' + log.year + '</span>' + log.day + '<span>' + log.month +'</span>'}"></a>
+                                    <a th:utext="${'<span>' + log.year + '</span>' + log.day + '<span>' + log.month +'</span>'}"></a>
                                 </div>
                             </div>
                         </div>
@@ -97,22 +97,22 @@
                             <!-- Blog Content -->
                             <div class="single-blog-content">
                                 <div class="line"></div>
-                                <a href="#" class="post-tag" th:text="${log.tag}"></a>
-                                <h4><a href="#" class="post-headline" th:text="${log.title}"></a></h4>
+                                <a th:href="${'/blog/cate?cid=' + log.category.cid}" class="post-tag" th:text="${log.category.desc}"></a>
+                                <h4><a th:href="${'/blog/article?id=' + log.id}" class="post-headline" th:text="${log.title}"></a></h4>
                                 <p th:text="${log.desc}"></p>
                                 <div class="post-meta">
-                                    <p>By <a href="#" th:text="${log.author}"></a></p>
+                                    <p>By <a th:text="${log.author}"></a></p>
                                     <p th:text="${log.comments_num + ' comments'}"></p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div th:unless="${state.index == 2}" class="row">
+                    <div th:if="${state.index == 2}" class="row">
                         <div class="col-12">
                             <div class="single-blog-thumbnail">
                                 <img th:src="${log.cover}" alt="">
                                 <div class="post-date">
-                                    <a href="#" th:utext="${'<span>' + log.year + '</span>' + log.day + '<span>' + log.month +'</span>'}"></a>
+                                    <a th:text="${'<span>' + log.year + '</span>' + log.day + '<span>' + log.month +'</span>'}"></a>
                                 </div>
                             </div>
                         </div>
@@ -120,11 +120,11 @@
                             <!-- Blog Content -->
                             <div class="single-blog-content mt-50">
                                 <div class="line"></div>
-                                <a href="#" class="post-tag" th:text="${log.category}"></a>
-                                <h4><a href="#" class="post-headline" th:text="${log.title}"></a></h4>
+                                <a th:href="${'/blog/cate?cid=' + log.category.cid}" class="post-tag" th:text="${log.category.desc}"></a>
+                                <h4><a th:href="${'/blog/article?id=' + log.id}" class="post-headline" th:text="${log.title}"></a></h4>
                                 <p th:text="${log.desc}"></p>
                                 <div class="post-meta">
-                                    <p>By <a href="#" th:text="${log.author}"></a></p>
+                                    <p>By <a th:text="${log.author}"></a></p>
                                     <p th:text="${log.comments_num + ' comments'}"></p>
                                 </div>
                             </div>
@@ -134,7 +134,7 @@
 
                 <!-- Load More -->
                 <div class="load-more-btn mt-100 wow fadeInUp" data-wow-delay="0.7s" data-wow-duration="1000ms">
-                    <a href="#" class="btn original-btn">Read More</a>
+                    <a href="/blog/list" class="btn original-btn">Read More</a>
                 </div>
             </div>
 
@@ -149,19 +149,19 @@
 
                     <!-- Widget Area -->
                     <div class="sidebar-widget-area">
-                        <h5 class="title">Latest Posts</h5>
+                        <h5 class="title">Hot Posts</h5>
                         <div class="widget-content">
                             <div th:each="post:${posts}" class="single-blog-post d-flex align-items-center widget-post">
                                 <!-- Post Thumbnail -->
                                 <div class="post-thumbnail">
-                                    <img class="img-fluid" th:src="${post.img_url}" alt="">
+                                    <img class="img-fluid" th:src="${post.cover}" alt="">
                                 </div>
                                 <!-- Post Content -->
                                 <div class="post-content">
-                                    <a href="#" class="post-tag" th:text="${post.tag}"></a>
-                                    <h4><a href="#" class="post-headline" th:text="${post.title}"></a></h4>
+                                    <a th:href="${'/blog/list?cate=' + post.category.cid}" class="post-tag" th:text="${post.category.desc}"></a>
+                                    <h4><a th:href="${'/blog/article?id=' + post.id}" class="post-headline" th:text="${post.title}"></a></h4>
                                     <div class="post-meta">
-                                        <p><a href="#" th:text="${post.date}"></a></p>
+                                        <p><a th:text="${post.date}"></a></p>
                                     </div>
                                 </div>
                             </div>
@@ -173,7 +173,7 @@
                         <h5 class="title">Tags</h5>
                         <div class="widget-content">
                             <ul class="tags">
-                                <li th:each="tag:${tags}"><a href="#" th:text="${tag}"></a></li>
+                                <li th:each="tag:${tags}"><a th:href="${'/blog/tag?tid=' + tag.id}" th:text="${tag.desc}"></a></li>
                             </ul>
                         </div>
                     </div>

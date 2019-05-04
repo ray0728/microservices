@@ -24,4 +24,7 @@ public interface RemoteResourceClient {
 
     @GetMapping("/res/files")
     public String getAllFileInfo(@RequestParam(name = "id") int id);
+
+    @GetMapping("/tag/list")
+    public String getAllTags();
 }

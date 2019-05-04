@@ -4,24 +4,20 @@ import com.rcircle.service.gateway.utils.Toolkit;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class LogFile implements Serializable {
-    public static final int STATUS_NORMAL = 0;
-    public static final int STATUS_DISABLE = 1;
-    public static final int STATUS_LOCKED = 2;
     private int id;
     private String title;
     private int uid;
     private long date;
     private int gid;
-    private int type;
     private int status;
+    private String author;
+    private Category category;
     private List<Tag> tags;
-
     private LogDetail detail;
-
     private List<Reply> replyList;
 
     public int getId() {
@@ -60,32 +56,8 @@ public class LogFile implements Serializable {
         return gid;
     }
 
-    public void setGid(int scope) {
-        this.gid = scope;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public LogDetail getDetial() {
-        return detail;
-    }
-
-    public void setDetial(LogDetail detial) {
-        this.detail = detial;
-    }
-
-    public List<Reply> getReplyList() {
-        return replyList;
-    }
-
-    public void setReplyList(List<Reply> replyList) {
-        this.replyList = replyList;
+    public void setGid(int gid) {
+        this.gid = gid;
     }
 
     public int getStatus() {
@@ -94,6 +66,22 @@ public class LogFile implements Serializable {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public List<Tag> getTags() {
@@ -109,6 +97,22 @@ public class LogFile implements Serializable {
             tags = new ArrayList<>();
         }
         tags.add(tag);
+    }
+
+    public LogDetail getDetail() {
+        return detail;
+    }
+
+    public void setDetail(LogDetail detail) {
+        this.detail = detail;
+    }
+
+    public List<Reply> getReplyList() {
+        return replyList;
+    }
+
+    public void setReplyList(List<Reply> replyList) {
+        this.replyList = replyList;
     }
 
     public void reset() {
@@ -134,17 +138,21 @@ public class LogFile implements Serializable {
     }
 
     public String getCover() {
-        List<FileInfo> files = detail.getFiles();
-        if(files == null){
-            return null;
-        }
-        Iterator<FileInfo> iter = files.iterator();
-        while (iter.hasNext()){
-            FileInfo file = iter.next();
-            if(file.isImage()){
-                return String.format("/blog/api/res/img/%d/%s", id, file.getName());
+        if (detail != null) {
+            Map<String, String> files = detail.getFiles();
+            for (Map.Entry<String, String> entry : files.entrySet()) {
+                if (entry.getValue().contains("/img/")) {
+                    return String.format("/blog/api/res/img/%d/%s", id, entry.getKey());
+                }
             }
         }
         return "/img/blog-img/7.jpg";
+    }
+
+    public String getDesc(){
+        if(detail != null){
+            return detail.getDesc(200);
+        }
+        return "";
     }
 }
