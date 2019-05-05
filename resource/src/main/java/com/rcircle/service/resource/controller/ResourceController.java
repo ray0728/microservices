@@ -278,7 +278,11 @@ public class ResourceController {
             }
         }
         List<Log> logs = resourceService.getLogs(uid, type, gid, title, status, offset, count);
+        assembleAuthor(logs);
+        return JSONObject.toJSONString(logs);
+    }
 
+    private List<Log> assembleAuthor(List<Log> logs){
         Iterator<Log> iter = logs.iterator();
         while (iter.hasNext()) {
             Log log = iter.next();
@@ -287,6 +291,13 @@ public class ResourceController {
                 log.setAuthor(JSONObject.parseObject(info, Account.class).getUsername());
             }
         }
+        return logs;
+    }
+
+    @GetMapping("top")
+    public String getTopResource(){
+        List<Log> logs = resourceService.getTopLogs();
+        assembleAuthor(logs);
         return JSONObject.toJSONString(logs);
     }
 

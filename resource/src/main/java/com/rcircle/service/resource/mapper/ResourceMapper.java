@@ -57,6 +57,8 @@ public interface ResourceMapper {
 
     public List<Tag> getTags(@Param("id") int id);
 
+    public List<Log> getTopLogs();
+
     public int createTag(Tag log);
 
     public int addTagForLog(@Param("lid") int lid, Tag tag);

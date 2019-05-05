@@ -14,7 +14,8 @@ public class ResourceSecurityConfigurer extends ResourceServerConfigurerAdapter 
         http
                 .authorizeRequests()
                 .antMatchers("/cate/list", "/tag/list").permitAll()
-                .antMatchers("/res/list", "/res/files", "/res/img/**", "/res/video/**").permitAll()
+                .antMatchers("/res/list", "/res/files", "/res/top").permitAll()
+                .antMatchers("/res/img/**", "/res/video/**").permitAll()
                 .anyRequest()
                 .authenticated();
     }

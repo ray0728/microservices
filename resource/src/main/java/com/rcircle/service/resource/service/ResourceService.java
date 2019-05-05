@@ -129,6 +129,16 @@ public class ResourceService {
     public List<Log> getLogs(int uid, int type, int gid, String title, int status, int offset, int count) {
         List<Log> logs = resourceMapper.getLogs(uid, type, gid, title, status, offset, count);
         Iterator<Log> iter = logs.iterator();
+        return assembleResFilesInfo(logs);
+    }
+
+    public List<Log> getTopLogs(){
+        List<Log> logs = resourceMapper.getTopLogs();
+        return assembleResFilesInfo(logs);
+    }
+
+    private List<Log> assembleResFilesInfo(List<Log> logs){
+        Iterator<Log> iter = logs.iterator();
         while (iter.hasNext()) {
             Log log = iter.next();
             copyResFileToLog(log, "img");
