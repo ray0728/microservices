@@ -18,7 +18,7 @@ public class AccountService {
 
     public Account loadUser(int uid, String username) {
         String accountinfo = getAccountInfo(uid, username);
-        if (accountinfo.equals("Invalid resources.")) {
+        if (accountinfo == null) {
             return null;
         }
         return JSON.parseObject(accountinfo, Account.class);
@@ -46,6 +46,6 @@ public class AccountService {
     }
 
     private String buildFallbackAccountInfo(int uid, String username, Throwable throwable) {
-        return "Invalid resources.";
+        return null;
     }
 }

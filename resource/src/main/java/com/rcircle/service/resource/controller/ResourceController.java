@@ -111,7 +111,7 @@ public class ResourceController {
         }
         resourceService.changeLog(log);
         if (!htmllog.isEmpty()) {
-            if(log.getDetail() == null){
+            if (log.getDetail() == null) {
                 resourceService.createLogDetail(log);
             }
             log.getDetail().setLog(htmllog);
@@ -184,7 +184,7 @@ public class ResourceController {
 
     private String saveClientFile(Log log, String savetype, String filename, int index, int total, String checksum, int chunkSize, MultipartFile file) {
         String result = "";
-        if(log.getDetail() == null){
+        if (log.getDetail() == null) {
             resourceService.createLogDetail(log);
         }
         String saveDir = NetFile.getDirAbsolutePath(log.getDetail().getRes_url(), savetype);
@@ -282,12 +282,12 @@ public class ResourceController {
         return JSONObject.toJSONString(logs);
     }
 
-    private List<Log> assembleAuthor(List<Log> logs){
+    private List<Log> assembleAuthor(List<Log> logs) {
         Iterator<Log> iter = logs.iterator();
         while (iter.hasNext()) {
             Log log = iter.next();
             String info = accountService.getAccountInfo(log.getUid(), null);
-            if(!info.startsWith("Invalid resources")) {
+            if (info != null) {
                 log.setAuthor(JSONObject.parseObject(info, Account.class).getUsername());
             }
         }
@@ -295,10 +295,16 @@ public class ResourceController {
     }
 
     @GetMapping("top")
-    public String getTopResource(){
+    public String getTopResource() {
         List<Log> logs = resourceService.getTopLogs();
         assembleAuthor(logs);
         return JSONObject.toJSONString(logs);
+    }
+
+    @GetMapping("blog")
+    public String getLog(@RequestParam(name = "id")int id){
+        Log log = resourceService.getLog(id);
+        return JSONObject.toJSONString(log);
     }
 
     @GetMapping("img/{lid}/{name}")
@@ -323,7 +329,7 @@ public class ResourceController {
         if (errinfo == null) {
             try {
                 for (Map.Entry<String, String> entry : log.getDetail().getFiles().entrySet()) {
-                    if (entry.getKey().equals(name) && entry.getValue().contains("/img/")) {
+                    if (entry.getKey().equals(name) && entry.getValue().contains(File.separatorChar + "img" + File.separatorChar)) {
                         MediaType mediaType = MediaType.parseMediaType("image/jpg");
                         HttpHeaders headers = new HttpHeaders();
                         headers.setContentType(mediaType);

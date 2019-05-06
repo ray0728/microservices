@@ -118,6 +118,12 @@
         ORDER BY id LIMIT #{offset},#{count}
     </select>
 
+
+    <select id="getTopLogs" resultMap="logMap">
+        SELECT t_log.id, t_log.uid, t_log.type, t_log.gid, t_log.title, t_log.date, t_log.status, count(*) AS count
+        FROM t_log join t_reply ON t_log.id = t_reply.lid AND t_log.gid = 0  GROUP BY t_log.id ORDER BY count DESC LIMIT 10;
+    </select>
+
     <select id="getLogById" resultMap="logMap">
         SELECT *
         FROM t_log
