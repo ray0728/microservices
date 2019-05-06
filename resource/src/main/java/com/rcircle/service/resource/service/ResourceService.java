@@ -77,9 +77,8 @@ public class ResourceService {
         return resourceMapper.changeLogDetail(log.getId(), log.getDetail().getLog(), log.getDetail().getRes_url());
     }
 
-    public Reply createReply(Reply reply) {
-        int status = resourceMapper.getLogStatus(reply.getLid());
-        switch (status) {
+    public Reply createReply(Log log, Reply reply) {
+        switch (log.getStatus()) {
             case Log.STATUS_NORMAL:
                 resourceMapper.createReply(reply);
                 break;
@@ -91,9 +90,8 @@ public class ResourceService {
         return reply;
     }
 
-    public Reply deleteReply(Reply reply) {
-        int status = resourceMapper.getLogStatus(reply.getLid());
-        switch (status) {
+    public Reply deleteReply(Log log, Reply reply) {
+        switch (log.getStatus()) {
             case Log.STATUS_NORMAL:
             case Log.STATUS_DISABLE:
                 resourceMapper.deleteReply(reply.getId());

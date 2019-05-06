@@ -6,6 +6,8 @@ public class Reply implements Serializable {
     private int id;
     private int lid;
     private int uid;
+    private String username;
+    private String email;
     private String desc;
     private long date;
 
@@ -47,5 +49,21 @@ public class Reply implements Serializable {
 
     public void setDate(long date) {
         this.date = date;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

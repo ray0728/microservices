@@ -218,49 +218,6 @@ public class ResourceController {
         return "";
     }
 
-    @PostMapping("reply")
-    public String createNewReply(Principal principal,
-                                 @RequestParam(name = "id", required = true) int id,
-                                 @RequestParam(name = "msg", required = true) String msg) {
-        Account account = getOpAccount(principal);
-        Log log = resourceService.getLog(id);
-        if (account == null || log == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CREATE_REPLY, "Invalid request parameters.");
-        }
-        Reply reply = new Reply();
-        reply.setDate(SimpleDate.getUTCTime());
-        reply.setDesc(msg);
-        reply.setLid(id);
-        reply.setUid(account.getUid());
-        resourceService.createReply(reply);
-        return JSONObject.toJSONString(reply);
-    }
-
-    @DeleteMapping("reply")
-    public String deleteReply(Principal principal, int lid, int rid) {
-        Account account = getOpAccount(principal);
-        Log log = resourceService.getLog(lid);
-        if (account == null || log == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_REPLY, "Invalid request parameters.");
-        }
-        for (Reply reply : log.getReplyList()) {
-            if (reply.getId() != rid) {
-                continue;
-            }
-            if (reply.getUid() == account.getUid() || log.getUid() == account.getUid()) {
-                resourceService.deleteReply(reply);
-            }
-            break;
-        }
-        return "";
-    }
-
-    @GetMapping("replies")
-    public String getAllReply(@RequestParam(name = "id", required = true) int id) {
-        List<Reply> replies = resourceService.getReplies(id);
-        return JSONObject.toJSONString(replies);
-    }
-
     @GetMapping("list")
     public String getResource(Principal principal,
                               @RequestParam(name = "type", required = false, defaultValue = "0") int type,

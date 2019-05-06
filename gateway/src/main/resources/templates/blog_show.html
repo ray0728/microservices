@@ -55,9 +55,66 @@
                     <div class="author-info">
                         <div class="line"></div>
                         <span class="author-role">Author</span>
-                        <h4><a th:href='${"/author?id=" + author.id}' class="author-name" th:text="${author.name}"></a></h4>
+                        <h4><a th:href='${"/author?id=" + author.id}' class="author-name" th:text="${author.name}"></a>
+                        </h4>
                         <p th:text="${author.desc}"></p>
                     </div>
+                </div>
+                <div class="comment_area clearfix mt-70" th:if="${log.comments_num > 0}">
+                    <h5 class="title">Comments</h5>
+                    <ol>
+                        <li class="single_comment_area" th:each="reply:${replies}">
+                            <!-- Comment Content -->
+                            <div class="comment-content d-flex">
+                                <!-- Comment Author -->
+                                <div class="comment-author">
+                                    <img src="img/bg-img/b7.jpg" alt="author">
+                                </div>
+                                <!-- Comment Meta -->
+                                <div class="comment-meta">
+                                    <a class="post-date" th:utext="${'<span>' + reply.year + '</span>' + reply.day + '<span>' + reply.month +'</span>'}"></a>
+                                    <p><a class="post-author" th:text="${reply.username}"></a></p>
+                                    <p th:text="${reply.msg}"></p>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+                <div class="post-a-comment-area mt-70">
+                    <h5>Leave a reply</h5>
+                    <!-- Reply Form -->
+                    <form action="/blog/api/reply/new" method="post">
+                        <div class="row">
+                            <input hidden="hidden" name="id" th:value="${log.id}">
+                            <div class="col-12 col-md-6">
+                                <div class="group">
+                                    <input type="text" name="name" id="name" required>
+                                    <span class="highlight"></span>
+                                    <span class="bar"></span>
+                                    <label>Name</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="group">
+                                    <input type="email" name="email" id="email" required>
+                                    <span class="highlight"></span>
+                                    <span class="bar"></span>
+                                    <label>Email</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="group">
+                                    <textarea name="message" id="message" required></textarea>
+                                    <span class="highlight"></span>
+                                    <span class="bar"></span>
+                                    <label>Comment</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn original-btn">Reply</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div th:include="public::sidebar"></div>

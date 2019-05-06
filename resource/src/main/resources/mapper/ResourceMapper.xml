@@ -18,13 +18,6 @@
         <result column="lid" property="lid"/>
         <result column="res_url" property="res_url"/>
     </resultMap>
-    <resultMap id="replyMap" type="Reply">
-        <id column="id" property="id"/>
-        <result column="lid" property="lid"/>
-        <result column="uid" property="uid"/>
-        <result column="desc" property="desc"/>
-        <result column="date" property="date"/>
-    </resultMap>
 
     <update id="changeLogStatus">
         UPDATE t_log
@@ -39,7 +32,7 @@
     </select>
 
     <select id="getLogReplies" resultType="Reply">
-        SELECT *
+        SELECT id, lid, uid,guest_name AS username, guest_email AS email, `date`, `desc`
         FROM t_reply
         WHERE lid = #{id}
     </select>
@@ -61,8 +54,8 @@
     </insert>
 
     <insert id="createReply" useGeneratedKeys="true" keyProperty="id" parameterType="Reply">
-        INSERT INTO t_reply(lid, uid, desc, date)
-        VALUES (#{lid}, #{uid}, #{desc}, #{date});
+        INSERT INTO t_reply(lid, uid, guest_name, guest_email, desc, date)
+        VALUES (#{lid}, #{uid}, #{username}, #{email}, #{desc}, #{date});
     </insert>
 
     <delete id="deleteLog">
