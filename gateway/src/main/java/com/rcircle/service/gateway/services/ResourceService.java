@@ -29,15 +29,27 @@ public class ResourceService {
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackGetAllDiaries", threadPoolKey = "DirayThreadPool")
-    public List<LogFile> getAllDiaries(int type, int gid, String title, int status, int offset, int count) {
+    public List<LogFile> getAllBlogs(int type, int gid, String title, int status, int offset, int count) {
         String ret = remoteResourceClient.getAllDiaries(type, gid, title, status, offset, count);
         return JSON.parseArray(ret, LogFile.class);
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackGetAllTags", threadPoolKey = "DirayThreadPool")
-    public List<Tag> getAllTags(){
+    public List<Tag> getAllTags() {
         String ret = remoteResourceClient.getAllTags();
         return JSON.parseArray(ret, Tag.class);
+    }
+
+    @HystrixCommand(fallbackMethod = "buildFallbackGetTopDiaries", threadPoolKey = "DirayThreadPool")
+    public List<LogFile> getTopBlogs() {
+        String ret = remoteResourceClient.getTopResource();
+        return JSON.parseArray(ret, LogFile.class);
+    }
+
+    @HystrixCommand(fallbackMethod = "buildFallbackGetDiary", threadPoolKey = "DirayThreadPool")
+    public LogFile getBlog(int id) {
+        String ret = remoteResourceClient.getBLog(id);
+        return JSON.parseObject(ret, LogFile.class);
     }
 
     public List<Category> buildFallbackGetAllCategory(Throwable throwable) {
@@ -52,7 +64,15 @@ public class ResourceService {
         return null;
     }
 
-    public List<Tag> buildFallbackGetAllTags(Throwable throwable){
+    public List<Tag> buildFallbackGetAllTags(Throwable throwable) {
+        return null;
+    }
+
+    public List<LogFile> buildFallbackGetTopDiaries(Throwable throwable) {
+        return null;
+    }
+
+    public LogFile buildFallbackGetDiary(int id, Throwable throwable) {
         return null;
     }
 }

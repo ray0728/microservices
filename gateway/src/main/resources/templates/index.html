@@ -49,10 +49,9 @@
                     <div class="single-blog-content">
                         <div class="line"></div>
                         <a href="#" class="post-tag">Lifestyle</a>
-                        <h4><a href="#" class="post-headline">Welcome to this Lifestyle blog</a></h4>
-                        <p>Curabitur venenatis efficitur lorem sed tempor. Integer aliquet tempor cursus. Nullam
-                            vestibulum convallis risus vel condimentum. Nullam auctor lorem in libero luctus, vel
-                            volutpat quam tincidunt. Morbi sodales, dolor id ultricies dictum</p>
+                        <h4><a href="#" class="post-headline">Welcome to this Simple Lift Blog</a></h4>
+                        <p>Happiness is a journey, not a destination. So work like you dont't need the money,
+                        Love like you have never been hurt, and dance like no one's watching.</p>
                         <a href="#" class="btn original-btn">Read More</a>
                     </div>
                 </div>
@@ -97,8 +96,10 @@
                             <!-- Blog Content -->
                             <div class="single-blog-content">
                                 <div class="line"></div>
-                                <a th:href="${'/blog/cate?cid=' + log.category.cid}" class="post-tag" th:text="${log.category.desc}"></a>
-                                <h4><a th:href="${'/blog/article?id=' + log.id}" class="post-headline" th:text="${log.title}"></a></h4>
+                                <a th:href="${'/blog/cate?cid=' + log.category.cid}" class="post-tag"
+                                   th:text="${log.category.desc}"></a>
+                                <h4><a th:href="${'/blog/article?id=' + log.id}" class="post-headline"
+                                       th:text="${log.title}"></a></h4>
                                 <p th:text="${log.desc}"></p>
                                 <div class="post-meta">
                                     <p>By <a th:text="${log.author}"></a></p>
@@ -120,8 +121,10 @@
                             <!-- Blog Content -->
                             <div class="single-blog-content mt-50">
                                 <div class="line"></div>
-                                <a th:href="${'/blog/cate?cid=' + log.category.cid}" class="post-tag" th:text="${log.category.desc}"></a>
-                                <h4><a th:href="${'/blog/article?id=' + log.id}" class="post-headline" th:text="${log.title}"></a></h4>
+                                <a th:href="${'/blog/cate?cid=' + log.category.cid}" class="post-tag"
+                                   th:text="${log.category.desc}"></a>
+                                <h4><a th:href="${'/blog/article?id=' + log.id}" class="post-headline"
+                                       th:text="${log.title}"></a></h4>
                                 <p th:text="${log.desc}"></p>
                                 <div class="post-meta">
                                     <p>By <a th:text="${log.author}"></a></p>
@@ -137,48 +140,7 @@
                     <a href="/blog/list" class="btn original-btn">Read More</a>
                 </div>
             </div>
-
-            <!-- ##### Sidebar Area ##### -->
-            <div class="col-12 col-md-4 col-lg-3">
-                <div class="post-sidebar-area">
-                    <!-- Widget Area -->
-                    <div class="sidebar-widget-area">
-                        <h5 class="title">Advertisement</h5>
-                        <a href="#"><img src="global/img/bg-img/add.gif" alt=""></a>
-                    </div>
-
-                    <!-- Widget Area -->
-                    <div class="sidebar-widget-area">
-                        <h5 class="title">Hot Posts</h5>
-                        <div class="widget-content">
-                            <div th:each="post:${posts}" class="single-blog-post d-flex align-items-center widget-post">
-                                <!-- Post Thumbnail -->
-                                <div class="post-thumbnail">
-                                    <img class="img-fluid" th:src="${post.cover}" alt="">
-                                </div>
-                                <!-- Post Content -->
-                                <div class="post-content">
-                                    <a th:href="${'/blog/list?cate=' + post.category.cid}" class="post-tag" th:text="${post.category.desc}"></a>
-                                    <h4><a th:href="${'/blog/article?id=' + post.id}" class="post-headline" th:text="${post.title}"></a></h4>
-                                    <div class="post-meta">
-                                        <p><a th:text="${post.date}"></a></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Widget Area -->
-                    <div class="sidebar-widget-area">
-                        <h5 class="title">Tags</h5>
-                        <div class="widget-content">
-                            <ul class="tags">
-                                <li th:each="tag:${tags}"><a th:href="${'/blog/tag?tid=' + tag.id}" th:text="${tag.desc}"></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div th:include="public::sidebar"></div>
         </div>
     </div>
 </div>

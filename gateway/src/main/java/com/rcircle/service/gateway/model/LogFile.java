@@ -2,6 +2,7 @@ package com.rcircle.service.gateway.model;
 
 import com.rcircle.service.gateway.utils.Toolkit;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -141,16 +142,16 @@ public class LogFile implements Serializable {
         if (detail != null) {
             Map<String, String> files = detail.getFiles();
             for (Map.Entry<String, String> entry : files.entrySet()) {
-                if (entry.getValue().contains("/img/")) {
+                if (entry.getValue().contains(File.separatorChar + "img" + File.separatorChar)) {
                     return String.format("/blog/api/res/img/%d/%s", id, entry.getKey());
                 }
             }
         }
-        return "/img/blog-img/7.jpg";
+        return "global/img/blog-img/7.jpg";
     }
 
-    public String getDesc(){
-        if(detail != null){
+    public String getDesc() {
+        if (detail != null) {
             return detail.getDesc(200);
         }
         return "";

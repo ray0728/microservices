@@ -82,15 +82,42 @@ public class Toolkit {
 
 
     public static int getYearFom(long localDate) {
-        return Integer.parseInt(String.valueOf(localDate).substring(0, 4));
+        if(isValidDate(localDate)) {
+            return Integer.parseInt(String.valueOf(localDate).substring(0, 4));
+        }else{
+            return 2016;
+        }
     }
 
     public static String getMonthFrom(long localDate) {
-        return month_map[Integer.parseInt(String.valueOf(localDate).substring(4, 6)) - 1];
+        if(isValidDate(localDate)) {
+            return month_map[Integer.parseInt(String.valueOf(localDate).substring(4, 6)) - 1];
+        }else{
+            return month_map[6];
+        }
+    }
+
+    private static boolean isValidDate(long date) {
+        String dateStr = String.valueOf(date);
+        if (dateStr.length() < 8) {
+            return false;
+        }
+        if (Integer.parseInt(dateStr.substring(4, 6)) >= month_map.length) {
+            return false;
+        }
+
+        if (Integer.parseInt(dateStr.substring(6, 8)) > 31) {
+            return false;
+        }
+        return true;
     }
 
     public static int getDayFrom(long localDate) {
-        return Integer.parseInt(String.valueOf(localDate).substring(6, 8));
+        if(isValidDate(localDate)) {
+            return Integer.parseInt(String.valueOf(localDate).substring(6, 8));
+        }else{
+            return 28;
+        }
     }
 
     private static String delHTMLTag(String htmlStr, String regex) {
@@ -99,7 +126,7 @@ public class Toolkit {
         return m_script.replaceAll("");
     }
 
-    public static String getTextFromHtml(String htmlStr){
+    public static String getTextFromHtml(String htmlStr) {
         htmlStr = delHTMLTag(htmlStr, regEx_script);
         htmlStr = delHTMLTag(htmlStr, regEx_style);
         htmlStr = delHTMLTag(htmlStr, regEx_html);
