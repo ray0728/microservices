@@ -5,6 +5,7 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.rcircle.service.gateway.clients.RemoteResourceClient;
 import com.rcircle.service.gateway.model.Category;
 import com.rcircle.service.gateway.model.LogFile;
+import com.rcircle.service.gateway.model.Reply;
 import com.rcircle.service.gateway.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,16 @@ public class ResourceService {
     public LogFile getBlog(int id) {
         String ret = remoteResourceClient.getBLog(id);
         return JSON.parseObject(ret, LogFile.class);
+    }
+
+    @HystrixCommand(fallbackMethod = "buildFallbackGetAllReplies", threadPoolKey = "ReplyThreadPool")
+    public List<Reply> getAllReplies(int logid){
+        String ret = remoteResourceClient.getAllReplies(logid);
+        return JSON.parseArray(ret, Reply.class);
+    }
+
+    public List<Reply>buildFallbackGetAllReplies(int logid, Throwable throwable){
+        return null;
     }
 
     public List<Category> buildFallbackGetAllCategory(Throwable throwable) {

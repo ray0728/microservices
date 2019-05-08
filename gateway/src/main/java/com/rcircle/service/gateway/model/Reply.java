@@ -1,15 +1,17 @@
 package com.rcircle.service.gateway.model;
 
+import com.rcircle.service.gateway.utils.Toolkit;
+
 import java.io.Serializable;
 
 public class Reply  implements Serializable {
     private int id;
     private int lid;
     private int uid;
+    private String username;
+    private String email;
     private String desc;
     private long date;
-    private int like_num = 0;
-    private int unlike_num = 0;
 
     public int getId() {
         return id;
@@ -35,6 +37,22 @@ public class Reply  implements Serializable {
         this.uid = uid;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getDesc() {
         return desc;
     }
@@ -51,19 +69,15 @@ public class Reply  implements Serializable {
         this.date = date;
     }
 
-    public int getLike_num() {
-        return like_num;
+    public String getMonth() {
+        return Toolkit.getMonthFrom(date);
     }
 
-    public void setLike_num(int like_num) {
-        this.like_num = like_num;
+    public int getYear() {
+        return Toolkit.getYearFom(date);
     }
 
-    public int getUnlike_num() {
-        return unlike_num;
-    }
-
-    public void setUnlike_num(int unlike_num) {
-        this.unlike_num = unlike_num;
+    public int getDay() {
+        return Toolkit.getDayFrom(date);
     }
 }

@@ -18,12 +18,20 @@ public class BlogController {
     @Resource
     private ResourceService resourceService;
 
-    @GetMapping("/new")
-    public String createNewDiary(ModelMap mm) {
+    @GetMapping("/edit")
+    public String createNewDiary(ModelMap mm, @RequestParam(name = "id", required = false, defaultValue = "0") int id) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
-        mm.addAttribute("title", "Create New Blog");
-        mm.addAttribute("logfile", new LogFile());
-        mm.addAttribute("res_id", 0);
+        LogFile log = null;
+        if (id != 0) {
+            log = resourceService.getBlog(id);
+        }
+        if (log == null) {
+            log = new LogFile();
+            id = 0;
+        }
+        mm.addAttribute("title", id == 0 ? "Create New Blog" : "Edit - " + log.getTitle());
+        mm.addAttribute("logfile", log);
+        mm.addAttribute("res_id", id);
         return "blog_edit";
     }
 
@@ -39,9 +47,9 @@ public class BlogController {
     @GetMapping("article")
     public String showLog(@RequestParam(name = "id") int lid, ModelMap mm) {
         LogFile log = resourceService.getBlog(lid);
-        if(log == null){
-            return "redirect:/err?type=404";
-        }else {
+        if (log == null) {
+            return "redirect:/error?type=404";
+        } else {
             MvcToolkit.autoLoadTopMenuData(resourceService, mm);
             MvcToolkit.autoLoadSideBarData(resourceService, mm);
             Author author = new Author();
@@ -52,7 +60,14 @@ public class BlogController {
             mm.addAttribute("log", log);
             mm.addAttribute("context", log.getDetail().getLog());
             mm.addAttribute("author", author);
+            mm.addAttribute("replies", resourceService.getAllReplies(log.getId()));
         }
         return "blog_show";
+    }
+
+    @GetMapping("reply")
+    public String showAllReplies(@RequestParam(name="id")int id, ModelMap mm){
+        mm.addAttribute("replies", resourceService.getAllReplies(id));
+        return "blog_show::reply-list";
     }
 }

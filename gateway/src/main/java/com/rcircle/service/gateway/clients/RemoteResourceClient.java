@@ -33,4 +33,7 @@ public interface RemoteResourceClient {
 
     @GetMapping("/tag/list")
     public String getAllTags();
+
+    @GetMapping("/reply/list")
+    public String getAllReplies(@RequestParam(name = "id", required = true) int id);
 }
