@@ -49,12 +49,12 @@
     </insert>
 
     <insert id="createLog" useGeneratedKeys="true" keyProperty="id" parameterType="Log">
-        INSERT INTO t_log(uid, title, date, gid, type, status)
+        INSERT INTO t_log(uid, title, `date`, gid, `type`, status)
         VALUES (#{uid}, #{title}, #{date}, #{gid}, #{category.cid}, 0);
     </insert>
 
     <insert id="createReply" useGeneratedKeys="true" keyProperty="id" parameterType="Reply">
-        INSERT INTO t_reply(lid, uid, guest_name, guest_email, desc, date)
+        INSERT INTO t_reply(lid, uid, guest_name, guest_email, `desc`, `date`)
         VALUES (#{lid}, #{uid}, #{username}, #{email}, #{desc}, #{date});
     </insert>
 

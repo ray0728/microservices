@@ -101,5 +101,9 @@ public class NetFile {
         return fileInfoList;
     }
 
+    public static String translateLocalVideoFileToHlsFile(String path){
+        return path.replaceFirst("\\.*$", ".m3u8");
+    }
+
 
 }

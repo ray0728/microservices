@@ -22,6 +22,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Arrays;
@@ -44,7 +45,10 @@ public class ResourceController {
     private AccountService accountService;
 
     private Account getOpAccount(Principal principal) {
-        return accountService.loadUser(0, principal.getName());
+        if (principal != null) {
+            return accountService.loadUser(0, principal.getName());
+        }
+        return null;
     }
 
     private List<Group> getAllGroupBelongOpAccount() {
@@ -146,7 +150,7 @@ public class ResourceController {
                                   @RequestParam(name = "checksum", required = true) String checksum) {
 
         Log log = resourceService.getLog(id);
-        String ret = verifyAccount(principal, log);
+        String ret = verifyAccount(principal, log, ErrInfo.CODE_UPLOAD_RES, false);
         if (ret != null) {
             return ret;
         }
@@ -163,7 +167,7 @@ public class ResourceController {
                                   @RequestParam(name = "chunksize") int chunkSize,
                                   @RequestParam(name = "checksum", required = true) String checksum) {
         Log log = resourceService.getLog(id);
-        String ret = verifyAccount(principal, log);
+        String ret = verifyAccount(principal, log, ErrInfo.CODE_UPLOAD_RES, false);
         if (ret != null) {
             return ret;
         }
@@ -171,13 +175,18 @@ public class ResourceController {
     }
 
 
-    private String verifyAccount(Principal principal, Log log) {
-        Account account = getOpAccount(principal);
-        if (account == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPLOAD_RES, "Invalid request parameters.");
-        }
-        if (log.getUid() != account.getUid()) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_UPLOAD_RES, "You don't have permission to access.");
+    private String verifyAccount(Principal principal, Log log, int errInfo, boolean shouldCheckGroup) {
+        if (log.getGid() != 0) {
+            Account account = getOpAccount(principal);
+            if (account == null) {
+                return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, errInfo, "Invalid request parameters.");
+            }
+            if (log.getUid() != account.getUid()) {
+                return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, errInfo, "You don't have permission to access.");
+            }
+            if (shouldCheckGroup && !isBelongGid(log.getGid())) {
+                return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, errInfo, "You don't have permission to access.");
+            }
         }
         return null;
     }
@@ -259,7 +268,7 @@ public class ResourceController {
     }
 
     @GetMapping("blog")
-    public String getLog(@RequestParam(name = "id")int id){
+    public String getLog(@RequestParam(name = "id") int id) {
         Log log = resourceService.getLog(id);
         return JSONObject.toJSONString(log);
     }
@@ -267,35 +276,13 @@ public class ResourceController {
     @GetMapping("img/{lid}/{name}")
     @ResponseBody
     public ResponseEntity getImageFile(Principal principal, @PathVariable("lid") int logid, @PathVariable("name") String name) {
-        int uid = 0;
-        String errinfo = null;
-        Account account;
-        if (principal != null) {
-            account = getOpAccount(principal);
-            if (account != null) {
-                uid = account.getUid();
-            }
-        }
         Log log = resourceService.getLog(logid);
-        if (log.getGid() != 0 && uid != 0 && !isBelongGid(log.getGid())) {
-            errinfo = ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_GET_RES_FILES, "You don't have permission to access.");
-        }
-        if (log.getGid() != 0 && uid == 0) {
-            errinfo = ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_GET_RES_FILES, "You don't have permission to access.");
-        }
+        String errinfo = verifyAccount(principal, log, ErrInfo.CODE_GET_RES_FILES, true);
         if (errinfo == null) {
             try {
                 for (Map.Entry<String, String> entry : log.getDetail().getFiles().entrySet()) {
                     if (entry.getKey().equals(name) && entry.getValue().contains(File.separatorChar + "img" + File.separatorChar)) {
-                        MediaType mediaType = MediaType.parseMediaType("image/jpg");
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.setContentType(mediaType);
-                        File file = new File(entry.getValue());
-                        FileInputStream inputStream = new FileInputStream(file);
-                        byte[] bytes = new byte[inputStream.available()];
-                        inputStream.read(bytes, 0, inputStream.available());
-                        inputStream.close();
-                        return new ResponseEntity(bytes, headers, HttpStatus.OK);
+                        return createResponseEntity("image/jpg", entry.getValue());
                     }
                 }
             } catch (Exception e) {
@@ -304,6 +291,37 @@ public class ResourceController {
         }
         return ResponseEntity.status(404).body(errinfo);
     }
+
+    @GetMapping("video/{lid}/{name}")
+    public ResponseEntity getVideoFile(Principal principal, @PathVariable("lid") int logid, @PathVariable("name") String name) {
+        Log log = resourceService.getLog(logid);
+        String errinfo = verifyAccount(principal, log, ErrInfo.CODE_GET_RES_FILES, true);
+        if (errinfo == null) {
+            try {
+                for (Map.Entry<String, String> entry : log.getDetail().getFiles().entrySet()) {
+                    if (entry.getKey().equals(name) && entry.getValue().contains(File.separatorChar + "video" + File.separatorChar)) {
+                        return createResponseEntity("application/x-mpegURL", NetFile.translateLocalVideoFileToHlsFile(entry.getValue()));
+                    }
+                }
+            } catch (Exception e) {
+                errinfo = e.getMessage();
+            }
+        }
+        return ResponseEntity.status(404).body(errinfo);
+    }
+
+    private ResponseEntity createResponseEntity(String type, String filePath) throws IOException {
+        MediaType mediaType = MediaType.parseMediaType(type);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(mediaType);
+        File file = new File(filePath);
+        FileInputStream inputStream = new FileInputStream(file);
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes, 0, inputStream.available());
+        inputStream.close();
+        return new ResponseEntity(bytes, headers, HttpStatus.OK);
+    }
+
 
     private boolean isBelongGid(int gid) {
         List<Group> groupList = getAllGroupBelongOpAccount();
