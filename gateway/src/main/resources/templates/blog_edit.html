@@ -14,31 +14,48 @@
 </head>
 <body>
 <div th:include="public::topbar"></div>
-<div class="container">
-    <div class="d-flex mb-1">
-        <h6 class="label mr-1 my-auto" th:value="${res_id}">Title</h6>
-        <input type="text" class="flex-grow-1 title">
-    </div>
-    <div class="d-flex mb-1">
-        <h6 class="my-auto ml-auto mr-1 label">Category</h6>
-        <select id="category">
-            <option th:each="category:${categories}" th:value="${category.desc}" th:text="${category.desc}"></option>
-        </select>
-        <button type="button" class="btn fa fa-plus" data-toggle="modal" data-target="#addLogType"></button>
-    </div>
-    <div id="summernote"></div>
-    <div class="d-flex mb-1 mt-1">
-        <h6 class="label mr-1 my-auto">Tag
-            <small>split tag with <kbd>;</kbd></small>
-            )
-        </h6>
-        <input placeholder="some tags" class="flex-grow-1">
-    </div>
-    <div class="mt-2 d-flex">
-        <div class="btn-group ml-auto">
-            <button type="button" class="btn btn-primary mr-1" data-toggle="modal" data-target="#extmodal">Preview
-            </button>
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#extmodal">Publish</button>
+<div class="post-blog-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="group">
+                    <input type="text" name="title">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Title</label>
+                </div>
+            </div>
+            <div class="col-12 d-flex">
+                <label class="my-auto ml-auto mr-1 label">Category</label>
+                <select id="category">
+                    <option th:each="category:${categories}" th:value="${category.desc}"
+                            th:text="${category.desc}"></option>
+                </select>
+                <button type="button" class="btn fa fa-plus" data-toggle="modal" data-target="#addLogType"></button>
+            </div>
+            <br>
+            <div class="col-12">
+                <div id="summernote"></div>
+            </div>
+            <br>
+            <div class="col-12">
+                <div class="group">
+                    <input type="text" name="tag" placeholder="split tags with ;">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Tag</label>
+                </div>
+            </div>
+            <br>
+            <div class="mt-2 d-flex">
+                <div class="btn-group ml-auto">
+                    <button type="button" class="btn btn-primary mr-1" data-toggle="modal" data-target="#extmodal">
+                        Preview
+                    </button>
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#extmodal">Publish
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
