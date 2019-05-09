@@ -1,18 +1,15 @@
 package com.rcircle.service.account.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.netflix.ribbon.proxy.annotation.Http;
 import com.rcircle.service.account.model.Account;
-import com.rcircle.service.account.model.Authority;
+import com.rcircle.service.account.model.Role;
 import com.rcircle.service.account.service.AccountService;
 import com.rcircle.service.account.util.ErrInfo;
-import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.Enumeration;
 import java.util.List;
 
 @RestController
@@ -23,12 +20,12 @@ public class AccountController {
     private AccountService mAccountService;
 
     private boolean isAdminAccount(String name) {
-        Account opAccount = mAccountService.getOpAccount(name);
+        Account opAccount = mAccountService.getAccount(name, 0);
         if (opAccount == null) {
             return false;
         }
-        List<Authority> authorities = opAccount.getRoles();
-        for (Authority role : authorities) {
+        List<Role> authorities = opAccount.getRoles();
+        for (Role role : authorities) {
             if (role.isAdminRole() || role.isSuperRole()) {
                 return true;
             }
@@ -37,10 +34,13 @@ public class AccountController {
     }
 
     @PostMapping("create")
-    public String create(Principal principal, @RequestParam(name = "usrname", required = true) String username,
-                         @RequestParam(name = "email", required = true) String email,
-                         @RequestParam(name = "passwd", required = true) String password,
-                         @RequestParam(name = "roles", required = false, defaultValue = "") int[] roles) {
+    public String create(Principal principal,
+                         @RequestParam(name = "usrname") String username,
+                         @RequestParam(name = "email") String email,
+                         @RequestParam(name = "passwd") String password,
+                         @RequestParam(name = "roles", required = false, defaultValue = "") int[] roles,
+                         @RequestParam(name = "profile", required = false, defaultValue = "") String profile
+    ) {
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
         }
@@ -52,17 +52,18 @@ public class AccountController {
         account.setUsername(username);
         account.setPassword(password);
         account.setEmail(email);
+        account.setProfile(profile);
         if (mAccountService.createAccount(account) == 0) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
         }
         if (isAdminOp) {
             if (roles.length == 0) {
-                mAccountService.autoChangeRoles(account, Authority.ID_USER);
+                mAccountService.addRole(account, Role.ID_USER);
             } else {
-                mAccountService.autoChangeRoles(account, roles);
+                mAccountService.addRole(account, roles);
             }
         } else {
-            mAccountService.autoChangeRoles(account, Authority.ID_GUEST);
+            mAccountService.addRole(account, Role.ID_GUEST);
         }
         account.setPassword("******");
         return JSONObject.toJSONString(account);
@@ -79,7 +80,7 @@ public class AccountController {
             isAdminOp = isAdminAccount(principal.getName());
         }
         if (isAdminOp) {
-            Account account = mAccountService.getAccountByUid(uid);
+            Account account = mAccountService.getAccount(null, uid);
             if (account == null) {
                 return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_ACCOUNT, "Invalid resources.");
             }
@@ -90,53 +91,51 @@ public class AccountController {
 
     @PutMapping("change")
     public String changeAccount(Principal principal,
-                                @RequestParam(name = "uid", required = true) long uid,
+                                @RequestParam(name = "uid", required = true) int uid,
                                 @RequestParam(name = "status", required = false, defaultValue = "-1") int status,
                                 @RequestParam(name = "roles", required = false) int[] roles) {
         if (uid == 0 || principal == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
         }
-        Account opAccount = mAccountService.getOpAccount(principal.getName());
+        Account opAccount = mAccountService.getAccount(principal.getName(), 0);
         if (opAccount == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
         }
         int maxRoleLevel = opAccount.getMaxLevelRole();
-        if (maxRoleLevel != Authority.ID_GUEST) {
-            Account account = mAccountService.getAccountByUid(uid);
+        if (maxRoleLevel >= Role.ID_ADMIN) {
+            Account account = mAccountService.getAccount(null, uid);
             if (account == null) {
                 return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid resources.");
             }
-            for (Authority role : account.getRoles()) {
-                if (role.getId() > maxRoleLevel) {
-                    return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_CHANGE_ACCOUNT, "have not enought permission.");
-                }
+            if (account.getMaxLevelRole() > maxRoleLevel) {
+                return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_CHANGE_ACCOUNT, "have no enough permission.");
             }
             if (status != -1) {
                 mAccountService.setAccountStatus(account, status);
             }
             if (roles != null && roles.length > 0) {
-                mAccountService.autoChangeRoles(account, roles);
+                mAccountService.addRole(account, roles);
             }
             account.setPassword("******");
             return JSONObject.toJSONString(account);
         } else {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_CHANGE_ACCOUNT, "have not enought permission.");
+            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_CHANGE_ACCOUNT, "have no enough permission.");
         }
     }
 
     @PutMapping("edit")
     public String changePassword(Principal principal,
-                                 @RequestParam(name = "passwd", required = false, defaultValue = "") String password) {
+                                 @RequestParam(name = "email", required = false, defaultValue = "") String email,
+                                 @RequestParam(name = "passwd", required = false, defaultValue = "") String password,
+                                 @RequestParam(name = "profile", required = false, defaultValue = "") String profile) {
         if (principal == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_EDIT_ACCOUNT, "Invalid request parameters.");
         }
-        Account account = mAccountService.getOpAccount(principal.getName());
+        Account account = mAccountService.getAccount(principal.getName(), 0);
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_EDIT_ACCOUNT, "Invalid resources.");
         }
-        if (!password.isEmpty()) {
-            mAccountService.changeAccountPassword(account, password);
-        }
+        mAccountService.updateAccountInfo(account.getUid(), email, password, profile);
         account.setPassword("******");
         return JSONObject.toJSONString(account);
     }
@@ -145,13 +144,7 @@ public class AccountController {
     public String getInfo(HttpServletRequest request,
                           @RequestParam(name = "username", required = false, defaultValue = "") String username,
                           @RequestParam(name = "uid", required = false, defaultValue = "0") int uid) {
-        Account account = null;
-        if (uid != 0) {
-            account = mAccountService.getAccountByUid(uid);
-        } else if (!username.isEmpty()) {
-            account = mAccountService.getAccountByUsername(username);
-        }
-
+        Account account = mAccountService.getAccount(username, uid);
         String securityFlag = request.getHeader("rc-account-security");
         if (account != null && securityFlag == null) {
             account.setPassword("******");
@@ -164,7 +157,7 @@ public class AccountController {
         if (principal == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_REFRESH_ACCOUNT, "Invalid request parameters.");
         }
-        Account account = mAccountService.getOpAccount(principal.getName());
+        Account account = mAccountService.getAccount(principal.getName(), 0);
         if (account == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_REFRESH_ACCOUNT, "Invalid resources.");
         }
@@ -177,10 +170,9 @@ public class AccountController {
     public String showMe(Principal principal) {
         Account account = null;
         if (principal != null) {
-            account = mAccountService.getOpAccount(principal.getName());
+            account = mAccountService.getAccount(principal.getName(), 0);
             account.setPassword("******");
         }
-        ;
         return account == null ? "" : JSONObject.toJSONString(account);
     }
 

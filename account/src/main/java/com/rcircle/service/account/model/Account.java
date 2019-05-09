@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Account implements Serializable {
-    private static final long serialVersionUID = 201810011523001L;
     public static final int STATUS_NORMAL = 0;
     public static final int STATUS_EXPIRED = 1;
     public static final int STATUS_LOCKED = 2;
@@ -14,11 +13,12 @@ public class Account implements Serializable {
     private String username;
     private String password;
     private String email;
+    private String profile;
     private int status = STATUS_NORMAL;
     private long firsttime;
     private int times;
     private long lastlogin;
-    private List<Authority> roles;
+    private List<Role> roles;
 
     public int getUid() {
         return uid;
@@ -69,8 +69,8 @@ public class Account implements Serializable {
     }
 
     public void addRole(int rid) {
-        Authority auth = new Authority();
-        auth.setId(rid);
+        Role auth = new Role();
+        auth.setRid(rid);
         if (roles == null) {
             roles = new ArrayList<>();
         }
@@ -80,14 +80,17 @@ public class Account implements Serializable {
     }
 
     public void deleteRole(int rid){
-        Authority auth = new Authority();
-        auth.setId(rid);
+        Role auth = new Role();
+        auth.setRid(rid);
         if(roles != null && roles.contains(auth)){
             roles.remove(auth);
         }
     }
 
-    public List<Authority> getRoles() {
+    public List<Role> getRoles() {
+        if(roles == null){
+            roles = new ArrayList<>();
+        }
         return roles;
     }
 
@@ -107,25 +110,33 @@ public class Account implements Serializable {
         this.times = times;
     }
 
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
+
     public void appendOneTimes() {
         this.times++;
     }
 
     public int getMaxLevelRole(){
-        int rid = Authority.ID_GUEST;
-        for (Authority role : roles) {
-            if(role.getId() > rid){
-                rid = role.getId();
+        int rid = Role.ID_GUEST;
+        for (Role role : roles) {
+            if(role.getRid() > rid){
+                rid = role.getRid();
             }
         }
         return rid;
     }
 
     public int getMinLevelRole(){
-        int rid = Authority.ID_SUPER;
-        for (Authority role : roles) {
-            if(role.getId() < rid){
-                rid = role.getId();
+        int rid = Role.ID_SUPER;
+        for (Role role : roles) {
+            if(role.getRid() < rid){
+                rid = role.getRid();
             }
         }
         return rid;

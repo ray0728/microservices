@@ -10,6 +10,7 @@
         <result property="firsttime" column="first_time"/>
         <result property="times" column="login_times"/>
         <result property="lastlogin" column="last_login"/>
+        <result property="profile" column="profile"/>
         <collection property="roles" column="id" select="getAccountRoles"/>
     </resultMap>
 
@@ -25,11 +26,13 @@
     </select>
 
     <insert id="create" useGeneratedKeys="true" keyProperty="uid" parameterType="Account">
-        INSERT INTO
-            t_account
-            (username, password, email, first_time, status)
-        VALUES
-            (#{username}, #{password}, #{email}, #{firsttime}, #{status})
+        INSERT INTO t_account (
+            <if test="profile.length > 0">profile,</if>
+            username, password, email, first_time, status
+        ) VALUES (
+            <if test="profile.length > 0">#{profile},</if>
+            #{username}, #{password}, #{email}, #{firsttime}, #{status}
+        )
     </insert>
 
     <update id="setAccountStatus">
@@ -45,15 +48,6 @@
         FROM t_account
         WHERE id = #{uid};
     </delete>
-
-    <select id="getAllRoleMapSpecialAccount" resultType="AccountRoleMap">
-        SELECT * FROM t_account_role_map
-        <where>
-            <if test="uid != 0">
-                uid = #{uid}
-            </if>
-        </where>
-    </select>
 
     <delete id="deleteAllRoleMap">
         DELETE FROM t_account_role_map
@@ -90,8 +84,8 @@
         FROM t_account
     </select>
 
-    <select id="getAccountRoles" resultType="Authority">
-        SELECT t_role.id, t_role.description
+    <select id="getAccountRoles" resultType="Role">
+        SELECT t_role.id AS rid, t_role.description AS authority, t_account_role_map.id AS mid
         FROM t_account_role_map
                  INNER JOIN t_role
                             ON t_account_role_map.rid = t_role.id
@@ -106,13 +100,16 @@
                 id = #{uid}
             </if>
         </where>
-        LIMIT 1;
+        <if test="uid != 0">LIMIT 1;</if>
     </select>
 
-    <update id="changePassword" parameterType="Account">
+    <update id="updateAccount" parameterType="Account">
         UPDATE t_account
-        SET
-            password=#{password}
+        <set>
+            <if test="password.length > 0">password=#{password},</if>
+            <if test="email.length > 0">email=#{email},</if>
+            <if test="profile.length > 0">profile=#{profile},</if>
+        </set>
         WHERE id = #{uid}
     </update>
 </mapper>

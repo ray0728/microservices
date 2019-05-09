@@ -14,8 +14,7 @@
         <typeAlias alias="ArrayList" type="java.util.ArrayList"/>
         <typeAlias alias="LinkedList" type="java.util.LinkedList"/>
         <typeAlias alias="Account" type="com.rcircle.service.account.model.Account"/>
-        <typeAlias alias="Authority" type="com.rcircle.service.account.model.Authority"/>
-        <typeAlias alias="AccountRoleMap" type="com.rcircle.service.account.model.AccountRoleMap"/>
+        <typeAlias alias="Role" type="com.rcircle.service.account.model.Role"/>
         <typeAlias alias="Group" type="com.rcircle.service.account.model.Group"/>
         <typeAlias alias="GroupMemberMap" type="com.rcircle.service.account.model.GroupMemberMap"/>
     </typeAliases>

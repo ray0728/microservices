@@ -2,7 +2,7 @@ package com.rcircle.service.account.model;
 
 import java.io.Serializable;
 
-public class Authority implements Serializable {
+public class Role implements Serializable {
     public static final String ROLE_GUEST = "GUEST";
     public static final int ID_GUEST = 1;
     public static final String ROLE_USER = "USER";
@@ -11,15 +11,24 @@ public class Authority implements Serializable {
     public static final int ID_ADMIN = 7;
     public static final String ROLE_SUPER = "SUPER";
     public static final int ID_SUPER = 9;
-    private int id = 0;
+    private int rid = 0;
+    private int mid;
     private String authority;
 
-    public int getId() {
-        return id;
+    public int getMid() {
+        return mid;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setMid(int mid) {
+        this.mid = mid;
+    }
+
+    public int getRid() {
+        return rid;
+    }
+
+    public void setRid(int id) {
+        this.rid = id;
         setAuthority(translate(id));
     }
 
@@ -48,17 +57,17 @@ public class Authority implements Serializable {
                 break;
             default:
                 desc = ROLE_GUEST;
-                this.id = ID_GUEST;
+                this.rid = ID_GUEST;
                 break;
         }
         return "ROLE_" + desc;
     }
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Authority)) {
+        if (obj == null || !(obj instanceof Role)) {
             return false;
         }
-        return getId() == ((Authority) obj).getId();
+        return getRid() == ((Role) obj).getRid();
     }
 
     public boolean isAdminRole() {

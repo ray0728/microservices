@@ -24,7 +24,7 @@ public class GroupController {
     private AccountService accountService;
 
     private boolean isAdminOp(String name, int admin_uid) {
-        Account opAccount = accountService.getOpAccount(name);
+        Account opAccount = accountService.getAccount(name, 0);
         if (opAccount == null) {
             return false;
         }
@@ -38,7 +38,7 @@ public class GroupController {
         if (principal == null || name == null || name.length() == 0 || desc == null || desc.length() == 0 || type == 0) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_GROUP, "Invalid request parameters.");
         }
-        Account opAccount = accountService.getOpAccount(principal.getName());
+        Account opAccount = accountService.getAccount(principal.getName(), 0);
         if (opAccount == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_GROUP, "Invalid request parameters.");
         }
@@ -162,7 +162,7 @@ public class GroupController {
         if (principal == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_QUERY_GROUP, "Invalid request parameters.");
         }
-        Account opAccount = accountService.getOpAccount(principal.getName());
+        Account opAccount = accountService.getAccount(principal.getName(), 0);
         if (opAccount == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_QUERY_GROUP, "Invalid request parameters.");
         }

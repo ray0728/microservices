@@ -3,8 +3,7 @@ package com.rcircle.service.account.service;
 
 import com.rcircle.service.account.mapper.AccountMapper;
 import com.rcircle.service.account.model.Account;
-import com.rcircle.service.account.model.AccountRoleMap;
-import com.rcircle.service.account.model.Authority;
+import com.rcircle.service.account.model.Role;
 import com.rcircle.service.account.util.Password;
 import com.rcircle.service.account.util.SimpleDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,19 +29,13 @@ public class AccountService {
         return uid;
     }
 
-    public Account getAccountByUsername(String username) {
-        return mapper.getDetialByName(username);
-    }
-
-    public Account getOpAccount(String username){
-        if(username == null || username.isEmpty()){
-            return null;
+    public Account getAccount(String username, int uid) {
+        if (uid != 0) {
+            return mapper.getDetialByUid(uid);
+        } else if (username != null && !username.isEmpty()) {
+            return mapper.getDetialByName(username);
         }
-        return getAccountByUsername(username);
-    }
-
-    public Account getAccountByUid(long uid) {
-        return mapper.getDetialByUid(uid);
+        return null;
     }
 
     public int updateAccountTimeInfo(Account account) {
@@ -52,13 +45,8 @@ public class AccountService {
     }
 
     public int destroyAccount(Account account) {
-        List<AccountRoleMap> list = mapper.getAllRoleMapSpecialAccount(account.getUid());
-        if (list != null && !list.isEmpty()) {
-            List<Integer> armids = new LinkedList<>();
-            for (AccountRoleMap armap : list) {
-                armids.add(armap.getId());
-            }
-            mapper.deleteAllRoleMap(armids);
+        for(Role role:account.getRoles()){
+            mapper.deleteRoleMap(role.getMid());
         }
         int ret = mapper.deleteAccount(account.getUid());
         account.reset();
@@ -70,58 +58,43 @@ public class AccountService {
         return mapper.setAccountStatus(account.getUid(), status);
     }
 
-    public int changeAccountPassword(Account account, String password) {
-        account.setPassword(Password.crypt(password));
-        return mapper.changePassword(account);
+    public int updateAccountInfo(int uid, String email, String password, String profile) {
+        Account tmpAccount = new Account();
+        tmpAccount.setUid(uid);
+        tmpAccount.setEmail(email);
+        tmpAccount.setProfile(profile);
+        tmpAccount.setPassword(Password.crypt(password));
+        return mapper.updateAccount(tmpAccount);
     }
 
-    public int autoChangeRoles(Account account, int... rids) {
-        Authority[] roles = null;
-        if(account.getRoles() != null) {
-            roles = account.getRoles().toArray(new Authority[]{});
-        }
+    public int addRole(Account account, int... rids) {
         boolean isSkip = false;
-        if(roles != null) {
-            for (Authority ga : roles) {
-                isSkip = false;
-                for (int rid : rids) {
-                    if (ga.getId() == rid) {
-                        isSkip = true;
-                        break;
-                    }
-                }
-                if (!isSkip) {
-                    rmoveRoleFromAccount(account.getUid(), ga.getId());
-                    account.deleteRole(ga.getId());
-                }
-            }
-        }
-        isSkip = false;
+        int count = 0;
         for (int rid : rids) {
             isSkip = false;
-            if(roles != null) {
-                for (Authority ga : roles) {
-                    if (ga.getId() == rid) {
-                        isSkip = true;
-                        break;
-                    }
+            for (int i = 0; i < account.getRoles().size(); i++) {
+                if(account.getRoles().get(i).getRid()== rid){
+                    isSkip = true;
+                    break;
                 }
             }
-            if (!isSkip) {
+            if(!isSkip){
+                count++;
                 mapper.addRoleForAccount(account.getUid(), rid);
                 account.addRole(rid);
             }
         }
-        return account.getRoles().size();
+        return count;
     }
 
-    private int rmoveRoleFromAccount(long uid, int rid) {
+    public int deleteRole(Account account, int... rids) {
         int count = 0;
-        List<AccountRoleMap> list = mapper.getAllRoleMapSpecialAccount(uid);
-        if (list != null && !list.isEmpty()) {
-            for (AccountRoleMap armap : list) {
-                if (armap.getRid() == rid) {
-                    count += mapper.deleteRoleMap(armap.getId());
+        for (int rid : rids) {
+            for (int i = 0; i < account.getRoles().size(); i++) {
+                if (account.getRoles().get(i).getRid() == rid) {
+                    mapper.deleteRoleMap(account.getRoles().get(i).getMid());
+                    account.deleteRole(rid);
+                    break;
                 }
             }
         }
