@@ -35,6 +35,7 @@ public class HomeController {
     @GetMapping("join")
     public String signup(ModelMap mm) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
+        MvcToolkit.autoLoadSideBarData(resourceService, mm);
         mm.addAttribute("title", "Create new account");
         mm.addAttribute("account", new Account());
         return "sign_up";
@@ -43,7 +44,7 @@ public class HomeController {
     @PostMapping("join")
     public String createNewAccount(@ModelAttribute Account account, ModelMap mm) {
         String ret = accountService.createAccount(account);
-        if (ret.startsWith("failed")) {
+        if (!ret.startsWith("success")) {
             mm.addAttribute("errinfo", ret);
             return "sign_up";
         }
@@ -53,6 +54,7 @@ public class HomeController {
     @GetMapping("login")
     public String login(ModelMap mm) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
+        MvcToolkit.autoLoadSideBarData(resourceService, mm);
         mm.addAttribute("title", "Login");
         return "login";
     }

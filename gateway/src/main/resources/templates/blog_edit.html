@@ -14,46 +14,51 @@
 </head>
 <body>
 <div th:include="public::topbar"></div>
-<div class="post-blog-area">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="group">
-                    <input type="text" name="title">
-                    <span class="highlight"></span>
-                    <span class="bar"></span>
-                    <label>Title</label>
-                </div>
-            </div>
-            <div class="col-12 d-flex">
-                <label class="my-auto ml-auto mr-1 label">Category</label>
-                <select id="category">
-                    <option th:each="category:${categories}" th:value="${category.desc}"
-                            th:text="${category.desc}"></option>
-                </select>
-                <button type="button" class="btn fa fa-plus" data-toggle="modal" data-target="#addLogType"></button>
-            </div>
-            <br>
-            <div class="col-12">
-                <div id="summernote"></div>
-            </div>
-            <br>
-            <div class="col-12">
-                <div class="group">
-                    <input type="text" name="tag" placeholder="split tags with ;">
-                    <span class="highlight"></span>
-                    <span class="bar"></span>
-                    <label>Tag</label>
-                </div>
-            </div>
-            <br>
-            <div class="mt-2 d-flex">
-                <div class="btn-group ml-auto">
-                    <button type="button" class="btn btn-primary mr-1" data-toggle="modal" data-target="#extmodal">
-                        Preview
-                    </button>
-                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#extmodal">Publish
-                    </button>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="post-blog-area">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="group">
+                            <input type="text" name="title" required>
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>Title</label>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex mb-1">
+                        <label class="my-auto ml-auto mr-1 label">Category</label>
+                        <select id="category">
+                            <option th:each="category:${categories}" th:value="${category.desc}"
+                                    th:text="${category.desc}"></option>
+                        </select>
+                        <button type="button" class="btn fa fa-plus" data-toggle="modal"
+                                data-target="#addLogType"></button>
+                    </div>
+                    <div class="col-12 mb-1">
+                        <div id="summernote"></div>
+                    </div>
+                    <div class="col-12">
+                        <div class="group">
+                            <input type="text" name="tag" required>
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>Tag <small>Separate by ;</small></label>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="col-12 d-flex">
+                        <div class="btn-group ml-auto">
+                            <button type="button" class="btn original-btn mr-1" data-toggle="modal"
+                                    data-target="#extmodal">
+                                Preview
+                            </button>
+                            <button type="button" class="btn original-btn" data-toggle="modal" data-target="#extmodal">
+                                Publish
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

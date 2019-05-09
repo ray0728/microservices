@@ -16,17 +16,14 @@ public class AccountService {
     @Autowired
     private RemoteAccountClient remoteAccountClient;
 
-    @HystrixCommand(fallbackMethod = "buildFallbackAccountInfo", threadPoolKey = "CreateAccountThreadPool",
-            commandProperties = {
-                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds",
-                            value = "1000")})
+    @HystrixCommand(fallbackMethod = "buildFallbackAccountInfo", threadPoolKey = "AccountThreadPool")
     public String createAccount(Account account) {
         String info = remoteAccountClient.getInfo(account.getName());
-        List<Account> accountList = JSON.parseArray(info, Account.class);
-        if (accountList != null && !accountList.isEmpty()) {
-            return String.format("failed! username(%s) already exists", account.getName());
+        Account existAccount = JSON.parseObject(info, Account.class);
+        if (existAccount != null) {
+            return String.format("username(%s) already exists", account.getName());
         }
-        info = remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null);
+        info = remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null, account.getProfile());
         ErrorData errorData = JSON.parseObject(info, ErrorData.class);
         return errorData.getCode() == ErrorData.INVALID_CODE ? "success" : errorData.toString();
     }
@@ -38,6 +35,6 @@ public class AccountService {
         } else {
             failinfo = throwable.getMessage();
         }
-        return "failed! " + failinfo;
+        return failinfo;
     }
 }

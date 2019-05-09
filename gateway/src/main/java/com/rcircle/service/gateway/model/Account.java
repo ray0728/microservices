@@ -13,9 +13,17 @@ public class Account implements Authentication, CredentialsContainer {
     private Object credentials;
     private Object principal;
     private Object detials;
+    private String profile;
     private JWTToken jwtToken = null;
     private boolean authenticated = false;
 
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
 
     public String getEmail() {
         return email;
