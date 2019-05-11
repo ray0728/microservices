@@ -35,40 +35,19 @@ $(document).ready(function () {
     $.base64.utf8encode = true;
 });
 
-$("#extmodal").on('show.bs.modal', function (e) {
-    let header = $(this).find('h5[class="title"]');
-    let content = $(this).find('div[class="modal-div"]');
-    if ($(e.relatedTarget).text() == "Publish") {
-        let files = $(".note-editable").find('video, img');
-        if (files.length > 0) {
-            header.text("Upload Files");
-            content.html(dynamicsUploadFilesBody(files));
-        } else {
-            header.text("Create New Blog");
-            content.html(createBody());
-        }
-    } else {
-        let title = $($.find('input[class="flex-grow-1 title"]')).val();
-        let code = $('#summernote').summernote('code');
-        header.text(title);
-        content.html(code);
-    }
-});
 
-$('#addLogType').on('hidden.bs.modal', function () {
-    let input = $(this).find('input');
+$('button.btn-type').click(function (e) {
+    let parentObj = $(this).parent();
+    let input = $(parentObj).find('input');
     let userdefcategory = $(input).val();
+    let error =!userdefcategory && !!($(input).css("border-color", "red")) || !($(input).css("border-color", ""));
     let shoudadd = true;
-    $("#category option").each(function () {
-        if ($(this).text() == userdefcategory) {
-            shoudadd = false;
-        }
-    });
-    if (shoudadd) {
-        let newoption = new Option(userdefcategory, userdefcategory);
-        $('#category').append(newoption);
-    }
-    input.val("");
+    !error && $("select option").each(function () {shoudadd = !($(this).text() == userdefcategory);});
+    let newoption = new Option(userdefcategory, userdefcategory);
+    !error && shoudadd && $('select').append(newoption);
+    !error && $("select").val(userdefcategory);
+    !error && input.val("");
+    !error && $("#addLogType").modal('hide');
 });
 
 createLog = function () {
@@ -106,6 +85,26 @@ autoDetect = function (resid) {
             break;
     }
 };
+
+$("#extmodal").on('show.bs.modal', function (e) {
+    let header = $(this).find('h5[class="title"]');
+    let content = $(this).find('div[class="modal-div"]');
+    if ($(e.relatedTarget).text() == "Publish") {
+        let files = $(".note-editable").find('video, img');
+        if (files.length > 0) {
+            header.text("Upload Files");
+            content.html(dynamicsUploadFilesBody(files));
+        } else {
+            header.text("Create New Blog");
+            content.html(createBody());
+        }
+    } else {
+        let title = $($.find('input[class="flex-grow-1 title"]')).val();
+        let code = $('#summernote').summernote('code');
+        header.text(title);
+        content.html(code);
+    }
+});
 
 $('#extmodal').on('shown.bs.modal', function (e) {
     if ($(e.relatedTarget).text() == "Publish") {
