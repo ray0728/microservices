@@ -37,6 +37,8 @@ public interface ResourceMapper {
 
     public List<Reply> getLogReplies(@Param("id") int lid);
 
+    public Reply getReply(@Param("id") int id);
+
     public List<Category> getAllCategory(@Param("uid") int uid);
 
     public List<Category> getAllPublicCategory();

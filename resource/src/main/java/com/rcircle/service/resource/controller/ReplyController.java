@@ -65,14 +65,9 @@ public class ReplyController {
         if (account == null || log == null) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_REPLY, "Invalid request parameters.");
         }
-        for (Reply reply : log.getReplyList()) {
-            if (reply.getId() != rid) {
-                continue;
-            }
-            if (reply.getUid() == account.getUid() || log.getUid() == account.getUid()) {
-                resourceService.deleteReply(log, reply);
-            }
-            break;
+        Reply reply = resourceService.getReplyById(rid);
+        if(reply.getLid() == log.getId() && account.getUid() == log.getUid()){
+            resourceService.deleteReply(log, reply);
         }
         return "";
     }

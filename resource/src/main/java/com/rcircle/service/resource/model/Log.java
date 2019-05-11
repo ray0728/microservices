@@ -17,10 +17,9 @@ public class Log implements Serializable {
     private String author;
     private Category category;
     private List<Tag> tags;
+    private int replies_count;
 
     private LogDetail detail;
-
-    private List<Reply> replyList;
 
     public int getId() {
         return id;
@@ -70,14 +69,6 @@ public class Log implements Serializable {
         this.detail = detial;
     }
 
-    public List<Reply> getReplyList() {
-        return replyList;
-    }
-
-    public void setReplyList(List<Reply> replyList) {
-        this.replyList = replyList;
-    }
-
     public int getStatus() {
         return status;
     }
@@ -104,10 +95,17 @@ public class Log implements Serializable {
         tags.add(tag);
     }
 
+    public int getReplies_count() {
+        return replies_count;
+    }
+
+    public void setReplies_count(int replies_count) {
+        this.replies_count = replies_count;
+    }
+
     public void reset(){
         id = 0;
         title = null;
-        replyList.clear();
     }
 
     public String getAuthor() {

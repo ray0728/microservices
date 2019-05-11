@@ -10,7 +10,6 @@
         <result column="status" property="status"/>
         <association property="category" column="{id=type, desc=title}" select="getCategory"/>
         <association property="detail" column="id" select="getLogDetail"/>
-        <collection property="replyList" column="id" select="getLogReplies"/>
         <collection property="tags" column="id" select="getTags"/>
     </resultMap>
     <resultMap id="logDetailMap" type="LogDetail">
@@ -35,6 +34,12 @@
         SELECT id, lid, uid,guest_name AS username, guest_email AS email, `date`, `desc`
         FROM t_reply
         WHERE lid = #{id}
+    </select>
+
+    <select id="getReply" resultType="Reply">
+        SELECT id, lid, uid,guest_name AS username, guest_email AS email, `date`, `desc`
+        FROM t_reply
+        WHERE id = #{id} LIMIT 1;
     </select>
 
     <select id="getLogDetail" resultType="LogDetail">

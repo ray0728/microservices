@@ -270,6 +270,10 @@ public class ResourceController {
     @GetMapping("blog")
     public String getLog(@RequestParam(name = "id") int id) {
         Log log = resourceService.getLog(id);
+        String info = accountService.getAccountInfo(log.getUid(), null);
+        if (info != null) {
+            log.setAuthor(JSONObject.parseObject(info, Account.class).getUsername());
+        }
         return JSONObject.toJSONString(log);
     }
 
