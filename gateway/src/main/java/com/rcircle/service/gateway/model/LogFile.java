@@ -19,7 +19,15 @@ public class LogFile implements Serializable {
     private Category category;
     private List<Tag> tags;
     private LogDetail detail;
-    private List<Reply> replyList;
+    private int replies_count;
+
+    public int getReplies_count() {
+        return replies_count;
+    }
+
+    public void setReplies_count(int replies_count) {
+        this.replies_count = replies_count;
+    }
 
     public int getId() {
         return id;
@@ -108,18 +116,9 @@ public class LogFile implements Serializable {
         this.detail = detail;
     }
 
-    public List<Reply> getReplyList() {
-        return replyList;
-    }
-
-    public void setReplyList(List<Reply> replyList) {
-        this.replyList = replyList;
-    }
-
     public void reset() {
         id = 0;
         title = null;
-        replyList.clear();
     }
 
     public String getMonth() {
@@ -132,10 +131,6 @@ public class LogFile implements Serializable {
 
     public int getDay() {
         return Toolkit.getDayFrom(date);
-    }
-
-    public int getComments_num() {
-        return replyList == null ? 0 : replyList.size();
     }
 
     public String getCover() {

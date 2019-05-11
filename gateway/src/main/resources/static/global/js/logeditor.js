@@ -112,23 +112,9 @@ $('#extmodal').on('shown.bs.modal', function (e) {
         let resid = $($('h6:contains("Title")')[0]).val();
         let titleobj = $.find('input[class="flex-grow-1 title"]');
         let category = $("#category").find(":selected").val();
-        let error = false;
-        if ($(titleobj).val() == "") {
-            $($('p:contains("Title")')[0]).css("color", "red");
-            $(titleobj).css("border-color", "red");
-            error = true;
-        } else {
-            $($('p:contains("Title")')[0]).css("color", "");
-            $(titleobj).css("border-color", "");
-        }
-        if (typeof (category) == "undefined") {
-            $($('p:contains("Category")')[0]).css("color", "red");
-            $('#category').css("border-color", "red");
-            error = true;
-        } else {
-            $($('p:contains("Category")')[0]).css("color", "");
-            $('#category').css("border-color", "");
-        }
+        let title = $(titleobj).val();
+        let error = !title && !!($(titleobj).css("border-color", "red")) || !($(titleobj).css("border-color", ""));
+        error = (typeof (category) == "undefined" && !!($('#category').css("border-color", "red")) || !($('#category').css("border-color", ""))) || error;
         if (error) {
             $('#extmodal').modal('hide');
         } else if (resid == 0 || resid == "") {

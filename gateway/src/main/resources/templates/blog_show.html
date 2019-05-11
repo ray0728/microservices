@@ -42,7 +42,7 @@
                         <h4><a th:text="${title}" class="post-headline mb-0" th:value="${log.id}"></a></h4>
                         <div class="post-meta mb-50">
                             <p>By <a href="#" th:text="${author.name}"></a></p>
-                            <p th:text="${log.comments_num + ' comments'}"></p>
+                            <p th:text="${log.replies_count + ' comments'}"></p>
                         </div>
                         <div th:utext="${context}"></div>
                     </div>
