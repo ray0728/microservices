@@ -14,7 +14,7 @@
 </head>
 <body>
 <div th:include="public::topbar"></div>
-<div class="container">
+<div class="container" name="context" th:value="${res_id}">
     <div class="row">
         <div class="col-12">
             <div class="post-blog-area">
@@ -36,7 +36,7 @@
                         <button type="button" class="btn fa fa-plus" data-toggle="modal"
                                 data-target="#addLogType"></button>
                     </div>
-                    <div class="col-12 mb-1">
+                    <div class="col-12 mb-2">
                         <div id="summernote"></div>
                     </div>
                     <div class="col-12">

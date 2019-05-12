@@ -51,13 +51,13 @@ $('button.btn-type').click(function (e) {
 });
 
 createLog = function () {
-    let title = $($.find('input[class="flex-grow-1 title"]')).val();
-    let category = $("#category").find(":selected").val();
+    let title = $($.find('input[name="title"]')).val();
+    let category = $("select").find(":selected").val();
     let formData = new FormData();
-    let tags = $($.find('input[class="flex-grow-1"]')).val().split(";");
+    let tags = $($.find('input[name="tag"]')).val().split(";");
     formData.append("title", title);
     formData.append("type", category);
-    formData.append("tags", tags);
+    tags.length > 0 && formData.append("tags", tags);
     formData.append("_csrf", $($.find('input[type="hidden"]')).val());
     $.ajax({
         url: "/blog/api/res/new",
@@ -89,7 +89,9 @@ autoDetect = function (resid) {
 $("#extmodal").on('show.bs.modal', function (e) {
     let header = $(this).find('h5[class="title"]');
     let content = $(this).find('div[class="modal-div"]');
-    if ($(e.relatedTarget).text() == "Publish") {
+    let source = $(e.relatedTarget).text();
+    source = $.trim(source);
+    if (source == "Publish") {
         let files = $(".note-editable").find('video, img');
         if (files.length > 0) {
             header.text("Upload Files");
@@ -99,7 +101,7 @@ $("#extmodal").on('show.bs.modal', function (e) {
             content.html(createBody());
         }
     } else {
-        let title = $($.find('input[class="flex-grow-1 title"]')).val();
+        let title = $($.find('input[name="title"]')).val();
         let code = $('#summernote').summernote('code');
         header.text(title);
         content.html(code);
@@ -107,13 +109,15 @@ $("#extmodal").on('show.bs.modal', function (e) {
 });
 
 $('#extmodal').on('shown.bs.modal', function (e) {
-    if ($(e.relatedTarget).text() == "Publish") {
-        let resid = $($('h6:contains("Title")')[0]).val();
-        let titleobj = $.find('input[class="flex-grow-1 title"]');
-        let category = $("#category").find(":selected").val();
+    let source = $(e.relatedTarget).text();
+    source = $.trim(source);
+    if (source == "Publish") {
+        let resid = $($.find('div[name="context"]')).val();
+        let titleobj = $.find('input[name="title"]');
+        let category = $("select").find(":selected").val();
         let title = $(titleobj).val();
         let error = !title && !!($(titleobj).css("border-color", "red")) || !($(titleobj).css("border-color", ""));
-        error = (typeof (category) == "undefined" && !!($('#category').css("border-color", "red")) || !($('#category').css("border-color", ""))) || error;
+        error = (typeof (category) == "undefined" && !!($('select').css("border-color", "red")) || !($('select').css("border-color", ""))) || error;
         if (error) {
             $('#extmodal').modal('hide');
         } else if (resid == 0 || resid == "") {
@@ -125,7 +129,9 @@ $('#extmodal').on('shown.bs.modal', function (e) {
 });
 
 $('#extmodal').on('hide.bs.modal', function (e) {
-    if ($(e.relatedTarget).text() == "Publish") {
+    let source = $(e.relatedTarget).text();
+    source = $.trim(source);
+    if (source == "Publish") {
         abort_upload = true;
         $.each(xhr_upload, function (index, filename) {
             $.ajax({
@@ -141,7 +147,9 @@ $('#extmodal').on('hide.bs.modal', function (e) {
 });
 
 $('#extmodal').on('hidden.bs.modal', function (e) {
-    if ($(e.relatedTarget).text() == "Publish") {
+    let source = $(e.relatedTarget).text();
+    source = $.trim(source);
+    if (source == "Publish") {
         abort_upload = false;
     }
 });
@@ -191,7 +199,7 @@ appendLog = function (lid) {
                 window.location.href = "/blog/list";
             },
             error: function (res) {
-                console.log("post new err:" + res);
+                console.log("post log err:" + res);
             }
         });
     }
