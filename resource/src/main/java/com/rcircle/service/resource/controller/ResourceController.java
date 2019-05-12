@@ -103,17 +103,23 @@ public class ResourceController {
         if (log.getUid() != account.getUid()) {
             return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_UPDATE_RES, "You don't have permission to access.");
         }
+        boolean shouldUpdate = false;
         if (!title.isEmpty()) {
             log.setTitle(title);
+            shouldUpdate = true;
         }
 
-        if (category != "") {
+        if (!category.isEmpty()) {
             log.setCategory(category);
+            shouldUpdate = true;
         }
         if (gid != 0) {
             log.setGid(gid);
+            shouldUpdate = true;
         }
-        resourceService.changeLog(log);
+        if (shouldUpdate) {
+            resourceService.changeLog(log);
+        }
         if (!htmllog.isEmpty()) {
             if (log.getDetail() == null) {
                 resourceService.createLogDetail(log);

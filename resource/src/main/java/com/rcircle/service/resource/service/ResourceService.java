@@ -76,7 +76,7 @@ public class ResourceService {
     }
 
     public int changeLogDetail(Log log) {
-        return resourceMapper.changeLogDetail(log.getId(), log.getDetail().getLog(), log.getDetail().getRes_url());
+        return resourceMapper.changeLogDetail(log.getDetail().getId(), log.getDetail().getLog(), log.getDetail().getRes_url());
     }
 
     public Reply createReply(Log log, Reply reply) {
