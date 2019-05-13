@@ -36,4 +36,7 @@ public interface RemoteResourceClient {
 
     @GetMapping("/reply/list")
     public String getAllReplies(@RequestParam(name = "id", required = true) int id);
+
+    @GetMapping("/ref/quot")
+    public String getQuotation(@RequestParam(name = "type") int type, @RequestParam(name = "id") int id);
 }

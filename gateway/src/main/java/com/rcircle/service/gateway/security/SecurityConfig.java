@@ -2,6 +2,8 @@ package com.rcircle.service.gateway.security;
 
 import com.rcircle.service.gateway.filters.OAuth2SsoAuthenticationProcessingFilter;
 import com.rcircle.service.gateway.model.Authority;
+import com.rcircle.service.gateway.security.authentication.OAuthAuthenticationFailureHandler;
+import com.rcircle.service.gateway.security.authentication.OAuthAuthenticationSuccessHandler;
 import com.rcircle.service.gateway.security.authentication.OAuthFeignAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +22,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
+    private OAuthAuthenticationFailureHandler oAuthAuthenticationFailureHandler;
+    @Autowired
+    private OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler;
+    @Autowired
     @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
 
@@ -32,6 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public OAuth2SsoAuthenticationProcessingFilter oAuth2SsoAuthenticationProcessingFilter() {
         OAuth2SsoAuthenticationProcessingFilter filter = new OAuth2SsoAuthenticationProcessingFilter();
         filter.setAuthenticationManager(authenticationManager);
+        filter.setAuthenticationSuccessHandler(oAuthAuthenticationSuccessHandler);
+        filter.setAuthenticationFailureHandler(oAuthAuthenticationFailureHandler);
         return filter;
     }
 
@@ -48,9 +56,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/blog/api/res/**", "/blog/api/reply/**").permitAll()
-                .antMatchers("/blog/list**","/blog/cate**","/blog/tag**","/blog/reply**").permitAll()
+                .antMatchers("/blog/list**", "/blog/cate**", "/blog/tag**", "/blog/reply**").permitAll()
                 .antMatchers("/blog/article**").permitAll()
-                .antMatchers("/home", "/", "/join**", "/rst/redirect").permitAll()
+                .antMatchers("/home", "/", "/login**","/join**", "/rst/redirect").permitAll()
                 .antMatchers("/admin/**").hasRole(Authority.ROLE_ADMIN)
                 .anyRequest().authenticated()
                 .and()

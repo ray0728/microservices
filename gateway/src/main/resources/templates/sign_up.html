@@ -16,10 +16,8 @@
         <div class="col-12 col-lg-9">
             <h3>Join Simple Life</h3>
             <blockquote class="blockquote">
-                <p>For 50 years, WWF has been protecting the future of nature. The world's leading conservation
-                    organization, WWF works in 100 countries and is supported by 1.2 million members in the United
-                    States and close to 5 million globally.</p>
-                <footer class="blockquote-footer">From WWF's website</footer>
+                <p th:text="${quot.desc}"></p>
+                <footer class="blockquote-footer" th:text="${quot.author + '【' + quot.source + '】'}"></footer>
             </blockquote>
             <h5>Create your personal account</h5>
             <div class="alert alert-danger alert-dismissible fade show" th:if="${errinfo != null}">

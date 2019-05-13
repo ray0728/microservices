@@ -113,7 +113,7 @@
                             <div class="single-blog-thumbnail">
                                 <img th:src="${log.cover}" alt="">
                                 <div class="post-date">
-                                    <a th:text="${'<span>' + log.year + '</span>' + log.day + '<span>' + log.month +'</span>'}"></a>
+                                    <a th:utext="${'<span>' + log.year + '</span>' + log.day + '<span>' + log.month +'</span>'}"></a>
                                 </div>
                             </div>
                         </div>

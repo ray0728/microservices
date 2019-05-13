@@ -15,6 +15,10 @@
     <div class="row">
         <div class="col-12 col-lg-9">
             <h5>Sign in to Simple Lift</h5>
+            <div class="alert alert-danger alert-dismissible fade show" th:if="${msg != null}">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <span th:utext="${'<strong>Failed! </strong>' + msg}"></span>
+            </div>
             <br/>
             <form role="form" action="/login" method="post">
                 <div class="row">

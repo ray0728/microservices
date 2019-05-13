@@ -2,14 +2,12 @@ package com.rcircle.service.gateway.controller;
 
 import com.rcircle.service.gateway.model.Account;
 import com.rcircle.service.gateway.services.AccountService;
+import com.rcircle.service.gateway.services.ReferenceService;
 import com.rcircle.service.gateway.services.ResourceService;
 import com.rcircle.service.gateway.utils.MvcToolkit;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.security.Principal;
@@ -19,6 +17,8 @@ import java.security.Principal;
 public class HomeController {
     @Resource
     AccountService accountService;
+    @Resource
+    ReferenceService referenceService;
     @Resource
     private ResourceService resourceService;
 
@@ -38,6 +38,7 @@ public class HomeController {
         MvcToolkit.autoLoadSideBarData(resourceService, mm);
         mm.addAttribute("title", "Create new account");
         mm.addAttribute("account", new Account());
+        mm.addAttribute("quot", referenceService.getRandomQuotation());
         return "sign_up";
     }
 
@@ -52,10 +53,13 @@ public class HomeController {
     }
 
     @GetMapping("login")
-    public String login(ModelMap mm) {
+    public String login(ModelMap mm, @RequestParam(name = "info", required = false, defaultValue = "") String msg) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
         MvcToolkit.autoLoadSideBarData(resourceService, mm);
         mm.addAttribute("title", "Login");
+        if (!msg.isEmpty()) {
+            mm.addAttribute("msg", msg);
+        }
         return "login";
     }
 }
