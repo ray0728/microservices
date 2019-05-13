@@ -20,6 +20,7 @@ public class ErrInfo {
     public static final int CODE_CREATE_NEW_CATEGORY = 513;
     public static final int CODE_DELETE_CATEGORY = 514;
     public static final int CODE_UPDATE_CATEGORY = 515;
+    public static final int CODE_GET_QUOT = 516;
 
 
     public static enum ErrType {

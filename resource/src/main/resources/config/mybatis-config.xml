@@ -19,5 +19,6 @@
         <typeAlias type="com.rcircle.service.resource.model.Reply" alias="Reply"/>
         <typeAlias type="com.rcircle.service.resource.model.Category" alias="Category"/>
         <typeAlias type="com.rcircle.service.resource.model.Tag" alias="Tag"/>
+        <typeAlias type="com.rcircle.service.resource.model.Quotation" alias="Quotation"/>
     </typeAliases>
 </configuration>
