@@ -47,6 +47,8 @@ public class HomeController {
         String ret = accountService.createAccount(account);
         if (!ret.startsWith("success")) {
             mm.addAttribute("errinfo", ret);
+            mm.addAttribute("quot", referenceService.getRandomQuotation());
+            mm.addAttribute("title", "Create new account");
             return "sign_up";
         }
         return "redirect:/home/";
