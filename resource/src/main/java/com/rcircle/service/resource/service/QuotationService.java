@@ -15,11 +15,11 @@ public class QuotationService {
     @Autowired
     private QuotationMapper quotationMapper;
 
-    public int getId(int type){
+    public int getId(int type) {
         int ret = 1;
         int max = quotationMapper.getMaxId();
         int min = quotationMapper.getMiniId();
-        switch (type){
+        switch (type) {
             case TYPE_MAX_ID:
                 ret = max;
                 break;
@@ -28,13 +28,13 @@ public class QuotationService {
                 break;
             case TYPE_RAND_ID:
                 Random random = new Random();
-                ret = min + random.nextInt(max + 1);
+                ret = min + random.nextInt(max - min);
                 break;
         }
         return ret;
     }
 
-    public Quotation getQuotationById(int id){
+    public Quotation getQuotationById(int id) {
         return quotationMapper.getQuotation(id);
     }
 

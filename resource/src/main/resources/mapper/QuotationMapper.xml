@@ -2,15 +2,15 @@
 <mapper namespace="com.rcircle.service.resource.mapper.QuotationMapper">
     <cache type="com.rcircle.service.resource.redis.RedisCache"/>
 
-    <select id="getMiniId">
+    <select id="getMiniId" resultType="java.lang.Integer">
         SELECT MIN(id) FROM t_quotations LIMIT 1;
     </select>
 
-    <select id="getMaxId">
+    <select id="getMaxId" resultType="java.lang.Integer">
         SELECT MAX(id) FROM t_quotations LIMIT 1;
     </select>
 
-    <select id="getQuotation">
+    <select id="getQuotation" resultType="Quotation">
         SELECT * FROM t_quotations WHERE id=#{id} LIMIT 1;
     </select>
 </mapper>
