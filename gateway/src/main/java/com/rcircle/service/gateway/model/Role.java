@@ -1,8 +1,10 @@
 package com.rcircle.service.gateway.model;
 
+import org.springframework.security.core.GrantedAuthority;
+
 import java.io.Serializable;
 
-public class Authority implements Serializable {
+public class Role implements Serializable, GrantedAuthority {
     public static final String ROLE_GUEST = "GUEST";
     public static final String ROLE_USER = "USER";
     public static final String ROLE_ADMIN = "ADMIN";

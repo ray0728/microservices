@@ -33,7 +33,7 @@
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-12 col-lg-9">
+            <div class="col-12 col-md-8 col-lg-9">
                 <div class="single-blog-area blog-style-2 mb-50">
                     <div class="single-blog-content">
                         <div class="line"></div>
@@ -41,7 +41,7 @@
                            th:text="${log.category.desc}"></a>
                         <h4><a th:text="${title}" class="post-headline mb-0" th:value="${log.id}"></a></h4>
                         <div class="post-meta mb-50">
-                            <p>By <a href="#" th:text="${author.name}"></a></p>
+                            <p>By <a th:text="${author.name}"></a></p>
                             <p th:text="${log.replies_count + ' comments'}"></p>
                         </div>
                         <div th:utext="${context}"></div>
@@ -54,9 +54,9 @@
                     <div class="author-info">
                         <div class="line"></div>
                         <span class="author-role">Author</span>
-                        <h4><a th:href='${"/author?id=" + author.id}' class="author-name" th:text="${author.name}"></a>
+                        <h4><a th:href='${"/author?id=" + author.uid}' class="author-name" th:text="${author.name}"></a>
                         </h4>
-                        <p th:text="${author.desc}"></p>
+                        <p th:text="${author.profile}"></p>
                     </div>
                 </div>
 
@@ -113,7 +113,7 @@
                     </div>
                 </div>
             </div>
-            <div th:include="public::sidebar"></div>
+            <div class="col-12 col-md-4 col-lg-3" th:include="public::sidebar"></div>
         </div>
     </div>
 </div>

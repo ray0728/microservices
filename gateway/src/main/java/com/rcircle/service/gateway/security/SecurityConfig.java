@@ -1,7 +1,7 @@
 package com.rcircle.service.gateway.security;
 
 import com.rcircle.service.gateway.filters.OAuth2SsoAuthenticationProcessingFilter;
-import com.rcircle.service.gateway.model.Authority;
+import com.rcircle.service.gateway.model.Role;
 import com.rcircle.service.gateway.security.authentication.OAuthAuthenticationFailureHandler;
 import com.rcircle.service.gateway.security.authentication.OAuthAuthenticationSuccessHandler;
 import com.rcircle.service.gateway.security.authentication.OAuthFeignAuthenticationProvider;
@@ -59,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/blog/list**", "/blog/cate**", "/blog/tag**", "/blog/reply**").permitAll()
                 .antMatchers("/blog/article**").permitAll()
                 .antMatchers("/home", "/", "/login**","/join**", "/rst/redirect").permitAll()
-                .antMatchers("/admin/**").hasRole(Authority.ROLE_ADMIN)
+                .antMatchers("/admin/**").hasRole(Role.ROLE_ADMIN)
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic().disable()

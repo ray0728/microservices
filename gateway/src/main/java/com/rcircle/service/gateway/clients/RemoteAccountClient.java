@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient("service-account")
 public interface RemoteAccountClient {
     @RequestMapping(method = RequestMethod.GET, value = "/account/info")
-    public String getInfo(@RequestParam(name = "username", required = true) String username);
+    public String getInfo(@RequestParam(name = "username") String username, @RequestParam(name = "uid") int id);
 
     @RequestMapping(method = RequestMethod.POST, value = "/account/create")
     public String create(@RequestParam(name = "usrname") String username,

@@ -80,7 +80,7 @@
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-12 col-lg-9">
+            <div class="col-12 col-md-8 col-lg-9">
                 <div class="single-blog-area blog-style-2 mb-50 wow fadeInUp" th:each="log,state:${logs}"
                      th:data-wow-delay="${'0.' + state.index+ 's'}">
                     <div th:if="${state.index != 2}" class="row align-items-center">
@@ -134,13 +134,12 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Load More -->
                 <div class="load-more-btn mt-100 wow fadeInUp" data-wow-delay="0.7s" data-wow-duration="1000ms">
                     <a href="/blog/list" class="btn original-btn">Read More</a>
                 </div>
             </div>
-            <div th:include="public::sidebar"></div>
+            <div class="col-12 col-md-4 col-lg-3" th:include="public::sidebar"></div>
         </div>
     </div>
 </div>

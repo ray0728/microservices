@@ -16,25 +16,39 @@ public class AccountService {
     @Autowired
     private RemoteAccountClient remoteAccountClient;
 
-    @HystrixCommand(fallbackMethod = "buildFallbackAccountInfo", threadPoolKey = "AccountThreadPool")
+    @HystrixCommand(fallbackMethod = "buildFallbackGetAccountInfo", threadPoolKey = "AccountThreadPool")
+    public Account getAccountInfo(int id, String name) {
+        String info = remoteAccountClient.getInfo(name, id);
+        return JSON.parseObject(info, Account.class);
+    }
+
+    @HystrixCommand(fallbackMethod = "buildFallbackCreateAccount", threadPoolKey = "AccountThreadPool")
     public String createAccount(Account account) {
-        String info = remoteAccountClient.getInfo(account.getName());
-        Account existAccount = JSON.parseObject(info, Account.class);
-        if (existAccount != null) {
-            return String.format("username(%s) already exists", account.getName());
+        Account existAccount = getAccountInfo(0, account.getName());
+        if (existAccount != null && !existAccount.hasError()) {
+            return String.format("user name(%s) already exists", account.getName());
         }
-        info = remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null, account.getProfile());
+        String info = remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null, account.getProfile());
         ErrorData errorData = JSON.parseObject(info, ErrorData.class);
         return errorData.getCode() == ErrorData.INVALID_CODE ? "success" : errorData.toString();
     }
 
-    private String buildFallbackAccountInfo(Account account, Throwable throwable) {
-        String failinfo = null;
+    private String autoDetectErrinfo(Throwable throwable){
+        String failinfo;
         if (throwable instanceof com.netflix.hystrix.exception.HystrixTimeoutException) {
             failinfo = "remote service is busy now, please retry it late";
         } else {
             failinfo = throwable.getMessage();
         }
         return failinfo;
+    }
+    private Account buildFallbackGetAccountInfo(int id, String name, Throwable throwable){
+        Account account = new Account();
+        account.setErrinfo(autoDetectErrinfo(throwable));
+        return account;
+    }
+
+    private String buildFallbackCreateAccount(Account account, Throwable throwable) {
+        return autoDetectErrinfo(throwable);
     }
 }

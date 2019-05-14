@@ -131,7 +131,7 @@
             href="https://colorlib.com" target="_blank">Colorlib</a>
     </footer>
 </div>
-<div class="col-12 col-md-4 col-lg-3" th:fragment="sidebar">
+<div th:fragment="sidebar">
     <div class="post-sidebar-area">
         <!-- Widget Area -->
         <div class="sidebar-widget-area">
@@ -155,7 +155,7 @@
                         <h4><a th:href="${'/blog/article?id=' + post.id}" class="post-headline"
                                th:text="${post.title}"></a></h4>
                         <div class="post-meta">
-                            <p><a th:text="${post.date}"></a></p>
+                            <p><a th:text="${post.createDate}"></a></p>
                         </div>
                     </div>
                 </div>

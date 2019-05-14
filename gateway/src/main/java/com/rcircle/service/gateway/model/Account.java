@@ -6,9 +6,12 @@ import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.security.auth.Subject;
+import java.security.Principal;
 import java.util.Collection;
+import java.util.List;
 
 public class Account implements Authentication, CredentialsContainer {
+    private int uid;
     private String email;
     private Object credentials;
     private Object principal;
@@ -16,6 +19,9 @@ public class Account implements Authentication, CredentialsContainer {
     private String profile;
     private JWTToken jwtToken = null;
     private boolean authenticated = false;
+    private String errinfo;
+    private long lastlogin;
+    private List<Role> roles;
 
     public String getProfile() {
         return profile;
@@ -35,7 +41,7 @@ public class Account implements Authentication, CredentialsContainer {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return roles;
     }
 
     @Override
@@ -65,6 +71,9 @@ public class Account implements Authentication, CredentialsContainer {
 
     @Override
     public String getName() {
+        if(principal instanceof Principal) {
+            return ((Principal) principal).getName();
+        }
         if (principal instanceof String) {
             return (String) principal;
         }
@@ -103,5 +112,41 @@ public class Account implements Authentication, CredentialsContainer {
     @Override
     public void eraseCredentials() {
         credentials = null;
+    }
+
+    public String getErrinfo() {
+        return errinfo;
+    }
+
+    public void setErrinfo(String errinfo) {
+        this.errinfo = errinfo;
+    }
+
+    public boolean hasError(){
+        return errinfo == null || errinfo.isEmpty();
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
+    public long getLastlogin() {
+        return lastlogin;
+    }
+
+    public void setLastlogin(long lastlogin) {
+        this.lastlogin = lastlogin;
+    }
+
+    public void setUsername(String name){
+        principal = name;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }

@@ -40,9 +40,11 @@ $('button.btn-type').click(function (e) {
     let parentObj = $(this).parent();
     let input = $(parentObj).find('input');
     let userdefcategory = $(input).val();
-    let error =!userdefcategory && !!($(input).css("border-color", "red")) || !($(input).css("border-color", ""));
+    let error = !userdefcategory && !!($(input).css("border-color", "red")) || !($(input).css("border-color", ""));
     let shoudadd = true;
-    !error && $("select option").each(function () {shoudadd = !($(this).text() == userdefcategory);});
+    !error && $("select option").each(function () {
+        shoudadd = !($(this).text() == userdefcategory);
+    });
     let newoption = new Option(userdefcategory, userdefcategory);
     !error && shoudadd && $('select').append(newoption);
     !error && $("select").val(userdefcategory);
@@ -54,7 +56,7 @@ createLog = function () {
     let title = $($.find('input[name="title"]')).val();
     let category = $("select").find(":selected").val();
     let formData = new FormData();
-    let tags = $($.find('input[name="tag"]')).val().split(";");
+    let tags = ($($.find('input[name="tag"]')).val()).replace("/；/g", ";").split(";");
     formData.append("title", title);
     formData.append("type", category);
     tags.length > 0 && formData.append("tags", tags);
@@ -93,13 +95,9 @@ $("#extmodal").on('show.bs.modal', function (e) {
     source = $.trim(source);
     if (source == "Publish") {
         let files = $(".note-editable").find('video, img');
-        if (files.length > 0) {
-            header.text("Upload Files");
-            content.html(dynamicsUploadFilesBody(files));
-        } else {
-            header.text("Create New Blog");
-            content.html(createBody());
-        }
+        files.length && (files = filterLocalResource(files));
+        files.length && header.text("Upload Files") && content.html(dynamicsUploadFilesBody(files));
+        !files.length && header.text("Create New Blog") && content.html(createBody());
     } else {
         let title = $($.find('input[name="title"]')).val();
         let code = $('#summernote').summernote('code');
@@ -107,6 +105,14 @@ $("#extmodal").on('show.bs.modal', function (e) {
         content.html(code);
     }
 });
+
+filterLocalResource = function (files) {
+    let localRes = [];
+    $.each(files, function (index, file) {
+        file.src.indexOf("blob") == 0 && localRes.push(file);
+    });
+    return localRes;
+};
 
 $('#extmodal').on('shown.bs.modal', function (e) {
     let source = $(e.relatedTarget).text();
@@ -280,7 +286,7 @@ sliceUpload = function (lid, file, chunkSize, progress) {
         formData.append("checksum", checksum);
         formData.append("_csrf", $($.find('input[type="hidden"]')).val());
         $.ajax({
-            url: "/blog/api/res/" + ((file.type.indexOf("video") == 0)? "video/":"img/") + lid + "/" + $.base64.encode(file.name),
+            url: "/blog/api/res/" + ((file.type.indexOf("video") == 0) ? "video/" : "img/") + lid + "/" + $.base64.encode(file.name),
             data: formData,
             type: "Post",
             cache: false,

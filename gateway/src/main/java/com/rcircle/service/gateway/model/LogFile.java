@@ -57,6 +57,11 @@ public class LogFile implements Serializable {
         return date;
     }
 
+    public String getCreateDate(){
+        String _date = String.valueOf(date);
+        return String.format("%s/%s/%s", _date.substring(0, 4),_date.substring(4,6), _date.substring(6,8));
+    }
+
     public void setDate(long date) {
         this.date = date;
     }

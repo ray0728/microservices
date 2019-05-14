@@ -1,7 +1,8 @@
 package com.rcircle.service.gateway.controller;
 
-import com.rcircle.service.gateway.model.Author;
+import com.rcircle.service.gateway.model.Account;
 import com.rcircle.service.gateway.model.LogFile;
+import com.rcircle.service.gateway.services.AccountService;
 import com.rcircle.service.gateway.services.ResourceService;
 import com.rcircle.service.gateway.utils.MvcToolkit;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,8 @@ import javax.annotation.Resource;
 public class BlogController {
     @Resource
     private ResourceService resourceService;
+    @Resource
+    private AccountService accountService;
 
     @GetMapping("/edit")
     public String createNewDiary(ModelMap mm, @RequestParam(name = "id", required = false, defaultValue = "0") int id) {
@@ -52,14 +55,11 @@ public class BlogController {
         } else {
             MvcToolkit.autoLoadTopMenuData(resourceService, mm);
             MvcToolkit.autoLoadSideBarData(resourceService, mm);
-            Author author = new Author();
-            author.setId(log.getUid());
-            author.setName(log.getAuthor());
-            author.setDesc("Nothing");
+            Account account = accountService.getAccountInfo(log.getUid(), null);
             mm.addAttribute("title", log.getTitle());
             mm.addAttribute("log", log);
             mm.addAttribute("context", log.getDetail().getLog());
-            mm.addAttribute("author", author);
+            mm.addAttribute("author", account);
             mm.addAttribute("replies", resourceService.getAllReplies(log.getId()));
         }
         return "blog_show";
