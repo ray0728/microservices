@@ -56,7 +56,8 @@ createLog = function () {
     let title = $($.find('input[name="title"]')).val();
     let category = $("select").find(":selected").val();
     let formData = new FormData();
-    let tags = ($($.find('input[name="tag"]')).val()).replace("/；/g", ";").split(";");
+    let tags = $($.find('input[name="tag"]')).val().replace(/；/g, ";").split(";");
+    tags = tags.filter(function(s){ return s&&s.trim();});
     formData.append("title", title);
     formData.append("type", category);
     tags.length > 0 && formData.append("tags", tags);
@@ -72,7 +73,7 @@ createLog = function () {
             autoDetect(resid);
         },
         error: function (res) {
-            console.log("post new err:" + res);
+            console.log(res);
         }
     });
 };
