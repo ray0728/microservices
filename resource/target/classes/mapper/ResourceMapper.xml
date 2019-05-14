@@ -104,12 +104,15 @@
     <select id="getLogs" resultMap="logMap">
         SELECT * FROM t_log
         <where>
-            <if test="uid != 0">uid = #{uid}</if>
-            <if test="type != 0">AND type = #{type}</if>
             <choose>
-                <when test="gid != 0">AND gid = #{gid}</when>
-                <otherwise>AND gid = 0</otherwise>
+                <when test="gid != 0">(gid = #{gid}</when>
+                <otherwise>(gid = 0</otherwise>
             </choose>
+            <choose>
+                <when test="uid!=0">OR uid = #{uid})</when>
+                <otherwise>)</otherwise>
+            </choose>
+            <if test="type != 0">AND type = #{type}</if>
             <if test="title != ''">AND title LIKE #{title}</if>
             <if test="status != 0">AND status = #{status}</if>
         </where>
