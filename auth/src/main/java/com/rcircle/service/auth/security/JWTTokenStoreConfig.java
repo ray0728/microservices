@@ -17,7 +17,6 @@ public class JWTTokenStoreConfig {
     @Value("${tokenkey.jks.private.key}")
     private String tokenkey_jks_private_key;
 
-    @Bean
     public TokenStore tokenStore() {
         return new JwtTokenStore(jwtAccessTokenConverter());
     }

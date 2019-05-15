@@ -1,6 +1,8 @@
 package com.rcircle.service.auth.security;
 
+import com.rcircle.service.auth.security.endpoint.LocalRedirectResolver;
 import com.rcircle.service.auth.service.AccountService;
+import com.rcircle.service.auth.service.GatewayService;
 import com.rcircle.service.auth.utils.CompatRedisTokenStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -54,6 +55,8 @@ public class AuthorizationConfigurer extends AuthorizationServerConfigurerAdapte
 
     @Resource
     private AccountService mAccountService;
+    @Resource
+    private GatewayService gatewayService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -106,6 +109,7 @@ public class AuthorizationConfigurer extends AuthorizationServerConfigurerAdapte
                 .tokenEnhancer(tokenEnhancerChain)
                 .authenticationManager(authenticationManager)
                 .tokenStore(tokenStore())
+                .redirectResolver(new LocalRedirectResolver().setGatewayService(gatewayService))
         ;
     }
 }
