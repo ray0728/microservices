@@ -1,12 +1,11 @@
 package com.rcircle.service.gateway.utils;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +18,6 @@ public class Toolkit {
     private static final String regEx_style = "<style[^>]*?>[\\s\\S]*?<\\/style>";
     private static final String regEx_html = "<[^>]+>";
     private static final String regEx_space = "\\s*|\t|\r|\n";
-
     public static String randomString(int length) {
         Random random = new Random();
         String ret = "";
@@ -71,7 +69,6 @@ public class Toolkit {
                 ip = inet.getHostAddress();
             }
         }
-        // 多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
         if (ip != null && ip.length() > 15) {
             if (ip.indexOf(",") > 0) {
                 ip = ip.substring(0, ip.indexOf(","));
