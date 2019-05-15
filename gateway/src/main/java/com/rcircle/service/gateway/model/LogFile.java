@@ -147,7 +147,7 @@ public class LogFile implements Serializable {
                 }
             }
         }
-        return "global/img/blog-img/7.jpg";
+        return "/global/img/blog-img/7.jpg";
     }
 
     public String getDesc() {

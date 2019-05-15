@@ -26,11 +26,21 @@ public class AccountService {
     public String createAccount(Account account) {
         Account existAccount = getAccountInfo(0, account.getName());
         if (existAccount != null && !existAccount.hasError()) {
-            return String.format("user name(%s) already exists", account.getName());
+            return String.format("user name(%s) has been used", account.getName());
+        }
+        existAccount = getAccountInfo(0, account.getEmail());
+        if (existAccount != null && !existAccount.hasError()) {
+            return String.format("email address(%s) has been used", account.getName());
         }
         String info = remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null, account.getProfile());
         ErrorData errorData = JSON.parseObject(info, ErrorData.class);
         return errorData.getCode() == ErrorData.INVALID_CODE ? "success" : errorData.toString();
+    }
+
+    @HystrixCommand(fallbackMethod = "buildFallbackAfterLoginSuccess", threadPoolKey = "AccountThreadPool")
+    public Account afterLoginSuccess(){
+        String ret = remoteAccountClient.refreshTime();
+        return JSON.parseObject(ret, Account.class);
     }
 
     private String autoDetectErrinfo(Throwable throwable){
@@ -42,6 +52,13 @@ public class AccountService {
         }
         return failinfo;
     }
+
+    private Account buildFallbackAfterLoginSuccess(Throwable throwable){
+        Account account = new Account();
+        account.setErrinfo(autoDetectErrinfo(throwable));
+        return account;
+    }
+
     private Account buildFallbackGetAccountInfo(int id, String name, Throwable throwable){
         Account account = new Account();
         account.setErrinfo(autoDetectErrinfo(throwable));

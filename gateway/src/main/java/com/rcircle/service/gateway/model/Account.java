@@ -7,7 +7,9 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 public class Account implements Authentication, CredentialsContainer {
@@ -123,7 +125,7 @@ public class Account implements Authentication, CredentialsContainer {
     }
 
     public boolean hasError(){
-        return errinfo == null || errinfo.isEmpty();
+        return errinfo != null && !errinfo.isEmpty();
     }
 
     public int getUid() {
@@ -148,5 +150,23 @@ public class Account implements Authentication, CredentialsContainer {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public void copyFrom(Account account){
+        if(!account.hasError()){
+            setEmail(account.getEmail());
+            setLastlogin(account.getLastlogin());
+            setProfile(account.getProfile());
+            setUsername(account.getName());
+            Iterator<? extends GrantedAuthority> iter = account.getAuthorities().iterator();
+            List<Role> roles = new ArrayList<>();
+            Role role;
+            while(iter.hasNext()){
+                role =  new Role();
+                role.setAuthority(iter.next().getAuthority());
+                roles.add(role);
+            }
+            setRoles(roles);
+        }
     }
 }

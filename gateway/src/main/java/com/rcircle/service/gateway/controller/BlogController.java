@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/blog")
@@ -48,7 +49,7 @@ public class BlogController {
     }
 
     @GetMapping("article")
-    public String showLog(@RequestParam(name = "id") int lid, ModelMap mm) {
+    public String showLog(Principal principal, @RequestParam(name = "id") int lid, ModelMap mm) {
         LogFile log = resourceService.getBlog(lid);
         if (log == null) {
             return "redirect:/error?type=404";
@@ -61,6 +62,12 @@ public class BlogController {
             mm.addAttribute("context", log.getDetail().getLog());
             mm.addAttribute("author", account);
             mm.addAttribute("replies", resourceService.getAllReplies(log.getId()));
+            if(principal!=null){
+                mm.addAttribute("reply_name", principal.getName());
+                if(principal instanceof Account){
+                    mm.addAttribute("reply_email", ((Account) principal).getEmail());
+                }
+            }
         }
         return "blog_show";
     }
