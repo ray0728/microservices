@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/account")
 public class AccountController {
-
     @Resource
     private AccountService mAccountService;
 

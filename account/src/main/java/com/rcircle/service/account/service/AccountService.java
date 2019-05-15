@@ -20,7 +20,7 @@ public class AccountService {
 
     public long createAccount(Account account) {
         long uid = 0;
-        if (mapper.getDetialByName(account.getUsername()) == null) {
+        if (mapper.getDetialByName(account.getUsername(), account.getEmail()) == null) {
             account.setPassword(Password.crypt(account.getPassword()));
             account.setFirsttime(SimpleDate.getUTCTime());
             mapper.create(account);
@@ -29,13 +29,22 @@ public class AccountService {
         return uid;
     }
 
-    public Account getAccount(String username, int uid) {
+    public Account getAccount(String name, int uid) {
         if (uid != 0) {
             return mapper.getDetialByUid(uid);
-        } else if (username != null && !username.isEmpty()) {
-            return mapper.getDetialByName(username);
+        } else if(isEmailFormat(name)) {
+            return mapper.getDetialByName(null, name);
+        }else if (name != null && !name.isEmpty()) {
+            return mapper.getDetialByName(name, null);
         }
         return null;
+    }
+
+    private boolean isEmailFormat(String email) {
+        if(email == null){
+            return false;
+        }
+        return  email.matches("[\\w\\.\\-]+@([\\w\\-]+\\.)+[\\w\\-]+");
     }
 
     public int updateAccountTimeInfo(Account account) {
@@ -45,7 +54,7 @@ public class AccountService {
     }
 
     public int destroyAccount(Account account) {
-        for(Role role:account.getRoles()){
+        for (Role role : account.getRoles()) {
             mapper.deleteRoleMap(role.getMid());
         }
         int ret = mapper.deleteAccount(account.getUid());
@@ -73,12 +82,12 @@ public class AccountService {
         for (int rid : rids) {
             isSkip = false;
             for (int i = 0; i < account.getRoles().size(); i++) {
-                if(account.getRoles().get(i).getRid()== rid){
+                if (account.getRoles().get(i).getRid() == rid) {
                     isSkip = true;
                     break;
                 }
             }
-            if(!isSkip){
+            if (!isSkip) {
                 count++;
                 mapper.addRoleForAccount(account.getUid(), rid);
                 account.addRole(rid);

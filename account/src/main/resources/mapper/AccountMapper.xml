@@ -8,7 +8,7 @@
         <result property="email" column="email"/>
         <result property="status" column="status"/>
         <result property="firsttime" column="first_time"/>
-        <result property="times" column="login_times"/>
+        <result property="times" column="times"/>
         <result property="lastlogin" column="last_login"/>
         <result property="profile" column="profile"/>
         <collection property="roles" column="id" select="getAccountRoles"/>
@@ -20,6 +20,9 @@
         <where>
             <if test="username != null">
                 username = #{username}
+            </if>
+            <if test="email != null">
+                OR email = #{email}
             </if>
         </where>
         LIMIT 1;
@@ -73,9 +76,10 @@
 
     <update id="updateLoginTime" parameterType="Account">
         UPDATE t_account
-        SET
-            login_times=#{times},
-            last_login=#{lastlogin}
+        <set>
+            <if test="times != 0">times=#{times},</if>
+            <if test="lastlogin != 0">last_login=#{lastlogin}</if>
+        </set>
         WHERE id = #{uid}
     </update>
 
