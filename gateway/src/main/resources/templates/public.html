@@ -3,6 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <body>
+
 <div th:fragment="topbar">
     <!-- ##### Header Area Start ##### -->
     <header class="header-area">
@@ -11,25 +12,22 @@
             <div class="container h-100">
                 <div class="row h-100 align-items-center">
                     <!-- Breaking News Area -->
-                    <div class="col-12 col-sm-8">
-                        <div class="breaking-news-area">
-                            <div id="breakingNewsTicker" class="ticker">
+                    <div id="newsarea" class="col-12 col-sm-10">
+                        <div class="breaking-news-area" th:fragment="news">
+                            <div id="breakingNewsTicker" class="ticker" style="height: 24px;">
                                 <ul>
-                                    <li><a href="#">Hello World!</a></li>
-                                    <li><a href="#">Hello Universe!</a></li>
-                                    <li><a href="#">Hello Original!</a></li>
-                                    <li><a href="#">Hello Earth!</a></li>
-                                    <li><a href="#">Hello Colorlib!</a></li>
+                                    <li th:each="news:${newslist}"><a th:href="${news.url}" th:text="${news.title}"></a></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                     <!-- Top Social Area -->
-                    <div class="col-12 col-sm-4">
+                    <div class="col-12 col-sm-2">
                         <div class="top-social-area">
                             <a href="#" data-toggle="tooltip" data-placement="bottom" title="Weibo"><i
                                     class="fa fa-weibo" aria-hidden="true"></i></a>
-                            <a href="#" data-toggle="tooltip" data-placement="bottom" title="Github"><i
+                            <a href="https://github.com/ray0728" data-toggle="tooltip" data-placement="bottom"
+                               title="Github"><i
                                     class="fa fa-github" aria-hidden="true"></i></a>
                         </div>
                     </div>

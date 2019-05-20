@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.rcircle.service.gateway.utils.Toolkit;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 

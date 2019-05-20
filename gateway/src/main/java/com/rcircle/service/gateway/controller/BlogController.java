@@ -3,6 +3,7 @@ package com.rcircle.service.gateway.controller;
 import com.rcircle.service.gateway.model.Account;
 import com.rcircle.service.gateway.model.LogFile;
 import com.rcircle.service.gateway.services.AccountService;
+import com.rcircle.service.gateway.services.MessageService;
 import com.rcircle.service.gateway.services.ResourceService;
 import com.rcircle.service.gateway.utils.MvcToolkit;
 import org.springframework.stereotype.Controller;
@@ -21,10 +22,13 @@ public class BlogController {
     private ResourceService resourceService;
     @Resource
     private AccountService accountService;
+    @Resource
+    private MessageService messageService;
 
     @GetMapping("/edit")
     public String createNewDiary(ModelMap mm, @RequestParam(name = "id", required = false, defaultValue = "0") int id) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
+        MvcToolkit.autoLoadNewsData(messageService, mm);
         LogFile log = null;
         if (id != 0) {
             log = resourceService.getBlog(id);
@@ -43,6 +47,7 @@ public class BlogController {
     public String showAllLogs(ModelMap mm) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
         MvcToolkit.autoLoadSideBarData(resourceService, mm);
+        MvcToolkit.autoLoadNewsData(messageService, mm);
         mm.addAttribute("title", "Blog List");
         mm.addAttribute("logs", resourceService.getAllBlogs(0, 0, null, 0, 0, 5));
         return "blog_list";
@@ -56,6 +61,7 @@ public class BlogController {
         } else {
             MvcToolkit.autoLoadTopMenuData(resourceService, mm);
             MvcToolkit.autoLoadSideBarData(resourceService, mm);
+            MvcToolkit.autoLoadNewsData(messageService, mm);
             Account account = accountService.getAccountInfo(log.getUid(), null);
             mm.addAttribute("title", log.getTitle());
             mm.addAttribute("log", log);

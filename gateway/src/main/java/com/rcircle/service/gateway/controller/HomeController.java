@@ -2,6 +2,7 @@ package com.rcircle.service.gateway.controller;
 
 import com.rcircle.service.gateway.model.Account;
 import com.rcircle.service.gateway.services.AccountService;
+import com.rcircle.service.gateway.services.MessageService;
 import com.rcircle.service.gateway.services.ReferenceService;
 import com.rcircle.service.gateway.services.ResourceService;
 import com.rcircle.service.gateway.utils.MvcToolkit;
@@ -21,13 +22,16 @@ public class HomeController {
     ReferenceService referenceService;
     @Resource
     private ResourceService resourceService;
+    @Resource
+    private MessageService messageService;
 
 
     @GetMapping(value = {"", "home"})
     public String showHomePage(Principal principal, ModelMap mm) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
         MvcToolkit.autoLoadSideBarData(resourceService, mm);
-        mm.addAttribute("title", "- Simple Lift -");
+        MvcToolkit.autoLoadNewsData(messageService, mm);
+        mm.addAttribute("title", "- Simple Life -");
         mm.addAttribute("logs", resourceService.getAllBlogs(0, 0, null, 0, 0, 5));
         return "index";
     }
@@ -36,6 +40,7 @@ public class HomeController {
     public String signup(ModelMap mm) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
         MvcToolkit.autoLoadSideBarData(resourceService, mm);
+        MvcToolkit.autoLoadNewsData(messageService, mm);
         mm.addAttribute("title", "Create new account");
         mm.addAttribute("account", new Account());
         mm.addAttribute("quot", referenceService.getRandomQuotation());
@@ -58,6 +63,7 @@ public class HomeController {
     public String login(ModelMap mm, @RequestParam(name = "info", required = false, defaultValue = "") String msg) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
         MvcToolkit.autoLoadSideBarData(resourceService, mm);
+        MvcToolkit.autoLoadNewsData(messageService, mm);
         mm.addAttribute("title", "Login");
         if (!msg.isEmpty()) {
             mm.addAttribute("msg", msg);
