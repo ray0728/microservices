@@ -17,14 +17,14 @@
     }
 
     // :: Newsticker Active Code
-    if ($.fn.simpleTicker) {
-        $.simpleTicker($("#breakingNewsTicker"), {
-            speed: 1000,
-            delay: 3500,
-            easing: 'swing',
-            effectType: 'roll'
-        });
-    }
+    // if ($.fn.simpleTicker) {
+    //     $.simpleTicker($("#breakingNewsTicker"), {
+    //         speed: 1000,
+    //         delay: 3500,
+    //         easing: 'swing',
+    //         effectType: 'roll'
+    //     });
+    // }
 
     // :: Tooltip Active Code
     $('[data-toggle="tooltip"]').tooltip();
