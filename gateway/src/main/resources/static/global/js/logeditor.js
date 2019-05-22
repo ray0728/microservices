@@ -185,6 +185,10 @@ dynamicsUploadFilesBody = function (files) {
     });
     return body.join('');
 };
+uploadCover = function(lid){
+    let upload = $("#cover_img").attr("src").indexOf("blob");
+
+};
 
 appendLog = function (lid) {
     $('#summernote').summernote('code');
@@ -330,3 +334,16 @@ sliceUpload = function (lid, file, chunkSize, progress) {
     xhr_upload.push(file.name);
 
 };
+
+$('#cover_img').on("click",function (e) {
+    $('#upload_cover').click();
+    e.preventDefault();
+});
+
+$('#upload_cover').on("change", function (e) {
+    let file = e.target.files;
+    $('#cover_img').attr('src',URL.createObjectURL(file[0]));
+});
+
+
+

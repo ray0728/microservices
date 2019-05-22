@@ -142,8 +142,8 @@ public class LogFile implements Serializable {
         if (detail != null) {
             Map<String, String> files = detail.getFiles();
             for (Map.Entry<String, String> entry : files.entrySet()) {
-                if (entry.getValue().contains(File.separatorChar + "img" + File.separatorChar)) {
-                    return String.format("/blog/api/res/img/%d/%s", id, entry.getKey());
+                if (entry.getValue().contains(File.separatorChar + "cover" + File.separatorChar)) {
+                    return String.format("/blog/api/res/cover/%d/%s", id, entry.getKey());
                 }
             }
         }

@@ -16,9 +16,19 @@
 <div th:include="public::topbar"></div>
 <div class="container" name="context" th:value="${res_id}">
     <div class="row">
-        <div class="col-12">
+        <div class="col-12 mt-4">
             <div class="post-blog-area">
                 <div class="row">
+                    <div class="col-12">
+                        <div class="group">
+                            <input id="upload_cover" type="file" accept="image/*" class="hidden">
+                            <label for="upload_cover">Select Cover</label>
+                            <br/>
+                            <div class="single-blog-thumbnail">
+                            <img  id="cover_img" src="/global/img/blog-img/add-cover.jpg">
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-12">
                         <div class="group">
                             <input type="text" name="title" required>
