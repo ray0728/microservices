@@ -145,6 +145,21 @@ public class ResourceController {
         return "";
     }
 
+    @PostMapping("cover/{lid}/{name}")
+    public String uploadCoverFile(Principal principal, MultipartFile file,
+                                  @PathVariable("lid") int id,
+                                  @PathVariable("name") String filename,
+                                  @RequestParam(name = "index", required = true) int index,
+                                  @RequestParam(name = "total", required = true) int total,
+                                  @RequestParam(name = "chunksize") int chunkSize,
+                                  @RequestParam(name = "checksum", required = true) String checksum){
+        Log log = resourceService.getLog(id);
+        String ret = verifyAccount(principal, log, ErrInfo.CODE_UPLOAD_RES, false);
+        if (ret != null) {
+            return ret;
+        }
+        return saveClientFile(log, "cover", filename, index, total, checksum, chunkSize, file);
+    }
 
     @PostMapping("img/{lid}/{name}")
     public String uploadImageFile(Principal principal, MultipartFile file,
@@ -283,15 +298,13 @@ public class ResourceController {
         return JSONObject.toJSONString(log);
     }
 
-    @GetMapping("img/{lid}/{name}")
-    @ResponseBody
-    public ResponseEntity getImageFile(Principal principal, @PathVariable("lid") int logid, @PathVariable("name") String name) {
+    private ResponseEntity getImageFile(Principal principal, String dir, int logid, String name){
         Log log = resourceService.getLog(logid);
         String errinfo = verifyAccount(principal, log, ErrInfo.CODE_GET_RES_FILES, true);
         if (errinfo == null) {
             try {
                 for (Map.Entry<String, String> entry : log.getDetail().getFiles().entrySet()) {
-                    if (entry.getKey().equals(name) && entry.getValue().contains(File.separatorChar + "img" + File.separatorChar)) {
+                    if (entry.getKey().equals(name) && entry.getValue().contains(File.separatorChar + dir + File.separatorChar)) {
                         return createResponseEntity("image/jpg", entry.getValue());
                     }
                 }
@@ -300,6 +313,17 @@ public class ResourceController {
             }
         }
         return ResponseEntity.status(404).body(errinfo);
+    }
+    @GetMapping("cover/{lid}/{name}")
+    @ResponseBody
+    public ResponseEntity getCoverFile(Principal principal, @PathVariable("lid") int logid, @PathVariable("name") String name) {
+        return getImageFile(principal, "cover", logid, name);
+    }
+
+    @GetMapping("img/{lid}/{name}")
+    @ResponseBody
+    public ResponseEntity getImageFile(Principal principal, @PathVariable("lid") int logid, @PathVariable("name") String name) {
+        return getImageFile(principal, "img", logid, name);
     }
 
     @GetMapping("video/{lid}/{name}")
