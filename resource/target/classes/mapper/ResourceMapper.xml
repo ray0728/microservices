@@ -206,14 +206,14 @@
         FROM t_tag
         JOIN t_tag_log_map
         JOIN t_log
-        <where>
-            <choose>
-                <when test="uid !=0">(t_log.uid = #{uid} OR t_log.gid = 0)</when>
-                <otherwise>t_log.gid = 0</otherwise>
-            </choose>
-            AND t_tag_log_map.tid = t_tag.id
-            AND t_tag_log_map.lid = t_log.id;
-        </where>
+        ON
+        <choose>
+            <when test="uid !=0">(t_log.uid = #{uid} OR t_log.gid = 0)</when>
+            <otherwise>t_log.gid = 0</otherwise>
+        </choose>
+        AND t_tag_log_map.tid = t_tag.id
+        AND t_tag_log_map.lid = t_log.id
+        GROUP BY t_tag.id;
     </select>
 
     <insert id="createTag" useGeneratedKeys="true" keyProperty="id" parameterType="Tag">

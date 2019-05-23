@@ -86,7 +86,7 @@ public class NetFile {
         return absolutePath;
     }
 
-    public static Map<String, String> getFilesInfo(String dir, String subdir){
+    public static Map<String, String> getFilesInfo(String dir, String subdir) {
         Map<String, String> fileInfoList = null;
         File root = new File(dir, subdir);
         File[] files = root.listFiles(pathname -> pathname.isFile());
@@ -101,8 +101,16 @@ public class NetFile {
         return fileInfoList;
     }
 
-    public static String translateLocalVideoFileToHlsFile(String path){
-        return path.replaceFirst("\\.*$", ".m3u8");
+    public static String translateLocalVideoFileToHlsFile(String path) {
+        File file = new File(path);
+        return String.format("%shls%sindex.m3u8", file.getParent() + File.separatorChar,
+                File.separatorChar + file.getName() + File.separatorChar);
+    }
+
+    public static String translateLocalVideoFileToTsFile(String path, String tsname){
+        File file = new File(path);
+        return String.format("%shls%s%s", file.getParent() + File.separatorChar,
+                File.separatorChar + file.getName() + File.separatorChar,tsname);
     }
 
 

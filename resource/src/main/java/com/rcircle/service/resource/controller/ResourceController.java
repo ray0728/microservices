@@ -152,7 +152,7 @@ public class ResourceController {
                                   @RequestParam(name = "index", required = true) int index,
                                   @RequestParam(name = "total", required = true) int total,
                                   @RequestParam(name = "chunksize") int chunkSize,
-                                  @RequestParam(name = "checksum", required = true) String checksum){
+                                  @RequestParam(name = "checksum", required = true) String checksum) {
         Log log = resourceService.getLog(id);
         String ret = verifyAccount(principal, log, ErrInfo.CODE_UPLOAD_RES, false);
         if (ret != null) {
@@ -298,7 +298,7 @@ public class ResourceController {
         return JSONObject.toJSONString(log);
     }
 
-    private ResponseEntity getImageFile(Principal principal, String dir, int logid, String name){
+    private ResponseEntity getImageFile(Principal principal, String dir, int logid, String name) {
         Log log = resourceService.getLog(logid);
         String errinfo = verifyAccount(principal, log, ErrInfo.CODE_GET_RES_FILES, true);
         if (errinfo == null) {
@@ -314,6 +314,7 @@ public class ResourceController {
         }
         return ResponseEntity.status(404).body(errinfo);
     }
+
     @GetMapping("cover/{lid}/{name}")
     @ResponseBody
     public ResponseEntity getCoverFile(Principal principal, @PathVariable("lid") int logid, @PathVariable("name") String name) {
@@ -324,6 +325,27 @@ public class ResourceController {
     @ResponseBody
     public ResponseEntity getImageFile(Principal principal, @PathVariable("lid") int logid, @PathVariable("name") String name) {
         return getImageFile(principal, "img", logid, name);
+    }
+
+    @GetMapping("video/{lid}/{name}/{tsfile}")
+    public ResponseEntity getVideoTsFile(Principal principal,
+                                       @PathVariable("lid") int logid,
+                                       @PathVariable("name") String name,
+                                       @PathVariable("tsfile")String tsname) {
+        Log log = resourceService.getLog(logid);
+        String errinfo = verifyAccount(principal, log, ErrInfo.CODE_GET_RES_FILES, true);
+        if (errinfo == null) {
+            try {
+                for (Map.Entry<String, String> entry : log.getDetail().getFiles().entrySet()) {
+                    if (entry.getKey().equals(name) && entry.getValue().contains(File.separatorChar + "video" + File.separatorChar)) {
+                        return createResponseEntity("application/x-mpegURL", NetFile.translateLocalVideoFileToTsFile(entry.getValue(), tsname));
+                    }
+                }
+            }catch (Exception e) {
+                errinfo = e.getMessage();
+            }
+        }
+        return ResponseEntity.status(404).body(errinfo);
     }
 
     @GetMapping("video/{lid}/{name}")
