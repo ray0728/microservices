@@ -259,7 +259,7 @@ replaceNode = function (code, lid) {
         let id = $(node).attr('id');
         let origial_video = [
             '<video controls class="video-js vjs-big-play-centered" id="' + id + '">',
-            '<source src="/blog/api/res/video/' + lid + '/' + $.base64.encode($(node).data('filename')) + '">',
+            '<source src="/blog/api/res/video/' + lid + '/' + $.base64.encode($(node).data('filename')) + '" type="application/x-mpegURL">',
             '</video>'
         ].join("");
         $(node).replaceWith(origial_video);
@@ -295,14 +295,61 @@ blobFileTransfer = function (lid, filename, url, type, progress, nextstep) {
             let blobdata = xhr.response;
             blobdata.name = filename;
             blobdata.lastModifiedDate = $.now();
-            sliceUpload(lid, new File([blobdata], filename, {
+            compressImage(lid, filename, new File([blobdata], filename, {
                 type: blobdata.type,
                 lastModified: Date.now()
-            }), 2097152, type, progress, nextstep);
+            }), type, progress, nextstep);
         }
     };
     xhr.open('GET', url, true);
     xhr.send();
+};
+
+compressImage = function (lid, filename, file, type, progress, nextstep) {
+    if (file.size / 1024 > 1025) {
+        let ready = new FileReader();
+        ready.readAsDataURL(file);
+        ready.onload = function () {
+            let img = new Image();
+            img.src = this.result;
+            img.onload = function () {
+                let that = this;
+                let w = that.width,
+                    h = that.height,
+                    scale = w / h;
+                let quality = 0.7;
+                let canvas = document.createElement('canvas');
+                let ctx = canvas.getContext('2d');
+                let anw = document.createAttribute("width");
+                anw.nodeValue = w;
+                let anh = document.createAttribute("height");
+                anh.nodeValue = h;
+                canvas.setAttributeNode(anw);
+                canvas.setAttributeNode(anh);
+                ctx.drawImage(that, 0, 0, w, h);
+                let base64 = canvas.toDataURL('image/jpeg', quality);
+                let afterfile = convertBase64UrlToFile(filename, base64);
+                sliceUpload(lid, afterfile, 2097152, type, progress, nextstep);
+            }
+        }
+    } else {
+        sliceUpload(lid, file, 2097152, type, progress, nextstep);
+    }
+}
+
+convertBase64UrlToFile = function(filename, urlData){
+    var arr = urlData.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    let blobdata = new Blob([u8arr], {type:mime});
+    blobdata.name = filename;
+    blobdata.lastModifiedDate = $.now();
+    return new File([blobdata], filename, {
+        type: blobdata.type,
+        lastModified: Date.now()
+    });
 }
 
 sliceUpload = function (lid, file, chunkSize, type, progress, nextstep) {
@@ -384,6 +431,5 @@ $('#upload_cover').on("change", function (e) {
     $('#cover_img').attr('src', URL.createObjectURL(file[0]));
     $('#cover_img').attr("data-filename", file[0].name);
 });
-
 
 
