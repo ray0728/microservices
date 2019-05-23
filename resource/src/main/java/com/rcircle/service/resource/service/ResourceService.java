@@ -111,6 +111,7 @@ public class ResourceService {
         log.setReplies_count(replies == null ? 0 : replies.size());
         copyResFileToLog(log, "img");
         copyResFileToLog(log, "video");
+        copyResFileToLog(log, "cover");
         return log;
     }
 
@@ -146,6 +147,7 @@ public class ResourceService {
             log.setReplies_count(replies == null ? 0 : replies.size());
             copyResFileToLog(log, "img");
             copyResFileToLog(log, "video");
+            copyResFileToLog(log, "cover");
         }
         return logs;
     }
