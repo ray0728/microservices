@@ -52,12 +52,15 @@ $('button.btn-type').click(function (e) {
     !error && $("#addLogType").modal('hide');
 });
 
-createLog = function () {
+createLog = function (header, progress) {
     let title = $($.find('input[name="title"]')).val();
     let category = $("select").find(":selected").val();
     let formData = new FormData();
     let tags = $($.find('input[name="tag"]')).val().replace(/；/g, ";").split(";");
-    tags = tags.filter(function(s){ return s&&s.trim();});
+    tags = tags.filter(function (s) {
+        return s && s.trim();
+    });
+    header.text("Prepare to create an article");
     formData.append("title", title);
     formData.append("type", category);
     tags.length > 0 && formData.append("tags", tags);
@@ -70,23 +73,13 @@ createLog = function () {
         processData: false,
         contentType: false,
         success: function (resid) {
-            autoDetect(resid);
+            $(progress[0]).css("width", "25%");
+            uploadCover(resid);
         },
         error: function (res) {
             console.log(res);
         }
     });
-};
-
-autoDetect = function (resid) {
-    switch ($('#extmodal').find('h5[class="title"]').text()) {
-        case ("Upload Files"):
-            processUpload(resid);
-            break;
-        case ("Create New Blog"):
-            appendLog(resid);
-            break;
-    }
 };
 
 $("#extmodal").on('show.bs.modal', function (e) {
@@ -95,10 +88,7 @@ $("#extmodal").on('show.bs.modal', function (e) {
     let source = $(e.relatedTarget).text();
     source = $.trim(source);
     if (source == "Publish") {
-        let files = $(".note-editable").find('video, img');
-        files.length && (files = filterLocalResource(files));
-        files.length && header.text("Upload Files") && content.html(dynamicsUploadFilesBody(files));
-        !files.length && header.text("Create New Blog") && content.html(createBody());
+        header.text("Prepare to create an article") && content.html(createBody());
     } else {
         let title = $($.find('input[name="title"]')).val();
         let code = $('#summernote').summernote('code');
@@ -117,6 +107,9 @@ filterLocalResource = function (files) {
 
 $('#extmodal').on('shown.bs.modal', function (e) {
     let source = $(e.relatedTarget).text();
+    let header = $(this).find('h5[class="title"]');
+    let content = $(this).find('div[class="modal-div"]');
+    let progress = $(this).find('div.progress-bar');
     source = $.trim(source);
     if (source == "Publish") {
         let resid = $($.find('div[name="context"]')).val();
@@ -125,13 +118,12 @@ $('#extmodal').on('shown.bs.modal', function (e) {
         let title = $(titleobj).val();
         let error = !title && !!($(titleobj).css("border-color", "red")) || !($(titleobj).css("border-color", ""));
         error = (typeof (category) == "undefined" && !!($('select').css("border-color", "red")) || !($('select').css("border-color", ""))) || error;
+        error && $('#extmodal').modal('hide');
         if (error) {
-            $('#extmodal').modal('hide');
-        } else if (resid == 0 || resid == "") {
-            createLog();
-        } else {
-            autoDetect(resid);
+            return;
         }
+        !resid && createLog(header, progress);
+        resid && uploadCover(resid);
     }
 });
 
@@ -163,8 +155,12 @@ $('#extmodal').on('hidden.bs.modal', function (e) {
 
 createBody = function () {
     body = [];
-    body.push('<div class="progress progresswithlabel">');
+    body.push('<div>');
+    body.push('<div class="progress progresswithlabel mb-2">');
     body.push('<div class="progress-bar progress-bar-striped bar" style="width:0%">');
+    body.push('</div>')
+    body.push('</div>')
+    body.push('<div id="upload_div" class="mt-4">')
     body.push('</div>')
     body.push('</div>')
     return body.join('');
@@ -185,35 +181,73 @@ dynamicsUploadFilesBody = function (files) {
     });
     return body.join('');
 };
-uploadCover = function(lid){
-    let upload = $("#cover_img").attr("src").indexOf("blob");
 
+createCoverUploadBody = function (filename) {
+    body = [];
+    body.push('<div class="progress progresswithlabel mt-2 mb-2">');
+    body.push('<div class="progress-bar progress-bar-striped bar" style="width:0%">');
+    body.push('<span>' + filename + '</span>');
+    body.push('</div>');
+    body.push('</div>');
+    return body.join('');
 };
 
+uploadCover = function (lid) {
+    let header = $("#extmodal").find('h5[class="title"]');
+    header.text("Upload Cover Image");
+    let progress = $("#extmodal").find('div.progress-bar');
+    if ($("#cover_img").attr("src").indexOf("blob") == 0) {
+        let filename = $("#cover_img").data("filename");
+        $('#upload_div').append(createCoverUploadBody(filename));
+        blobFileTransfer(lid, filename, $("#cover_img").attr("src"), "cover", progress[1], 0);
+    } else {
+        $(progress[0]).css("width", "50%");
+    }
+};
+
+uploadResFiles = function (lid) {
+    $("#upload_div").empty();
+    let header = $("#extmodal").find('h5[class="title"]');
+    let progress = $("#extmodal").find('div.progress-bar');
+    $(progress[0]).css("width", "50%");
+    header.text("Upload files in the article");
+    let files = $(".note-editable").find('video, img');
+    files.length && (files = filterLocalResource(files));
+    files.length && $('#upload_div').append(dynamicsUploadFilesBody(files));
+    processUpload(lid);
+}
+
 appendLog = function (lid) {
+    if (xhr_upload.length != 0) {
+        return;
+    }
+    $("#upload_div").empty();
+    let header = $('#extmodal').find('h5[class="title"]');
+    let progress = $("#extmodal").find('div.progress-bar');
+    header.text("Publishing article");
+    $(progress[0]).css("width", "75%");
     $('#summernote').summernote('code');
     let code = replaceNode($('#summernote').summernote('code'), lid);
     let formData = new FormData();
     formData.append("id", lid);
     formData.append("log", $(code).html());
     formData.append("_csrf", $($.find('input[type="hidden"]')).val());
-    if (xhr_upload.length == 0) {
-        $.ajax({
-            url: "/blog/api/res/update",
-            data: formData,
-            type: "Post",
-            cache: false,
-            processData: false,
-            contentType: false,
-            success: function (resid) {
-                $('#extmodal').modal("hide");
-                window.location.href = "/blog/list";
-            },
-            error: function (res) {
-                console.log("post log err:" + res);
-            }
-        });
-    }
+    $.ajax({
+        url: "/blog/api/res/update",
+        data: formData,
+        type: "Post",
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (resid) {
+            $(progress[0]).css("width", "100%");
+            $('#extmodal').modal("hide");
+            window.location.href = "/blog/list";
+        },
+        error: function (res) {
+            console.log("post log err:" + res);
+        }
+    });
 };
 
 replaceNode = function (code, lid) {
@@ -244,30 +278,34 @@ replaceNode = function (code, lid) {
 };
 
 processUpload = function (lid) {
-    let uploadlist = $('#extmodal').find('div[class="progress progresswithlabel mb-2"]');
+    let uploadlist = $('#upload_div').find('div[class="progress progresswithlabel mb-2"]');
     $.each(uploadlist, function (index, data) {
         let progress = $(data).find('div[class="progress-bar progress-bar-striped bar"]');
         let url = $(data).attr("value");
         let filename = $(data).find("span").text();
-        let xhr = new XMLHttpRequest;
-        xhr.responseType = 'blob';
-        xhr.onload = function () {
-            if (this.status == 200) {
-                let blobdata = xhr.response;
-                blobdata.name = filename;
-                blobdata.lastModifiedDate = $.now();
-                sliceUpload(lid, new File([blobdata], filename, {
-                    type: blobdata.type,
-                    lastModified: Date.now()
-                }), 2097152, progress);
-            }
-        };
-        xhr.open('GET', url, true);
-        xhr.send();
+        blobFileTransfer(lid, filename, url, null, progress, 1);
     });
 };
 
-sliceUpload = function (lid, file, chunkSize, progress) {
+blobFileTransfer = function (lid, filename, url, type, progress, nextstep) {
+    let xhr = new XMLHttpRequest;
+    xhr.responseType = 'blob';
+    xhr.onload = function () {
+        if (this.status == 200) {
+            let blobdata = xhr.response;
+            blobdata.name = filename;
+            blobdata.lastModifiedDate = $.now();
+            sliceUpload(lid, new File([blobdata], filename, {
+                type: blobdata.type,
+                lastModified: Date.now()
+            }), 2097152, type, progress, nextstep);
+        }
+    };
+    xhr.open('GET', url, true);
+    xhr.send();
+}
+
+sliceUpload = function (lid, file, chunkSize, type, progress, nextstep) {
     let chunks = Math.ceil(file.size / chunkSize);
     let currentChunk = 0;
     let checksum;
@@ -276,7 +314,7 @@ sliceUpload = function (lid, file, chunkSize, progress) {
     let fileReader = new FileReader();
     let start = 0;
     let end = chunkSize >= file.size ? file.size : chunkSize;
-
+    !type && (type = ((file.type.indexOf("video") == 0) ? "video" : "img"));
     fileReader.onload = function (e) {
         spark.appendBinary(e.target.result);
         checksum = spark.end();
@@ -291,7 +329,7 @@ sliceUpload = function (lid, file, chunkSize, progress) {
         formData.append("checksum", checksum);
         formData.append("_csrf", $($.find('input[type="hidden"]')).val());
         $.ajax({
-            url: "/blog/api/res/" + ((file.type.indexOf("video") == 0) ? "video/" : "img/") + lid + "/" + $.base64.encode(file.name),
+            url: "/blog/api/res/" + type + "/" + lid + "/" + $.base64.encode(file.name),
             data: formData,
             type: "Post",
             cache: false,
@@ -309,7 +347,7 @@ sliceUpload = function (lid, file, chunkSize, progress) {
                     xhr_upload.splice(file.name, 1);
                 } else if (currentChunk + 1 < chunks) {
                     currentChunk++;
-                    $(progress[0]).css('width', (currentChunk * 100 / chunks) + '%');
+                    $(progress).css('width', (currentChunk * 100 / chunks) + '%');
                     start = currentChunk * chunkSize;
                     end = start + chunkSize >= file.size ? file.size : start + chunkSize;
                     filedata = blobSlice.call(file, start, end);
@@ -317,9 +355,10 @@ sliceUpload = function (lid, file, chunkSize, progress) {
                         fileReader.readAsBinaryString(filedata);
                     }
                 } else {
-                    $(progress[0]).css('width', '100%');
+                    $(progress).css('width', '100%');
                     xhr_upload.splice(file.name, 1);
-                    appendLog(lid);
+                    !nextstep && uploadResFiles(lid);
+                    nextstep && appendLog(lid);
                 }
             },
             error: function (res) {
@@ -335,14 +374,15 @@ sliceUpload = function (lid, file, chunkSize, progress) {
 
 };
 
-$('#cover_img').on("click",function (e) {
+$('#cover_img').on("click", function (e) {
     $('#upload_cover').click();
     e.preventDefault();
 });
 
 $('#upload_cover').on("change", function (e) {
     let file = e.target.files;
-    $('#cover_img').attr('src',URL.createObjectURL(file[0]));
+    $('#cover_img').attr('src', URL.createObjectURL(file[0]));
+    $('#cover_img').attr("data-filename", file[0].name);
 });
 
 
