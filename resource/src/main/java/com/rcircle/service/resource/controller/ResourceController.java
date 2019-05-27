@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.rcircle.service.resource.service.AccountService;
 import com.rcircle.service.resource.service.ResourceService;
+import com.rcircle.service.resource.service.StreamService;
 import com.rcircle.service.resource.utils.ErrInfo;
 import com.rcircle.service.resource.utils.NetFile;
 import com.rcircle.service.resource.utils.SimpleDate;
@@ -43,6 +44,8 @@ public class ResourceController {
     private ResourceService resourceService;
     @Resource
     private AccountService accountService;
+    @Resource
+    private StreamService streamService;
 
     private Account getOpAccount(Principal principal) {
         if (principal != null) {
@@ -222,6 +225,11 @@ public class ResourceController {
             int err = NetFile.saveSplitFile(saveDir, filename, index, total, checksum, chunkSize, file);
             if (err != 0) {
                 result = ErrInfo.assembleJson(ErrInfo.ErrType.MISMATCH, err, "checksum mismatch.");
+            }else if(index + 1 == total && savetype.toLowerCase().equals("video")){
+                streamService.asynCreateHLSFiles(log.getId(),
+                        NetFile.getDirAbsolutePath(saveDir, filename) ,
+                        NetFile.getDirAbsolutePath(saveDir, "hls", filename),
+                        "/blog/api/res/video/");
             }
         } catch (IOException e) {
             result = ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_UPLOAD_RES, e.getMessage());
