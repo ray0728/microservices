@@ -44,12 +44,14 @@ public class BlogController {
     }
 
     @GetMapping("list")
-    public String showAllLogs(ModelMap mm) {
+    public String showAllLogs(ModelMap mm,
+                              @RequestParam(name = "cid", required = false, defaultValue = "0") int cate,
+                              @RequestParam(name = "tid", required = false, defaultValue = "0") int tag) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
         MvcToolkit.autoLoadSideBarData(resourceService, mm);
         MvcToolkit.autoLoadNewsData(messageService, mm);
         mm.addAttribute("title", "Blog List");
-        mm.addAttribute("logs", resourceService.getAllBlogs(0, 0, null, 0, 0, 5));
+        mm.addAttribute("logs", resourceService.getAllBlogs(0, 0, null, 0, 0, 10));
         return "blog_list";
     }
 
@@ -68,9 +70,9 @@ public class BlogController {
             mm.addAttribute("context", log.getDetail().getLog());
             mm.addAttribute("author", account);
             mm.addAttribute("replies", resourceService.getAllReplies(log.getId()));
-            if(principal!=null){
+            if (principal != null) {
                 mm.addAttribute("reply_name", principal.getName());
-                if(principal instanceof Account){
+                if (principal instanceof Account) {
                     mm.addAttribute("reply_email", ((Account) principal).getEmail());
                 }
             }
@@ -79,7 +81,7 @@ public class BlogController {
     }
 
     @GetMapping("reply")
-    public String showAllReplies(@RequestParam(name="id")int id, ModelMap mm){
+    public String showAllReplies(@RequestParam(name = "id") int id, ModelMap mm) {
         mm.addAttribute("replies", resourceService.getAllReplies(id));
         return "blog_show::reply-list";
     }

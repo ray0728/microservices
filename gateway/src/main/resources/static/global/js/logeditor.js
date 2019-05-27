@@ -306,7 +306,7 @@ blobFileTransfer = function (lid, filename, url, type, progress, nextstep) {
 };
 
 compressImage = function (lid, filename, file, type, progress, nextstep) {
-    if (file.size / 1024 > 1025) {
+    if (!file.type.indexOf("image") && (file.size / 1024 > 1025)) {
         let ready = new FileReader();
         ready.readAsDataURL(file);
         ready.onload = function () {
