@@ -56,8 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/blog/api/res/**", "/blog/api/reply/**").permitAll()
-                .antMatchers("/blog/list**", "/blog/cate**", "/blog/tag**", "/blog/reply**").permitAll()
-                .antMatchers("/blog/article**").permitAll()
+                .antMatchers("/blog/article", "/blog/list", "/blog/reply").permitAll()
                 .antMatchers("/home", "/", "/login**","/join**", "/news/**","/rst/redirect","/rst/ai").permitAll()
                 .antMatchers("/admin/**").hasRole(Role.ROLE_ADMIN)
                 .anyRequest().authenticated()

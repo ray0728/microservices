@@ -2,14 +2,11 @@ package com.rcircle.service.gateway.services;
 
 import com.alibaba.fastjson.JSON;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.rcircle.service.gateway.clients.RemoteAccountClient;
 import com.rcircle.service.gateway.model.Account;
-import com.rcircle.service.gateway.model.ErrorData;
+import com.rcircle.service.gateway.model.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class AccountService {
@@ -33,8 +30,8 @@ public class AccountService {
             return String.format("email address(%s) has been used", account.getName());
         }
         String info = remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null, account.getProfile());
-        ErrorData errorData = JSON.parseObject(info, ErrorData.class);
-        return errorData.getCode() == ErrorData.INVALID_CODE ? "success" : errorData.toString();
+        ResultData errorData = JSON.parseObject(info, ResultData.class);
+        return errorData.isSuccess()? "success" : errorData.toString();
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackAfterLoginSuccess", threadPoolKey = "AccountThreadPool")

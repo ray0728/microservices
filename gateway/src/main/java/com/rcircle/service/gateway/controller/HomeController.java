@@ -1,6 +1,7 @@
 package com.rcircle.service.gateway.controller;
 
 import com.rcircle.service.gateway.model.Account;
+import com.rcircle.service.gateway.model.LogFile;
 import com.rcircle.service.gateway.services.AccountService;
 import com.rcircle.service.gateway.services.MessageService;
 import com.rcircle.service.gateway.services.ReferenceService;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/")
@@ -31,8 +34,10 @@ public class HomeController {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
         MvcToolkit.autoLoadSideBarData(resourceService, mm);
         MvcToolkit.autoLoadNewsData(messageService, mm);
+        List<LogFile> logs = new ArrayList<>();
+        resourceService.getAllBlogs(0, 0, null, 0, 0, 5, logs);
         mm.addAttribute("title", "- Simple Life -");
-        mm.addAttribute("logs", resourceService.getAllBlogs(0, 0, null, 0, 0, 5));
+        mm.addAttribute("logs", logs);
         return "index";
     }
 

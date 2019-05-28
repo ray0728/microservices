@@ -8,6 +8,7 @@ public class Log implements Serializable {
     public static final int STATUS_NORMAL = 0;
     public static final int STATUS_DISABLE = 1;
     public static final int STATUS_LOCKED = 2;
+    private int count;
     private int id;
     private String title;
     private int uid;
@@ -101,6 +102,14 @@ public class Log implements Serializable {
 
     public void setReplies_count(int replies_count) {
         this.replies_count = replies_count;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public void reset(){

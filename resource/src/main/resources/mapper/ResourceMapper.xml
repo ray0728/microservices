@@ -8,6 +8,7 @@
         <result column="date" property="date"/>
         <result column="gid" property="gid"/>
         <result column="status" property="status"/>
+        <association property="count" column="id" select="getLogCount"/>
         <association property="category" column="{id=type, desc=title}" select="getCategory"/>
         <association property="detail" column="id" select="getLogDetail"/>
         <collection property="tags" column="id" select="getTags"/>
@@ -102,7 +103,7 @@
     </update>
 
     <select id="getLogs" resultMap="logMap">
-        SELECT * FROM t_log
+        SELECT SQL_CALC_FOUND_ROWS * FROM t_log
         <where>
             <choose>
                 <when test="gid != 0">(gid = #{gid}</when>
@@ -119,6 +120,9 @@
         ORDER BY id LIMIT #{offset},#{count}
     </select>
 
+    <select id="getLogCount" resultType="Integer">
+        SELECT FOUND_ROWS();
+    </select>
 
     <select id="getTopLogs" resultMap="logMap">
         SELECT t_log.id, t_log.uid, t_log.type, t_log.gid, t_log.title, t_log.date, t_log.status, count(*) AS count

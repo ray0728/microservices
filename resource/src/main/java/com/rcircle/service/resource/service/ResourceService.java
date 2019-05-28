@@ -129,9 +129,11 @@ public class ResourceService {
     }
 
 
-    public List<Log> getLogs(int uid, int type, int gid, String title, int status, int offset, int count) {
+    public List<Log> getLogs(int uid, int type, int gid, String title, int status, int offset, int count, Map resultData) {
         List<Log> logs = resourceMapper.getLogs(uid, type, gid, title, status, offset, count);
-        return assembleResFilesInfo(logs);
+        resultData.putIfAbsent("count", logs.get(0).getCount());
+        resultData.putIfAbsent("logs",assembleResFilesInfo(logs));
+        return logs;
     }
 
     public List<Log> getTopLogs() {

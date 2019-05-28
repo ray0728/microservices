@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class LogFile implements Serializable {
     private int id;
+    private int count;
     private String title;
     private int uid;
     private long date;
@@ -27,6 +28,14 @@ public class LogFile implements Serializable {
 
     public void setReplies_count(int replies_count) {
         this.replies_count = replies_count;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public int getId() {

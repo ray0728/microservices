@@ -5,7 +5,7 @@ import com.rcircle.service.resource.model.Account;
 import com.rcircle.service.resource.model.Category;
 import com.rcircle.service.resource.service.AccountService;
 import com.rcircle.service.resource.service.ResourceService;
-import com.rcircle.service.resource.utils.ErrInfo;
+import com.rcircle.service.resource.utils.ResultInfo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -44,7 +44,7 @@ public class CategoryController {
                                  @RequestParam(name = "desc", required = true) String desc){
         Account op = getOpAccount(principal);
         if (op == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CREATE_NEW_CATEGORY, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_CREATE_NEW_CATEGORY, "Invalid request parameters.");
         }
         Category category = resourceService.createNewCategory(op.getUid(), desc);
         return JSONObject.toJSONString(category);
@@ -55,7 +55,7 @@ public class CategoryController {
                                  @RequestParam(name = "id") int id){
         Account op = getOpAccount(principal);
         if (op == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_CATEGORY, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_DELETE_CATEGORY, "Invalid request parameters.");
         }
         resourceService.deleteUserDefCategory(op.getUid(), id);
         return "";
@@ -67,11 +67,11 @@ public class CategoryController {
                          @RequestParam(name = "desc") String desc){
         Account op = getOpAccount(principal);
         if (op == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPDATE_CATEGORY, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_UPDATE_CATEGORY, "Invalid request parameters.");
         }
         int line = resourceService.deleteUserDefCategory(op.getUid(), id);
         if(line == 0){
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPDATE_CATEGORY, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_UPDATE_CATEGORY, "Invalid request parameters.");
         }
         Category category = resourceService.createNewCategory(op.getUid(), desc);
         return JSONObject.toJSONString(category);

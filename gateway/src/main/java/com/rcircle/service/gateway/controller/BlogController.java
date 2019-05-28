@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/blog")
@@ -45,13 +47,18 @@ public class BlogController {
 
     @GetMapping("list")
     public String showAllLogs(ModelMap mm,
+                              @RequestParam(name = "page", required = false, defaultValue = "1") int page,
                               @RequestParam(name = "cid", required = false, defaultValue = "0") int cate,
                               @RequestParam(name = "tid", required = false, defaultValue = "0") int tag) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
         MvcToolkit.autoLoadSideBarData(resourceService, mm);
         MvcToolkit.autoLoadNewsData(messageService, mm);
+        List<LogFile> logs = new ArrayList<>();
         mm.addAttribute("title", "Blog List");
-        mm.addAttribute("logs", resourceService.getAllBlogs(0, 0, null, 0, 0, 10));
+        mm.addAttribute("count", resourceService.getAllBlogs(0, 0, null, 0,
+                (page - 1) * 10, 10, logs));
+        mm.addAttribute("logs", logs);
+        mm.addAttribute("page", page);
         return "blog_list";
     }
 

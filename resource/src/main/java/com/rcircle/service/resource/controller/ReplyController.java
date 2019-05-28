@@ -6,7 +6,7 @@ import com.rcircle.service.resource.model.Log;
 import com.rcircle.service.resource.model.Reply;
 import com.rcircle.service.resource.service.AccountService;
 import com.rcircle.service.resource.service.ResourceService;
-import com.rcircle.service.resource.utils.ErrInfo;
+import com.rcircle.service.resource.utils.ResultInfo;
 import com.rcircle.service.resource.utils.SimpleDate;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,11 +41,11 @@ public class ReplyController {
             }
         }
         if (uid == 0 && username.isEmpty()) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_CREATE_REPLY, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_CREATE_REPLY, "Invalid request parameters.");
         }
         Log log = resourceService.getLog(id);
         if(log == null){
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CREATE_REPLY, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_CREATE_REPLY, "Invalid request parameters.");
         }
         Reply reply = new Reply();
         reply.setDate(SimpleDate.getUTCTime());
@@ -63,7 +63,7 @@ public class ReplyController {
         Account account = getOpAccount(principal);
         Log log = resourceService.getLog(lid);
         if (account == null || log == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_REPLY, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_DELETE_REPLY, "Invalid request parameters.");
         }
         Reply reply = resourceService.getReplyById(rid);
         if(reply.getLid() == log.getId() && account.getUid() == log.getUid()){

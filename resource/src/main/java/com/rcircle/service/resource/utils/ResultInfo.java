@@ -1,10 +1,10 @@
 package com.rcircle.service.resource.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.rcircle.service.resource.model.ErrorData;
+import com.rcircle.service.resource.model.ResultData;
 
 
-public class ErrInfo {
+public class ResultInfo {
     public static final int CODE_CREATE_NEW = 501;
     public static final int CODE_UPDATE_RES = 502;
     public static final int CODE_DELETE_RES = 503;
@@ -21,6 +21,7 @@ public class ErrInfo {
     public static final int CODE_DELETE_CATEGORY = 514;
     public static final int CODE_UPDATE_CATEGORY = 515;
     public static final int CODE_GET_QUOT = 516;
+    public static final int CODE_GET_RES_COUNT = 517;
 
 
     public static enum ErrType {
@@ -29,9 +30,9 @@ public class ErrInfo {
         NULLOBJ,
         INVALID,
         MISMATCH
-    };
+    }
 
-    private static String translate(ErrType type) {
+    public static String translate(ErrType type) {
         String desc = null;
         switch (type) {
             case PARAMS:
@@ -57,10 +58,21 @@ public class ErrInfo {
     }
 
     public static String assembleJson(ErrType type, int code, String msg) {
-        ErrorData data = new ErrorData();
+        ResultData data = new ResultData();
         data.setCode(code);
         data.setType(translate(type));
         data.setMsg(msg);
+        return JSONObject.toJSONString(data);
+    }
+
+    public static String assembleSuccessJson(int code, String msg, String label, Object obj) {
+        ResultData data = new ResultData();
+        data.setCode(code);
+        data.setType(translate(ErrType.SUCCESS));
+        if (msg != null) {
+            data.setMsg(msg);
+        }
+        data.addToMap(label, obj);
         return JSONObject.toJSONString(data);
     }
 }

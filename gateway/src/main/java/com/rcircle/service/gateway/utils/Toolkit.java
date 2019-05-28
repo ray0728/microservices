@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -130,5 +133,19 @@ public class Toolkit {
         htmlStr = delHTMLTag(htmlStr, regEx_space);
 
         return htmlStr.replaceAll("&nbsp;", "");
+    }
+
+    public static <T> int copy(List<T>src, List<T>dst){
+        if(src == null){
+            return 0;
+        }
+        if(dst == null){
+            dst = new ArrayList<T>();
+        }
+        Iterator<T> iter = src.iterator();
+        while(iter.hasNext()){
+            dst.add(iter.next());
+        }
+        return src.size();
     }
 }

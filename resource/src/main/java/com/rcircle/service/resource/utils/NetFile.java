@@ -4,7 +4,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,7 @@ public class NetFile {
             srcfile.transferTo(tmpFile);
             fis = new FileInputStream(tmpFile);
             if (!DigestUtils.md5Hex(fis).equals(checksum)) {
-                errcode = ErrInfo.CODE_SAVE_NETFILE;
+                errcode = ResultInfo.CODE_SAVE_NETFILE;
             } else {
                 fis.close();
                 RandomAccessFile dstFile = new RandomAccessFile(getDirAbsolutePath(root, "Unconfirmed " + filename + ".download"), "rw");
@@ -40,9 +39,9 @@ public class NetFile {
                 dstFile.close();
             }
         } catch (FileNotFoundException e) {
-            errcode = ErrInfo.CODE_CREATE_FILE_STREAM;
+            errcode = ResultInfo.CODE_CREATE_FILE_STREAM;
         } catch (IOException e) {
-            errcode = ErrInfo.CODE_SAVE_NETFILE;
+            errcode = ResultInfo.CODE_SAVE_NETFILE;
             ;
         } finally {
             if (fis != null) {

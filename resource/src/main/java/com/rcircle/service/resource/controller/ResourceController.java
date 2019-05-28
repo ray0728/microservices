@@ -5,25 +5,21 @@ import com.alibaba.fastjson.JSONObject;
 import com.rcircle.service.resource.service.AccountService;
 import com.rcircle.service.resource.service.ResourceService;
 import com.rcircle.service.resource.service.StreamService;
-import com.rcircle.service.resource.utils.ErrInfo;
+import com.rcircle.service.resource.utils.ResultInfo;
 import com.rcircle.service.resource.utils.NetFile;
 import com.rcircle.service.resource.utils.SimpleDate;
 import com.rcircle.service.resource.model.*;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Arrays;
@@ -74,7 +70,7 @@ public class ResourceController {
                                @RequestParam(name = "tags", required = false, defaultValue = "") String[] tags) {
         Account account = getOpAccount(principal);
         if (account == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CREATE_NEW, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_CREATE_NEW, "Invalid request parameters.");
         }
         Log log = new Log();
         log.setTitle(title);
@@ -100,11 +96,11 @@ public class ResourceController {
                             @RequestParam(name = "log", required = false, defaultValue = "") String htmllog) {
         Account account = getOpAccount(principal);
         if (account == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_UPDATE_RES, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_UPDATE_RES, "Invalid request parameters.");
         }
         Log log = resourceService.getLog(id);
         if (log.getUid() != account.getUid()) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_UPDATE_RES, "You don't have permission to access.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_UPDATE_RES, "You don't have permission to access.");
         }
         boolean shouldUpdate = false;
         if (!title.isEmpty()) {
@@ -138,11 +134,11 @@ public class ResourceController {
                             @RequestParam(name = "id", required = true) int id) {
         Account account = getOpAccount(principal);
         if (account == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_RES, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_DELETE_RES, "Invalid request parameters.");
         }
         Log log = resourceService.getLog(id);
         if (log.getUid() != account.getUid()) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_DELETE_RES, "You don't have permission to access.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_DELETE_RES, "You don't have permission to access.");
         }
         resourceService.deleteLog(log);
         return "";
@@ -157,7 +153,7 @@ public class ResourceController {
                                   @RequestParam(name = "chunksize") int chunkSize,
                                   @RequestParam(name = "checksum", required = true) String checksum) {
         Log log = resourceService.getLog(id);
-        String ret = verifyAccount(principal, log, ErrInfo.CODE_UPLOAD_RES, false);
+        String ret = verifyAccount(principal, log, ResultInfo.CODE_UPLOAD_RES, false);
         if (ret != null) {
             return ret;
         }
@@ -174,7 +170,7 @@ public class ResourceController {
                                   @RequestParam(name = "checksum", required = true) String checksum) {
 
         Log log = resourceService.getLog(id);
-        String ret = verifyAccount(principal, log, ErrInfo.CODE_UPLOAD_RES, false);
+        String ret = verifyAccount(principal, log, ResultInfo.CODE_UPLOAD_RES, false);
         if (ret != null) {
             return ret;
         }
@@ -191,7 +187,7 @@ public class ResourceController {
                                   @RequestParam(name = "chunksize") int chunkSize,
                                   @RequestParam(name = "checksum", required = true) String checksum) {
         Log log = resourceService.getLog(id);
-        String ret = verifyAccount(principal, log, ErrInfo.CODE_UPLOAD_RES, false);
+        String ret = verifyAccount(principal, log, ResultInfo.CODE_UPLOAD_RES, false);
         if (ret != null) {
             return ret;
         }
@@ -203,13 +199,13 @@ public class ResourceController {
         if (log.getGid() != 0) {
             Account account = getOpAccount(principal);
             if (account == null) {
-                return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, errInfo, "Invalid request parameters.");
+                return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, errInfo, "Invalid request parameters.");
             }
             if (log.getUid() != account.getUid()) {
-                return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, errInfo, "You don't have permission to access.");
+                return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, errInfo, "You don't have permission to access.");
             }
             if (shouldCheckGroup && !isBelongGid(log.getGid())) {
-                return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, errInfo, "You don't have permission to access.");
+                return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, errInfo, "You don't have permission to access.");
             }
         }
         return null;
@@ -224,15 +220,15 @@ public class ResourceController {
         try {
             int err = NetFile.saveSplitFile(saveDir, filename, index, total, checksum, chunkSize, file);
             if (err != 0) {
-                result = ErrInfo.assembleJson(ErrInfo.ErrType.MISMATCH, err, "checksum mismatch.");
-            }else if(index + 1 == total && savetype.toLowerCase().equals("video")){
+                result = ResultInfo.assembleJson(ResultInfo.ErrType.MISMATCH, err, "checksum mismatch.");
+            } else if (index + 1 == total && savetype.toLowerCase().equals("video")) {
                 streamService.asynCreateHLSFiles(log.getId(),
-                        NetFile.getDirAbsolutePath(saveDir, filename) ,
+                        NetFile.getDirAbsolutePath(saveDir, filename),
                         NetFile.getDirAbsolutePath(saveDir, "hls", filename),
                         "/blog/api/res/video/");
             }
         } catch (IOException e) {
-            result = ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_UPLOAD_RES, e.getMessage());
+            result = ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_UPLOAD_RES, e.getMessage());
         }
         return result;
     }
@@ -243,14 +239,14 @@ public class ResourceController {
                              @RequestParam(name = "name", required = false, defaultValue = "all") String filesname) {
         Account account = getOpAccount(principal);
         if (account == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_RES_FILES, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_DELETE_RES_FILES, "Invalid request parameters.");
         }
         Log log = resourceService.getLog(id);
         if (log.getUid() != account.getUid()) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_DELETE_RES_FILES, "You don't have permission to access.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_DELETE_RES_FILES, "You don't have permission to access.");
         }
         if (log == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_RES_FILES, "There are no logfile existes.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_DELETE_RES_FILES, "There are no logfile existes.");
         }
         NetFile.deleteFiles(log.getDetail().getRes_url(), Arrays.asList(filesname.split(";")));
         return "";
@@ -272,9 +268,13 @@ public class ResourceController {
                 uid = account.getUid();
             }
         }
-        List<Log> logs = resourceService.getLogs(uid, type, gid, title, status, offset, count);
+        ResultData data = new ResultData();
+        List<Log> logs = resourceService.getLogs(uid, type, gid, title, status, offset, count, data.getMap());
         assembleAuthor(logs);
-        return JSONObject.toJSONString(logs);
+        data.setCode(ResultInfo.CODE_GET_RES);
+        data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
+        data.addToMap("logs", logs);
+        return JSONObject.toJSONString(data);
     }
 
     private List<Log> assembleAuthor(List<Log> logs) {
@@ -291,24 +291,31 @@ public class ResourceController {
 
     @GetMapping("top")
     public String getTopResource() {
+        ResultData data = new ResultData();
         List<Log> logs = resourceService.getTopLogs();
         assembleAuthor(logs);
-        return JSONObject.toJSONString(logs);
+        data.setCode(ResultInfo.CODE_GET_RES);
+        data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
+        data.addToMap("logs", logs);
+        return JSONObject.toJSONString(data);
     }
 
     @GetMapping("blog")
     public String getLog(@RequestParam(name = "id") int id) {
+        ResultData data = new ResultData();
         Log log = resourceService.getLog(id);
         String info = accountService.getAccountInfo(log.getUid(), null);
         if (info != null) {
             log.setAuthor(JSONObject.parseObject(info, Account.class).getUsername());
         }
-        return JSONObject.toJSONString(log);
+        data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
+        data.addToMap("log", log);
+        return JSONObject.toJSONString(data);
     }
 
     private ResponseEntity getImageFile(Principal principal, String dir, int logid, String name) {
         Log log = resourceService.getLog(logid);
-        String errinfo = verifyAccount(principal, log, ErrInfo.CODE_GET_RES_FILES, true);
+        String errinfo = verifyAccount(principal, log, ResultInfo.CODE_GET_RES_FILES, true);
         if (errinfo == null) {
             try {
                 for (Map.Entry<String, String> entry : log.getDetail().getFiles().entrySet()) {
@@ -337,11 +344,11 @@ public class ResourceController {
 
     @GetMapping("video/{lid}/{name}/{tsfile}")
     public ResponseEntity getVideoTsFile(Principal principal,
-                                       @PathVariable("lid") int logid,
-                                       @PathVariable("name") String name,
-                                       @PathVariable("tsfile")String tsname) {
+                                         @PathVariable("lid") int logid,
+                                         @PathVariable("name") String name,
+                                         @PathVariable("tsfile") String tsname) {
         Log log = resourceService.getLog(logid);
-        String errinfo = verifyAccount(principal, log, ErrInfo.CODE_GET_RES_FILES, true);
+        String errinfo = verifyAccount(principal, log, ResultInfo.CODE_GET_RES_FILES, true);
         if (errinfo == null) {
             try {
                 for (Map.Entry<String, String> entry : log.getDetail().getFiles().entrySet()) {
@@ -349,7 +356,7 @@ public class ResourceController {
                         return createResponseEntity("application/x-mpegURL", NetFile.translateLocalVideoFileToTsFile(entry.getValue(), tsname));
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 errinfo = e.getMessage();
             }
         }
@@ -359,7 +366,7 @@ public class ResourceController {
     @GetMapping("video/{lid}/{name}")
     public ResponseEntity getVideoFile(Principal principal, @PathVariable("lid") int logid, @PathVariable("name") String name) {
         Log log = resourceService.getLog(logid);
-        String errinfo = verifyAccount(principal, log, ErrInfo.CODE_GET_RES_FILES, true);
+        String errinfo = verifyAccount(principal, log, ResultInfo.CODE_GET_RES_FILES, true);
         if (errinfo == null) {
             try {
                 for (Map.Entry<String, String> entry : log.getDetail().getFiles().entrySet()) {
