@@ -1,15 +1,12 @@
 package com.rcircle.service.gateway.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import com.alibaba.fastjson.JSON;
+import com.rcircle.service.gateway.model.ResultData;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +18,7 @@ public class Toolkit {
     private static final String regEx_style = "<style[^>]*?>[\\s\\S]*?<\\/style>";
     private static final String regEx_html = "<[^>]+>";
     private static final String regEx_space = "\\s*|\t|\r|\n";
+
     public static String randomString(int length) {
         Random random = new Random();
         String ret = "";
@@ -82,17 +80,17 @@ public class Toolkit {
 
 
     public static int getYearFom(long localDate) {
-        if(isValidDate(localDate)) {
+        if (isValidDate(localDate)) {
             return Integer.parseInt(String.valueOf(localDate).substring(0, 4));
-        }else{
+        } else {
             return 2016;
         }
     }
 
     public static String getMonthFrom(long localDate) {
-        if(isValidDate(localDate)) {
+        if (isValidDate(localDate)) {
             return month_map[Integer.parseInt(String.valueOf(localDate).substring(4, 6)) - 1];
-        }else{
+        } else {
             return month_map[6];
         }
     }
@@ -113,9 +111,9 @@ public class Toolkit {
     }
 
     public static int getDayFrom(long localDate) {
-        if(isValidDate(localDate)) {
+        if (isValidDate(localDate)) {
             return Integer.parseInt(String.valueOf(localDate).substring(6, 8));
-        }else{
+        } else {
             return 28;
         }
     }
@@ -135,17 +133,46 @@ public class Toolkit {
         return htmlStr.replaceAll("&nbsp;", "");
     }
 
-    public static <T> int copy(List<T>src, List<T>dst){
-        if(src == null){
+    public static <T> int copy(List<T> src, List<T> dst) {
+        if (src == null) {
             return 0;
         }
-        if(dst == null){
+        if (dst == null) {
             dst = new ArrayList<T>();
         }
         Iterator<T> iter = src.iterator();
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             dst.add(iter.next());
         }
         return src.size();
     }
+
+    public static boolean parseResultData(String ret, Map<String, Object> result) {
+        Object newobj;
+        if (ret == null || ret.isEmpty()) {
+            return false;
+        }
+        ResultData data = JSON.parseObject(ret, ResultData.class);
+        if (!data.isSuccess()) {
+            return false;
+        }
+        Set<Map.Entry<String, Object>> set = result.entrySet();
+        for (Map.Entry<String, Object> entry : set) {
+            if (entry.getKey().startsWith("list_")) {
+                newobj = JSON.parseArray(data.getMap().get(entry.getKey()).toString(), (Class) entry.getValue());
+            } else if (isATOMClass((Class) entry.getValue())) {
+                newobj = data.getMap().get(entry.getKey());
+            } else {
+                newobj = JSON.parseObject(data.getMap().get(entry.getKey()).toString(), (Class) entry.getValue());
+            }
+            result.put(entry.getKey(), newobj);
+        }
+        return true;
+    }
+
+    private static boolean isATOMClass(Class clzss) {
+        return clzss.equals(Integer.class);
+    }
+
+
 }

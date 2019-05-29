@@ -1,11 +1,14 @@
 package com.rcircle.service.gateway.services;
 
-import com.alibaba.fastjson.JSON;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.rcircle.service.gateway.clients.RemoteResourceClient;
 import com.rcircle.service.gateway.model.Quotation;
+import com.rcircle.service.gateway.utils.Toolkit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class ReferenceService {
@@ -18,7 +21,12 @@ public class ReferenceService {
     @HystrixCommand(fallbackMethod = "buildGetRandomQuotation", threadPoolKey = "ReferenceThreadPool")
     public Quotation getRandomQuotation(){
         String ret = remoteResourceClient.getQuotation(TYPE_QUOTATION_RAND_ID, 0);
-        return JSON.parseObject(ret, Quotation.class);
+        Map<String, Object> map = new HashMap<>();
+        map.put("quot", Quotation.class);
+        if(Toolkit.parseResultData(ret, map)){
+            return (Quotation) map.get("quot");
+        }
+        return buildGetRandomQuotation();
     }
 
     public Quotation buildGetRandomQuotation(){

@@ -43,7 +43,7 @@ $('.original-btn').click(function () {
             processData: false,
             contentType: false,
             success: function () {
-                $('div.comment_area').load("/blog/reply?id=" + $(titleObj).attr("value"));
+                $('#comments').load("/blog/reply?id=" + $(titleObj).attr("value"));
                 $(nameObj).val("");
                 $(emailObj).val("");
                 $(messageObj).val("");

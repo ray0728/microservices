@@ -59,10 +59,10 @@
                         <p th:text="${author.profile}"></p>
                     </div>
                 </div>
-                <div class="comment_area clearfix mt-70" th:if="${replies.size() > 0}">
-                    <h5 class="title">Comments</h5>
-                    <ol>
-                        <div th:fragment="reply-list">
+                <div id="comments">
+                    <div th:fragment="reply-list" class="comment_area clearfix mt-70" th:if="${replies.size() > 0}">
+                        <h5 class="title">Comments</h5>
+                        <ol>
                             <li class="single_comment_area" th:each="reply:${replies}">
                                 <div class="comment-content d-flex">
                                     <div class="comment-author">
@@ -76,8 +76,8 @@
                                     </div>
                                 </div>
                             </li>
-                        </div>
-                    </ol>
+                        </ol>
+                    </div>
                 </div>
                 <div class="post-a-comment-area mt-70">
                     <h5>Leave a reply</h5>

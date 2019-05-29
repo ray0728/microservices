@@ -16,41 +16,53 @@
 <div class="container">
     <div class="row">
         <div class="col-12 col-md-8 col-lg-9">
-            <div class="single-blog-area blog-style-2 mb-50 wow fadeInUp" th:each="log,state:${logs}"
-                 th:data-wow-delay="${'0.' + state.index+ 's'}">
-                <div class="row align-items-center">
-                    <div class="col-12 col-md-6">
-                        <div class="single-blog-thumbnail">
-                            <img th:src="${log.cover}" alt="">
-                            <div class="post-date">
-                                <a th:utext="${'<span>' + log.year + '</span>' + log.day + '<span>' + log.month +'</span>'}"></a>
+            <div id="list_area">
+                <div th:fragment="log_list" class="single-blog-area blog-style-2 mb-50 wow fadeInUp"
+                     th:each="log,state:${logs}"
+                     th:data-wow-delay="${'0.' + state.index+ 's'}">
+                    <div class="row align-items-center">
+                        <div class="col-12 col-md-6">
+                            <div class="single-blog-thumbnail">
+                                <img th:src="${log.cover}" alt="">
+                                <div class="post-date">
+                                    <a th:utext="${'<span>' + log.year + '</span>' + log.day + '<span>' + log.month +'</span>'}"></a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <!-- Blog Content -->
-                        <div class="single-blog-content">
-                            <div class="line"></div>
-                            <a th:href="${'/blog/cate?cid=' + log.category.cid}" class="post-tag"
-                               th:text="${log.category.desc}"></a>
-                            <h4><a th:href="${'/blog/article?id=' + log.id}" class="post-headline"
-                                   th:text="${log.title}"></a></h4>
-                            <p th:text="${log.desc}"></p>
-                            <div class="post-meta">
-                                <p>By <a th:text="${log.author}"></a></p>
-                                <p th:text="${log.replies_count + ' comments'}"></p>
+                        <div class="col-12 col-md-6">
+                            <!-- Blog Content -->
+                            <div class="single-blog-content">
+                                <div class="line"></div>
+                                <a th:href="${'/blog/cate?cid=' + log.category.cid}" class="post-tag"
+                                   th:text="${log.category.desc}"></a>
+                                <h4><a th:href="${'/blog/article?id=' + log.id}" class="post-headline"
+                                       th:text="${log.title}"></a></h4>
+                                <p th:text="${log.desc}"></p>
+                                <div class="post-meta">
+                                    <p>By <a th:text="${log.author}"></a></p>
+                                    <p th:text="${log.replies_count + ' comments'}"></p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <ul class="pagination justify-content-center">
-                <li th:if="${page > 1}" class="page-item"><a class="page-link" th:href="${'?page='+ (page - 1)}"><span class="fa fa-angle-double-left"></span></a>
+                <li th:if="${page > 1}" class="page-item"><a class="page-link"
+                                                             th:href="${'?page='+ (page - 1) + query_param}"><span
+                        class="fa fa-angle-double-left"></span></a>
                 </li>
-                <li class="page-item"><a class="page-link" th:href="${'?page=' + page}" th:text="${page}"></a></li>
-                <li th:if="${(page * 10) < count}" class="page-item"><a class="page-link" th:href="${'?page=' + (page + 1)}" th:text="${page + 1}"></a></li>
-                <li th:if="${(page + 1) * 10 < count}" class="page-item"><a class="page-link" th:href="${'?page=' + (page + 2)}" th:text="${page + 2}"></a></li>
-                <li th:if="${(page + 2) * 10 < count}" class="page-item"><a class="page-link" th:href="${'?page=' + (page + 3)}"><span class="fa fa-angle-double-right"></span></a>
+                <li class="page-item"><a class="page-link" th:href="${'/blog/page/' + page + query_param}"
+                                         th:text="${page}"></a></li>
+                <li th:if="${(page * 10) < count}" class="page-item"><a class="page-link"
+                                                                        th:href="${'/blog/page/' + (page + 1) + query_param}"
+                                                                        th:text="${page + 1}"></a></li>
+                <li th:if="${(page + 1) * 10 < count}" class="page-item"><a class="page-link"
+                                                                            th:href="${'/blog/page/' + (page + 2) + query_param}"
+                                                                            th:text="${page + 2}"></a></li>
+                <li th:if="${(page + 2) * 10 < count}" class="page-item"><a class="page-link"
+                                                                            th:href="${'?page=' + (page + 3) + query_param}"><span
+                        class="fa fa-angle-double-right"></span></a>
                 </li>
             </ul>
         </div>
@@ -64,5 +76,6 @@
 <script src="/global/js/plugins.js"></script>
 <script src="/global/js/active.js"></script>
 <script src="/global/js/events.js"></script>
+<script src="/global/js/loglist.js"></script>
 </body>
 </html>

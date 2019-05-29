@@ -9,6 +9,7 @@ import com.rcircle.service.gateway.utils.MvcToolkit;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -54,12 +55,31 @@ public class BlogController {
         MvcToolkit.autoLoadSideBarData(resourceService, mm);
         MvcToolkit.autoLoadNewsData(messageService, mm);
         List<LogFile> logs = new ArrayList<>();
+        String param = "";
+        if (cate != 0) {
+            param += "&cid=" + cate;
+        }
+        if (tag != 0) {
+            param += "&tid=" + tag;
+        }
         mm.addAttribute("title", "Blog List");
         mm.addAttribute("count", resourceService.getAllBlogs(0, 0, null, 0,
                 (page - 1) * 10, 10, logs));
         mm.addAttribute("logs", logs);
         mm.addAttribute("page", page);
+        mm.addAttribute("query_param", param);
         return "blog_list";
+    }
+
+    @GetMapping("page/{index}")
+    public String getLogsOnPage(ModelMap mm, @PathVariable("index")int page,
+                                @RequestParam(name = "cid", required = false, defaultValue = "0") int cate,
+                                @RequestParam(name = "tid", required = false, defaultValue = "0") int tag) {
+        List<LogFile> logs = new ArrayList<>();
+        resourceService.getAllBlogs(0, 0, null, 0,
+                (page - 1) * 10, 10, logs);
+        mm.addAttribute("logs", logs);
+        return "blog_list::log_list";
     }
 
     @GetMapping("article")
