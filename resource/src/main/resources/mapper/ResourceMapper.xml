@@ -8,11 +8,24 @@
         <result column="date" property="date"/>
         <result column="gid" property="gid"/>
         <result column="status" property="status"/>
+        <association property="category" column="{id=type, desc=title}" select="getCategory"/>
+        <association property="detail" column="id" select="getLogDetail"/>
+        <collection property="tags" column="id" select="getTags"/>
+    </resultMap>
+
+    <resultMap id="logMapWithCount" type="Log">
+        <id column="id" property="id"/>
+        <result column="uid" property="uid"/>
+        <result column="title" property="title"/>
+        <result column="date" property="date"/>
+        <result column="gid" property="gid"/>
+        <result column="status" property="status"/>
         <association property="count" column="id" select="getLogCount"/>
         <association property="category" column="{id=type, desc=title}" select="getCategory"/>
         <association property="detail" column="id" select="getLogDetail"/>
         <collection property="tags" column="id" select="getTags"/>
     </resultMap>
+
     <resultMap id="logDetailMap" type="LogDetail">
         <id column="id" property="id"/>
         <result column="lid" property="lid"/>
@@ -102,7 +115,7 @@
         WHERE id=#{id}
     </update>
 
-    <select id="getLogs" resultMap="logMap">
+    <select id="getLogs" resultMap="logMapWithCount">
         SELECT SQL_CALC_FOUND_ROWS * FROM t_log
         <where>
             <choose>

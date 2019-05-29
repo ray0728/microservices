@@ -273,7 +273,7 @@ public class ResourceController {
         assembleAuthor(logs);
         data.setCode(ResultInfo.CODE_GET_RES);
         data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
-        data.addToMap("logs", logs);
+        data.addToMap("list_log", logs);
         return JSONObject.toJSONString(data);
     }
 
@@ -296,7 +296,7 @@ public class ResourceController {
         assembleAuthor(logs);
         data.setCode(ResultInfo.CODE_GET_RES);
         data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
-        data.addToMap("logs", logs);
+        data.addToMap("list_log", logs);
         return JSONObject.toJSONString(data);
     }
 

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.rcircle.service.resource.model.Account;
 import com.rcircle.service.resource.model.Log;
 import com.rcircle.service.resource.model.Reply;
+import com.rcircle.service.resource.model.ResultData;
 import com.rcircle.service.resource.service.AccountService;
 import com.rcircle.service.resource.service.ResourceService;
 import com.rcircle.service.resource.utils.ResultInfo;
@@ -87,6 +88,9 @@ public class ReplyController {
                 }
             }
         }
-        return JSONObject.toJSONString(replies);
+        ResultData data = new ResultData();
+        data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
+        data.addToMap("list_reply", replies);
+        return JSONObject.toJSONString(data);
     }
 }

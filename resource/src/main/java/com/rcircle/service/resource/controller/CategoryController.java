@@ -3,6 +3,7 @@ package com.rcircle.service.resource.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.rcircle.service.resource.model.Account;
 import com.rcircle.service.resource.model.Category;
+import com.rcircle.service.resource.model.ResultData;
 import com.rcircle.service.resource.service.AccountService;
 import com.rcircle.service.resource.service.ResourceService;
 import com.rcircle.service.resource.utils.ResultInfo;
@@ -27,6 +28,7 @@ public class CategoryController {
     @GetMapping("/list")
     public String getAllCategorys(Principal principal){
         List list = null;
+        ResultData data = new ResultData();
         if(principal != null) {
             Account op = getOpAccount(principal);
             if (op != null) {
@@ -36,7 +38,9 @@ public class CategoryController {
         if(list == null){
             list = resourceService.getAllCategory(0);
         }
-        return JSONObject.toJSONString(list);
+        data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
+        data.addToMap("list_category", list);
+        return JSONObject.toJSONString(data);
     }
 
     @PostMapping("/new")

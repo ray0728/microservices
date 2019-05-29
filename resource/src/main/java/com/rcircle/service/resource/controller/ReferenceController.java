@@ -2,6 +2,7 @@ package com.rcircle.service.resource.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.rcircle.service.resource.model.Quotation;
+import com.rcircle.service.resource.model.ResultData;
 import com.rcircle.service.resource.service.QuotationService;
 import com.rcircle.service.resource.utils.ResultInfo;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,11 @@ public class ReferenceController {
         } else if (id == 0) {
             id = quotationService.getId(type);
         }
+
+        ResultData data = new ResultData();
         Quotation quotation = quotationService.getQuotationById(id);
-        return JSONObject.toJSONString(quotation);
+        data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
+        data.addToMap("quot", quotation);
+        return JSONObject.toJSONString(data);
     }
 }
