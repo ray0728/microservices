@@ -5,16 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Log implements Serializable {
+    public static final int STATUS_INVALID = -1;
     public static final int STATUS_NORMAL = 0;
     public static final int STATUS_DISABLE = 1;
     public static final int STATUS_LOCKED = 2;
+    public static final int STATUS_EDITING = 3;
     private int count;
     private int id;
     private String title;
     private int uid;
     private long date;
     private int gid;
-    private int status;
+    private int status = STATUS_INVALID;
     private String author;
     private Category category;
     private List<Tag> tags;

@@ -64,8 +64,9 @@ public class ResourceController {
 
     @PostMapping("new")
     public String createNewLog(Principal principal,
-                               @RequestParam(name = "title", required = true) String title,
-                               @RequestParam(name = "type", required = true) String type,
+                               @RequestParam(name = "title") String title,
+                               @RequestParam(name = "type") String type,
+                               @RequestParam(name = "content", required = false, defaultValue = "")String content,
                                @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
                                @RequestParam(name = "tags", required = false, defaultValue = "") String[] tags) {
         Account account = getOpAccount(principal);
@@ -78,12 +79,13 @@ public class ResourceController {
         log.setGid(gid);
         log.setUid(account.getUid());
         log.setDate(SimpleDate.getUTCTime());
+        log.setStatus(Log.STATUS_EDITING);
         for (String desc : tags) {
             Tag tag = new Tag();
             tag.setDesc(desc);
             log.addTag(tag);
         }
-        resourceService.createLog(log);
+        resourceService.createLog(log, content);
         return String.valueOf(log.getId());
     }
 
@@ -93,7 +95,8 @@ public class ResourceController {
                             @RequestParam(name = "title", required = false, defaultValue = "") String title,
                             @RequestParam(name = "type", required = false, defaultValue = "") String category,
                             @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
-                            @RequestParam(name = "log", required = false, defaultValue = "") String htmllog) {
+                            @RequestParam(name = "log", required = false, defaultValue = "") String htmllog,
+                            @RequestParam(name="status", required = false, defaultValue = "-1")int status) {
         Account account = getOpAccount(principal);
         if (account == null) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_UPDATE_RES, "Invalid request parameters.");
@@ -116,17 +119,23 @@ public class ResourceController {
             log.setGid(gid);
             shouldUpdate = true;
         }
+        if(status != Log.STATUS_INVALID){
+            changeLogStatus(account, status, log);
+        }
         if (shouldUpdate) {
             resourceService.changeLog(log);
         }
         if (!htmllog.isEmpty()) {
-            if (log.getDetail() == null) {
-                resourceService.createLogDetail(log);
-            }
             log.getDetail().setLog(htmllog);
             resourceService.changeLogDetail(log);
         }
         return JSONObject.toJSONString(log);
+    }
+
+    private void changeLogStatus(Account op, int status, Log log){
+        if(log.getStatus() == Log.STATUS_EDITING){
+            log.setStatus(status);
+        }
     }
 
     @DeleteMapping("delete")
@@ -213,9 +222,6 @@ public class ResourceController {
 
     private String saveClientFile(Log log, String savetype, String filename, int index, int total, String checksum, int chunkSize, MultipartFile file) {
         String result = "";
-        if (log.getDetail() == null) {
-            resourceService.createLogDetail(log);
-        }
         String saveDir = NetFile.getDirAbsolutePath(log.getDetail().getRes_url(), savetype);
         try {
             int err = NetFile.saveSplitFile(saveDir, filename, index, total, checksum, chunkSize, file);

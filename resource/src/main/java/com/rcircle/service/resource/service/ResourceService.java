@@ -21,7 +21,7 @@ public class ResourceService {
     @Autowired
     private ResourceMapper resourceMapper;
 
-    public Log createLog(Log log) {
+    public Log createLog(Log log, String content) {
         Category category = createNewCategory(log.getUid(), log.getCategory().getDesc());
         log.getCategory().setCid(category.getCid());
         log.getCategory().setId(category.getId());
@@ -33,16 +33,20 @@ public class ResourceService {
             createTag(tag);
             resourceMapper.addTagForLog(log.getId(), tag);
         }
+        createLogDetail(log, content);
         return log;
     }
 
-    public Log createLogDetail(Log log) {
+    private Log createLogDetail(Log log, String content) {
         LogDetail logDetail = new LogDetail();
         logDetail.setLid(log.getId());
         logDetail.setRes_url(NetFile.getDirAbsolutePath(saveDirRoot,
                 String.valueOf(log.getUid()),
                 SimpleDate.getUTCTimeStr(),
                 String.valueOf(log.getId())));
+        if(content != null) {
+            logDetail.setLog(content);
+        }
         resourceMapper.createLogDetail(logDetail);
         log.setDetail(logDetail);
         return log;

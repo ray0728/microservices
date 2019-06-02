@@ -63,13 +63,13 @@
     </select>
 
     <insert id="createLogDetail" useGeneratedKeys="true" keyProperty="id" parameterType="LogDetail">
-        INSERT INTO t_log_detail(lid, res_url)
-        VALUES (#{lid}, #{res_url});
+        INSERT INTO t_log_detail(lid, res_url, htmllog)
+        VALUES (#{lid}, #{res_url}, #{log});
     </insert>
 
     <insert id="createLog" useGeneratedKeys="true" keyProperty="id" parameterType="Log">
         INSERT INTO t_log(uid, title, `date`, gid, `type`, status)
-        VALUES (#{uid}, #{title}, #{date}, #{gid}, #{category.cid}, 0);
+        VALUES (#{uid}, #{title}, #{date}, #{gid}, #{category.cid}, #{status});
     </insert>
 
     <insert id="createReply" useGeneratedKeys="true" keyProperty="id" parameterType="Reply">
@@ -102,6 +102,7 @@
             <if test="date != 0">date = #{date},</if>
             <if test="gid !=  0">gid = #{gid},</if>
             <if test="category != null">type = #{category.cid},</if>
+            <if test="status != -1">status = #{status}</if>
         </set>
         WHERE id = #{id};
     </update>
@@ -128,7 +129,7 @@
             </choose>
             <if test="type != 0">AND type = #{type}</if>
             <if test="title != ''">AND title LIKE #{title}</if>
-            <if test="status != 0">AND status = #{status}</if>
+            AND status = #{status}
         </where>
         ORDER BY id LIMIT #{offset},#{count}
     </select>
