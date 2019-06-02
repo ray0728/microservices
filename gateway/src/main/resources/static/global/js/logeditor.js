@@ -1,5 +1,29 @@
 var xhr_upload = [];
 var abort_upload = false;
+var ClockHashMap = function () {
+    let size = 0;
+    let entry = new Object();
+    this.put = function (key, value) {
+        if (!this.containsKey(key)) {
+            size++;
+            entry[key] = value;
+        }
+    }
+    this.get = function (key) {
+        return this.containsKey(key) ? entry[key] : null;
+    }
+    this.remove = function (key) {
+        if (this.containsKey(key) && clearInterval(entry[key])) {
+            delete entry[key];
+            size--;
+        }
+    }
+    this.containsKey = function (key) {
+        return (key in entry);
+    }
+}
+var xhr_upload_clock = new ClockHashMap();
+
 $(document).ready(function () {
     $('#summernote').summernote({
         popatmouse: false,
@@ -33,6 +57,7 @@ $(document).ready(function () {
     });
     $(".card-header").css("z-index", "auto");
     $.base64.utf8encode = true;
+    $("#errinfo").hide();
 });
 
 
@@ -51,36 +76,6 @@ $('button.btn-type').click(function (e) {
     !error && input.val("");
     !error && $("#addLogType").modal('hide');
 });
-
-createLog = function (header, progress) {
-    let title = $($.find('input[name="title"]')).val();
-    let category = $("select").find(":selected").val();
-    let formData = new FormData();
-    let tags = $($.find('input[name="tag"]')).val().replace(/；/g, ";").split(";");
-    tags = tags.filter(function (s) {
-        return s && s.trim();
-    });
-    header.text("Prepare to create an article");
-    formData.append("title", title);
-    formData.append("type", category);
-    tags.length > 0 && formData.append("tags", tags);
-    formData.append("_csrf", $($.find('input[type="hidden"]')).val());
-    $.ajax({
-        url: "/blog/api/res/new",
-        data: formData,
-        type: "Post",
-        cache: false,
-        processData: false,
-        contentType: false,
-        success: function (resid) {
-            $(progress[0]).css("width", "25%");
-            uploadCover(resid);
-        },
-        error: function (res) {
-            console.log(res);
-        }
-    });
-};
 
 $("#extmodal").on('show.bs.modal', function (e) {
     let header = $(this).find('h5[class="title"]');
@@ -153,19 +148,6 @@ $('#extmodal').on('hidden.bs.modal', function (e) {
     }
 });
 
-createBody = function () {
-    body = [];
-    body.push('<div>');
-    body.push('<div class="progress progresswithlabel mb-2">');
-    body.push('<div class="progress-bar progress-bar-striped bar" style="width:0%">');
-    body.push('</div>')
-    body.push('</div>')
-    body.push('<div id="upload_div" class="mt-4">')
-    body.push('</div>')
-    body.push('</div>')
-    return body.join('');
-};
-
 dynamicsUploadFilesBody = function (files) {
     body = [];
     $.each(files, function (index, file) {
@@ -192,6 +174,93 @@ createCoverUploadBody = function (filename) {
     return body.join('');
 };
 
+uploadResFiles = function (lid) {
+    $("#upload_div").empty();
+    let header = $("#extmodal").find('h5[class="title"]');
+    let progress = $("#extmodal").find('div.progress-bar');
+    $(progress[0]).css("width", "75%");
+    header.text("Upload files in the article");
+    let files = $(".note-editable").find('video, img');
+    files.length && (files = filterLocalResource(files));
+    files.length && $('#upload_div').append(dynamicsUploadFilesBody(files));
+    processUpload(lid);
+}
+
+waitHLSFinish = function (lid, filename, progress) {
+    $.get("/rst/hls?lid=" + lid + "&file=" + $.base64.encode(filename), function (data, status) {
+        data == "1" && status == "success" && $(progress).css('width', '100%') && xhr_upload.splice(filename, 1) && xhr_upload_clock.remove(filename);
+        data == "1" && status == "success" && jump(lid);
+    });
+}
+
+jump = function (lid) {
+    if (xhr_upload.length != 0) {
+        return;
+    }
+    $.post("/blog/api/res/update", {
+        'id': lid,
+        'status': 0,
+        '_csrf': $($.find('input[type="hidden"]')).val()
+    }, function (ret, status) {
+        $.ajax({
+            url: "/rst/hls?lid=" + lid,
+            type: 'DELETE'});
+        window.location.href = "/blog/article?id=" + lid;
+    });
+}
+
+createBody = function () {
+    body = [];
+    body.push('<div>');
+    body.push('<div class="progress progresswithlabel mb-2">');
+    body.push('<div class="progress-bar progress-bar-striped bar" style="width:0%">');
+    body.push('</div>')
+    body.push('</div>')
+    body.push('<div id="upload_div" class="mt-4">')
+    body.push('</div>')
+    body.push('</div>')
+    return body.join('');
+};
+
+errorOccurred = function () {
+    $("#errinfo").is(':hidden') && $("#errinfo").show();
+    let spanobj = $("#errinfo").find("span");
+    $(spanobj).text("The server is busy, please try again later");
+    $('#extmodal').modal('hide');
+}
+
+createLog = function (header, progress) {
+    let title = $($.find('input[name="title"]')).val();
+    let category = $("select").find(":selected").val();
+    let tags = $($.find('input[name="tag"]')).val().replace(/；/g, ";").split(";");
+    tags = tags.filter(function (s) {
+        return s && s.trim();
+    });
+    header.text("Prepare to create an article");
+    $.post("/blog/api/res/new", {
+        'title': title,
+        'type': category,
+        'tags': tags,
+        '_csrf': $($.find('input[type="hidden"]')).val()
+    }, function (data, status) {
+        status == "success" && $(progress[0]).css("width", "25%") && updateLog(data, progress);
+        status != "success" && errorOccurred();
+    });
+};
+
+updateLog = function (lid, progress) {
+    $('#summernote').summernote('code');
+    let code = replaceNode($('#summernote').summernote('code'), lid);
+    $.post("/blog/api/res/update", {
+        'id': lid,
+        'log': $(code).html(),
+        '_csrf': $($.find('input[type="hidden"]')).val()
+    }, function (ret, status) {
+        status == "success" && $(progress[0]).css("width", "50%") && uploadCover(lid);
+        status != "success" && errorOccurred();
+    });
+};
+
 uploadCover = function (lid) {
     let header = $("#extmodal").find('h5[class="title"]');
     header.text("Upload Cover Image");
@@ -203,51 +272,6 @@ uploadCover = function (lid) {
     } else {
         $(progress[0]).css("width", "50%");
     }
-};
-
-uploadResFiles = function (lid) {
-    $("#upload_div").empty();
-    let header = $("#extmodal").find('h5[class="title"]');
-    let progress = $("#extmodal").find('div.progress-bar');
-    $(progress[0]).css("width", "50%");
-    header.text("Upload files in the article");
-    let files = $(".note-editable").find('video, img');
-    files.length && (files = filterLocalResource(files));
-    files.length && $('#upload_div').append(dynamicsUploadFilesBody(files));
-    processUpload(lid);
-}
-
-appendLog = function (lid) {
-    if (xhr_upload.length != 0) {
-        return;
-    }
-    $("#upload_div").empty();
-    let header = $('#extmodal').find('h5[class="title"]');
-    let progress = $("#extmodal").find('div.progress-bar');
-    header.text("Publishing article");
-    $(progress[0]).css("width", "75%");
-    $('#summernote').summernote('code');
-    let code = replaceNode($('#summernote').summernote('code'), lid);
-    let formData = new FormData();
-    formData.append("id", lid);
-    formData.append("log", $(code).html());
-    formData.append("_csrf", $($.find('input[type="hidden"]')).val());
-    $.ajax({
-        url: "/blog/api/res/update",
-        data: formData,
-        type: "Post",
-        cache: false,
-        processData: false,
-        contentType: false,
-        success: function (resid) {
-            $(progress[0]).css("width", "100%");
-            $('#extmodal').modal("hide");
-            window.location.href = "/blog/list";
-        },
-        error: function (res) {
-            console.log("post log err:" + res);
-        }
-    });
 };
 
 replaceNode = function (code, lid) {
@@ -337,13 +361,13 @@ compressImage = function (lid, filename, file, type, progress, nextstep) {
     }
 }
 
-convertBase64UrlToFile = function(filename, urlData){
+convertBase64UrlToFile = function (filename, urlData) {
     var arr = urlData.split(','), mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-    while(n--){
+    while (n--) {
         u8arr[n] = bstr.charCodeAt(n);
     }
-    let blobdata = new Blob([u8arr], {type:mime});
+    let blobdata = new Blob([u8arr], {type: mime});
     blobdata.name = filename;
     blobdata.lastModifiedDate = $.now();
     return new File([blobdata], filename, {
@@ -382,15 +406,13 @@ sliceUpload = function (lid, file, chunkSize, type, progress, nextstep) {
             cache: false,
             processData: false,
             contentType: false,
-            success: function (res) {
-                if (res == "resend") {
+            success: function (respond) {
+                if (respond == "resend") {
                     start = currentChunk * chunkSize;
                     end = start + chunkSize >= file.size ? file.size : start + chunkSize;
                     filedata = blobSlice.call(file, start, end);
-                    if (!abort_upload) {
-                        fileReader.readAsBinaryString(filedata);
-                    }
-                } else if (res == "abort") {
+                    !abort_upload && fileReader.readAsBinaryString(filedata);
+                } else if (respond == "abort") {
                     xhr_upload.splice(file.name, 1);
                 } else if (currentChunk + 1 < chunks) {
                     currentChunk++;
@@ -398,18 +420,17 @@ sliceUpload = function (lid, file, chunkSize, type, progress, nextstep) {
                     start = currentChunk * chunkSize;
                     end = start + chunkSize >= file.size ? file.size : start + chunkSize;
                     filedata = blobSlice.call(file, start, end);
-                    if (!abort_upload) {
-                        fileReader.readAsBinaryString(filedata);
-                    }
+                    !abort_upload && fileReader.readAsBinaryString(filedata);
                 } else {
-                    $(progress).css('width', '100%');
-                    xhr_upload.splice(file.name, 1);
-                    !nextstep && uploadResFiles(lid);
-                    nextstep && appendLog(lid);
+                    !nextstep && $(progress).css('width', '100%') && uploadResFiles(lid);
+                    type == "video" && nextstep && $(progress).css('width', '99%') && xhr_upload_clock.put(file.name, setInterval(function () {
+                        waitHLSFinish(lid, file.name, progress);
+                    }, 10000));
+                    type != "video" && nextstep && $(progress).css('width', '100%') && xhr_upload.splice(file.name, 1) && jump(lid);
                 }
             },
-            error: function (res) {
-                console.log("post upload err:" + res);
+            error: function () {
+                errorOccurred();
             }
         });
     };

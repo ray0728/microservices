@@ -14,6 +14,10 @@
 </head>
 <body>
 <div th:include="public::topbar"></div>
+<div id="errinfo" class="alert alert-danger alert-dismissible fade show">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Error occurred</strong><span></span>
+</div>
 <div class="container" name="context" th:value="${res_id}">
     <div class="row">
         <div class="col-12 mt-4">
@@ -93,7 +97,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="extmodal" tabindex="-1" backdrop="static">
+    <div class="modal fade" id="extmodal" tabindex="-1" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span

@@ -1,8 +1,10 @@
 package com.rcircle.service.gateway.services;
 
 import com.alibaba.fastjson.JSON;
+import com.rcircle.service.gateway.events.sink.HLSSink;
 import com.rcircle.service.gateway.events.sink.NewsSink;
 import com.rcircle.service.gateway.events.sink.SmsSink;
+import com.rcircle.service.gateway.model.HLSMap;
 import com.rcircle.service.gateway.model.News;
 import com.rcircle.service.gateway.model.Sms;
 import org.slf4j.Logger;
@@ -18,13 +20,18 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
-@EnableBinding(value = {NewsSink.class, SmsSink.class})
+@EnableBinding(value = {NewsSink.class, SmsSink.class, HLSSink.class})
 public class MessageService {
+    public int RESULT_FAILED = 0;
+    public int RESULT_SUCCESS = 1;
+    public int RESULT_UNKNOWN = 2;
     private static final Logger logger = LoggerFactory.getLogger(MessageService.class);
     private List<News> newsList = new ArrayList<>();
     private List<Sms> smsList = new ArrayList<>();
+    private List<HLSMap> hlsList = new ArrayList<>();
     private Lock newsListLock = new ReentrantLock();
     private Lock smsListLock = new ReentrantLock();
+    private Lock hlsListLock = new ReentrantLock();
 
     @StreamListener(NewsSink.TOPIC)
     public void receiveNews(String string) {
@@ -44,9 +51,46 @@ public class MessageService {
         smsListLock.unlock();
     }
 
+    @StreamListener(HLSSink.TOPIC)
+    public void reveiveHLS(String str) {
+        HLSMap map = JSON.parseObject(str, HLSMap.class);
+        logger.info("LOG_ID:{}, FILE_NAME:{}, RESULT:{}", map.getId(), map.getName(), map.isSuccess());
+        hlsListLock.lock();
+        hlsList.add(map);
+        hlsListLock.unlock();
+    }
+
+    public int checkHLSResult(int logid, String filename) {
+        int ret = RESULT_UNKNOWN;
+        hlsListLock.lock();
+        Iterator<HLSMap> iter = hlsList.iterator();
+        while (iter.hasNext()) {
+            HLSMap map = iter.next();
+            if (map.isPointSameFile(logid, filename)) {
+                ret = map.isSuccess() ? RESULT_SUCCESS : RESULT_FAILED;
+                break;
+            }
+        }
+        hlsListLock.unlock();
+        return ret;
+    }
+
+    public void clearAllHLSResultFor(int logid){
+        int ret = RESULT_UNKNOWN;
+        hlsListLock.lock();
+        Iterator<HLSMap> iter = hlsList.iterator();
+        while (iter.hasNext()) {
+            HLSMap map = iter.next();
+            if(map.getId() == logid){
+                hlsList.remove(map);
+            }
+        }
+        hlsListLock.unlock();
+    }
+
     public List<News> getNewsList() {
         List<News> currentList = cloneList(newsList, newsListLock);
-        if(currentList.isEmpty() || currentList.size() < 2) {
+        if (currentList.isEmpty() || currentList.size() < 2) {
             News defaultNews = new News();
             defaultNews.setTitle("Welcome to Simple Life");
             defaultNews.setUrl("#");
