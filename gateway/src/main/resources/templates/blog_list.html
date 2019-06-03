@@ -52,12 +52,12 @@
                                                              th:href="${'?page='+ (page - 1) + query_param}"><span
                         class="fa fa-angle-double-left"></span></a>
                 </li>
-                <li class="page-item"><a class="page-link" th:href="${'/blog/page/' + page + query_param}"
+                <li class="page-item"><a class="page-link page-inner-query" th:href="${'/blog/page/' + page + query_param}"
                                          th:text="${page}"></a></li>
-                <li th:if="${(page * 10) < count}" class="page-item"><a class="page-link"
+                <li th:if="${(page * 10) < count}" class="page-item"><a class="page-link page-inner-query"
                                                                         th:href="${'/blog/page/' + (page + 1) + query_param}"
                                                                         th:text="${page + 1}"></a></li>
-                <li th:if="${(page + 1) * 10 < count}" class="page-item"><a class="page-link"
+                <li th:if="${(page + 1) * 10 < count}" class="page-item"><a class="page-link page-inner-query"
                                                                             th:href="${'/blog/page/' + (page + 2) + query_param}"
                                                                             th:text="${page + 2}"></a></li>
                 <li th:if="${(page + 2) * 10 < count}" class="page-item"><a class="page-link"

@@ -188,8 +188,12 @@ uploadResFiles = function (lid) {
 
 waitHLSFinish = function (lid, filename, progress) {
     $.get("/rst/hls?lid=" + lid + "&file=" + $.base64.encode(filename), function (data, status) {
-        data == "1" && status == "success" && $(progress).css('width', '100%') && xhr_upload.splice(filename, 1) && xhr_upload_clock.remove(filename);
-        data == "1" && status == "success" && jump(lid);
+        if (data == "1" && status == "success") {
+            $(progress).css('width', '100%');
+            xhr_upload.splice(filename, 1);
+            xhr_upload_clock.remove(filename);
+            jump(lid);
+        }
     });
 }
 
@@ -204,7 +208,8 @@ jump = function (lid) {
     }, function (ret, status) {
         $.ajax({
             url: "/rst/hls?lid=" + lid,
-            type: 'DELETE'});
+            type: 'DELETE'
+        });
         window.location.href = "/blog/article?id=" + lid;
     });
 }
@@ -352,6 +357,7 @@ compressImage = function (lid, filename, file, type, progress, nextstep) {
                 canvas.setAttributeNode(anh);
                 ctx.drawImage(that, 0, 0, w, h);
                 let base64 = canvas.toDataURL('image/jpeg', quality);
+                type == "cover" && (filename = "cover_" + filename);
                 let afterfile = convertBase64UrlToFile(filename, base64);
                 sliceUpload(lid, afterfile, 2097152, type, progress, nextstep);
             }
@@ -422,11 +428,17 @@ sliceUpload = function (lid, file, chunkSize, type, progress, nextstep) {
                     filedata = blobSlice.call(file, start, end);
                     !abort_upload && fileReader.readAsBinaryString(filedata);
                 } else {
-                    !nextstep && $(progress).css('width', '100%') && uploadResFiles(lid);
-                    type == "video" && nextstep && $(progress).css('width', '99%') && xhr_upload_clock.put(file.name, setInterval(function () {
-                        waitHLSFinish(lid, file.name, progress);
-                    }, 10000));
-                    type != "video" && nextstep && $(progress).css('width', '100%') && xhr_upload.splice(file.name, 1) && jump(lid);
+                    if (type == "video") {
+                        $(progress).css('width', '99%');
+                        xhr_upload_clock.put(file.name, setInterval(function () {
+                            waitHLSFinish(lid, file.name, progress);
+                        }, 10000));
+                    } else {
+                        $(progress).css('width', '100%');
+                        xhr_upload.splice(file.name, 1);
+                        nextstep && jump(lid);
+                        !nextstep && uploadResFiles(lid);
+                    }
                 }
             },
             error: function () {
