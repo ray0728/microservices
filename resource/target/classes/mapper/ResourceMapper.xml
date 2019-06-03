@@ -131,7 +131,7 @@
             <if test="title != ''">AND title LIKE #{title}</if>
             AND status = #{status}
         </where>
-        ORDER BY id LIMIT #{offset},#{count}
+        ORDER BY id DESC LIMIT #{offset},#{count}
     </select>
 
     <select id="getLogCount" resultType="Integer">

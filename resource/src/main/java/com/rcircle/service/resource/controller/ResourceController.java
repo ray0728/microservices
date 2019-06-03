@@ -120,7 +120,7 @@ public class ResourceController {
             shouldUpdate = true;
         }
         if(status != Log.STATUS_INVALID){
-            changeLogStatus(account, status, log);
+            shouldUpdate |= changeLogStatus(account, status, log);
         }
         if (shouldUpdate) {
             resourceService.changeLog(log);
@@ -132,10 +132,12 @@ public class ResourceController {
         return JSONObject.toJSONString(log);
     }
 
-    private void changeLogStatus(Account op, int status, Log log){
+    private boolean changeLogStatus(Account op, int status, Log log){
         if(log.getStatus() == Log.STATUS_EDITING){
             log.setStatus(status);
+            return true;
         }
+        return false;
     }
 
     @DeleteMapping("delete")
@@ -314,8 +316,12 @@ public class ResourceController {
         if (info != null) {
             log.setAuthor(JSONObject.parseObject(info, Account.class).getUsername());
         }
-        data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
-        data.addToMap("log", log);
+        if(log.getStatus() == Log.STATUS_NORMAL) {
+            data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
+            data.addToMap("log", log);
+        }else {
+            data.setType(ResultInfo.translate(ResultInfo.ErrType.INVALID));
+        }
         return JSONObject.toJSONString(data);
     }
 

@@ -42,7 +42,7 @@ public class ResourceService {
         logDetail.setLid(log.getId());
         logDetail.setRes_url(NetFile.getDirAbsolutePath(saveDirRoot,
                 String.valueOf(log.getUid()),
-                SimpleDate.getUTCTimeStr(),
+                SimpleDate.today(),
                 String.valueOf(log.getId())));
         if(content != null) {
             logDetail.setLog(content);
