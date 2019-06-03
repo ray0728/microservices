@@ -92,7 +92,7 @@ public class HLSService implements CommandCallback<HLSService.MateData> {
         if (baseurl.endsWith("/")) {
             baseurl = baseurl.substring(0, baseurl.length() - 1);
         }
-        return String.format("%s/%d/%s", baseurl, id, name);
+        return String.format("%s/%d/%s/", baseurl, id, name);
     }
 
     private String assembleAbsoluteFilePath(String filepath, String filename) {
