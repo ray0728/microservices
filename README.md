@@ -1,34 +1,33 @@
-基于Spring cloud的资源共享服务集
-包含以下服务：
+This is a personal site source based on Spring cloud. It contains multiple micro-service components, which provide functions such as permission verification, file reading and writing, video transcoding, video streaming, etc. The following briefly describes the role of each service.
 
 #config
-服务配置分发
-同时支持本地配置文件分发与git配置文件分发（目前使用github）
+Configuring distribution services
+Support for reading encrypted configuration files from github and decrypting them locally.
 
-#discovey
-服务注册与发现
-所有服务均注册在此服务上
+#discovery
+Service discovery and governance
+EUREKA-based service governance microservices.
 
 #auth
-Oauth2 验证服务
-目前支持 authorization code 验证方式，并提供使用RSA加密后的JWT token
+User Token Authentication Service
+Based on security-oauth2, the authorization code authentication method is provided. After the verification is passed, the JWT token encrypted by RSA can be returned.
 
 #account
-账户管理服务
-对外提供账户增删改接口（以JSON格式返回）
-对外提供群组增删改查接口（以JSON格式返回）
-*除查询账户信息接口（/account/info）允许匿名访问外，其余接口均需要通过验证登录，部分接口需管理员权限
-*仅在auth服务查询账户信息时返回完整信息，其余查询调用均屏蔽关键字段（密码）
-*数据存储使用mysql+mybatis
-*二级缓存使用redis
+Account data management service
+Support the addition, deletion and change of account data, and save the modified data in Mysql, and support Redis to do the second-level cache to speed up the query.
 
 #resource
-资源存储查询服务
-对外提供资源增删改查，以及评论增删改查接口（以JSON格式返回）
-*所有接口均需通过验证登录
-*数据存储使用mysql+mybatis
-*二级缓存使用redis
+Resource management service
+Manage all data submitted by users and use Mysql for management. At the same time, support Redis to do secondary cache to speed up query efficiency.
+
+#message
+Message management service
+Support for posting multiple topics via Kafka.
+
+#stream
+Streaming service
+Support for transcoding (HLS) video files and publishing transcoding results through message service.
 
 #gateway
-zuul网关服务
-提供统一的操作界面（使用thymeleaf模板）
+Gateway service, integrated UI (thymeleaf based)
+Provide all user interfaces
