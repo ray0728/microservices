@@ -44,7 +44,7 @@ public class ResourceService {
                 String.valueOf(log.getUid()),
                 SimpleDate.today(),
                 String.valueOf(log.getId())));
-        if(content != null) {
+        if (content != null) {
             logDetail.setLog(content);
         }
         resourceMapper.createLogDetail(logDetail);
@@ -133,10 +133,10 @@ public class ResourceService {
     }
 
 
-    public List<Log> getLogs(int uid, int type, int gid, String title, int status, int offset, int count, Map resultData) {
-        List<Log> logs = resourceMapper.getLogs(uid, type, gid, title, status, offset, count);
+    public List<Log> getLogs(int uid, int type, int gid, int tid, String title, int status, int offset, int count, Map resultData) {
+        List<Log> logs = resourceMapper.getLogs(uid, type, tid, gid, title, status, offset, count);
         resultData.putIfAbsent("count", logs.get(0).getCount());
-        resultData.putIfAbsent("logs",assembleResFilesInfo(logs));
+        resultData.putIfAbsent("logs", assembleResFilesInfo(logs));
         return logs;
     }
 

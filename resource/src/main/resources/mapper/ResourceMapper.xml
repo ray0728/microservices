@@ -20,7 +20,7 @@
         <result column="date" property="date"/>
         <result column="gid" property="gid"/>
         <result column="status" property="status"/>
-        <association property="count" column="id" select="getLogCount"/>
+        <association property="count" column="{tid=tid, cid=type}" select="getLogCount"/>
         <association property="category" column="{id=type, desc=title}" select="getCategory"/>
         <association property="detail" column="id" select="getLogDetail"/>
         <collection property="tags" column="id" select="getTags"/>
@@ -117,7 +117,19 @@
     </update>
 
     <select id="getLogs" resultMap="logMapWithCount">
-        SELECT SQL_CALC_FOUND_ROWS * FROM t_log
+        SELECT SQL_CALC_FOUND_ROWS t_log.*
+        <choose>
+        <when test="tid != 0">
+            , t_tag_log_map.tid AS "tid"
+        </when>
+        <otherwise>
+            , "0" AS "tid"
+        </otherwise>
+        </choose>
+        FROM t_log
+        <if test="tid !=0">
+            JOIN t_tag_log_map ON t_log.id = t_tag_log_map.lid
+        </if>
         <where>
             <choose>
                 <when test="gid != 0">(gid = #{gid}</when>
@@ -127,15 +139,16 @@
                 <when test="uid!=0">OR uid = #{uid})</when>
                 <otherwise>)</otherwise>
             </choose>
-            <if test="type != 0">AND type = #{type}</if>
-            <if test="title != ''">AND title LIKE #{title}</if>
+            <if test="tid != 0">AND t_tag_log_map.tid = #{tid}</if>
+            <if test="type != 0">AND t_log.type = #{type}</if>
+            <if test="title != ''">AND t_log.title LIKE #{title}</if>
             AND status = #{status}
         </where>
         ORDER BY id DESC LIMIT #{offset},#{count}
     </select>
 
     <select id="getLogCount" resultType="Integer">
-        SELECT FOUND_ROWS();
+        SELECT FOUND_ROWS(), #{tid}, #{cid};
     </select>
 
     <select id="getTopLogs" resultMap="logMap">

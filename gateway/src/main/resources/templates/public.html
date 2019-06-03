@@ -95,7 +95,7 @@
                                         <ul class="dropdown">
                                             <li><a href="/blog/list">All</a></li>
                                             <li th:each="category:${categories}"><a
-                                                    th:href="${'/blog/cate?cid=' + category.cid}"
+                                                    th:href="${'/blog/list?cid=' + category.cid}"
                                                     th:text="${category.desc}"></a>
                                             </li>
                                         </ul>
@@ -148,7 +148,7 @@
                     </div>
                     <!-- Post Content -->
                     <div class="post-content">
-                        <a th:href="${'/blog/list?cate=' + post.category.cid}" class="post-tag"
+                        <a th:href="${'/blog/list?cid=' + post.category.cid}" class="post-tag"
                            th:text="${post.category.desc}"></a>
                         <h4><a th:href="${'/blog/article?id=' + post.id}" class="post-headline"
                                th:text="${post.title}"></a></h4>
@@ -165,7 +165,7 @@
             <h5 class="title">Tags</h5>
             <div class="widget-content">
                 <ul class="tags">
-                    <li th:each="tag:${tags}"><a th:href="${'/blog/tag?tid=' + tag.id}" th:text="${tag.desc}"></a>
+                    <li th:each="tag:${tags}"><a th:href="${'/blog/list?tid=' + tag.id}" th:text="${tag.desc}"></a>
                     </li>
                 </ul>
             </div>

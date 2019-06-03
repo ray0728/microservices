@@ -30,10 +30,12 @@ public interface ResourceMapper {
     public Log getLogById(@Param("id") int lid);
 
     public List<Log> getLogs(@Param("uid") int uid, @Param("type") int type,
+                             @Param("tid") int tid,
                              @Param("gid") int gid, @Param("title") String title,
                              @Param("status") int status, @Param("offset") int offset,
                              @Param("count") int count);
 
+    public int getLogCount(Map<String, Object> params);
 
     public List<Reply> getLogReplies(@Param("id") int lid);
 

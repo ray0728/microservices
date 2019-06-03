@@ -62,8 +62,11 @@ public class BlogController {
         if (tag != 0) {
             param += "&tid=" + tag;
         }
+        if(page < 0){
+            page = 1;
+        }
         mm.addAttribute("title", "Blog List");
-        mm.addAttribute("count", resourceService.getAllBlogs(0, 0, null, 0,
+        mm.addAttribute("count", resourceService.getAllBlogs(cate, 0, null, 0,
                 (page - 1) * 10, 10, logs));
         mm.addAttribute("logs", logs);
         mm.addAttribute("page", page);

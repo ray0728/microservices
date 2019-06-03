@@ -264,6 +264,7 @@ public class ResourceController {
     public String getResource(Principal principal,
                               @RequestParam(name = "type", required = false, defaultValue = "0") int type,
                               @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
+                              @RequestParam(name = "tid", required = false, defaultValue = "0") int tid,
                               @RequestParam(name = "title", required = false, defaultValue = "") String title,
                               @RequestParam(name = "status", required = false, defaultValue = "0") int status,
                               @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
@@ -277,7 +278,7 @@ public class ResourceController {
             }
         }
         ResultData data = new ResultData();
-        List<Log> logs = resourceService.getLogs(uid, type, gid, title, status, offset, count, data.getMap());
+        List<Log> logs = resourceService.getLogs(uid, type, gid, tid, title, status, offset, count, data.getMap());
         assembleAuthor(logs);
         data.setCode(ResultInfo.CODE_GET_RES);
         data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
