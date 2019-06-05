@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class DetectTokenFilter extends ZuulFilter {
     private static final String PRE_FILTER_TYPE = "pre";
-//    public static final String POST_FILTER_TYPE = "post";
 //    public static final String ROUTE_FILTER_TYPE = "route";
     private static final int FILTER_ORDER = 0;
     private static final String BEARER = "Bearer";

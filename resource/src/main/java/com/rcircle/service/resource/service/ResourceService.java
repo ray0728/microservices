@@ -16,8 +16,11 @@ import java.util.Map;
 
 @Service
 public class ResourceService {
-    @Value("${rource.upload.dir.root}")
-    private String saveDirRoot;
+    @Value("${rource.upload.dir.root.windows}")
+    private String saveDirRootW;
+
+    @Value("${rource.upload.dir.root.linux}")
+    private String saveDirRootL;
     @Autowired
     private ResourceMapper resourceMapper;
 
@@ -40,7 +43,7 @@ public class ResourceService {
     private Log createLogDetail(Log log, String content) {
         LogDetail logDetail = new LogDetail();
         logDetail.setLid(log.getId());
-        logDetail.setRes_url(NetFile.getDirAbsolutePath(saveDirRoot,
+        logDetail.setRes_url(NetFile.getDirAbsolutePath(NetFile.autoDetectSystemType(saveDirRootW, saveDirRootL),
                 String.valueOf(log.getUid()),
                 SimpleDate.today(),
                 String.valueOf(log.getId())));
@@ -135,7 +138,7 @@ public class ResourceService {
 
     public List<Log> getLogs(int uid, int type, int gid, int tid, String title, int status, int offset, int count, Map resultData) {
         List<Log> logs = resourceMapper.getLogs(uid, type, tid, gid, title, status, offset, count);
-        resultData.putIfAbsent("count", logs.get(0).getCount());
+        resultData.putIfAbsent("count", logs.size() == 0 ? 0 : logs.get(0).getCount());
         resultData.putIfAbsent("logs", assembleResFilesInfo(logs));
         return logs;
     }

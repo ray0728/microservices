@@ -6,6 +6,7 @@ import com.rcircle.service.gateway.services.AccountService;
 import com.rcircle.service.gateway.services.MessageService;
 import com.rcircle.service.gateway.services.ReferenceService;
 import com.rcircle.service.gateway.services.ResourceService;
+import com.rcircle.service.gateway.utils.Base64;
 import com.rcircle.service.gateway.utils.MvcToolkit;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -61,7 +62,7 @@ public class HomeController {
             mm.addAttribute("title", "Create new account");
             return "sign_up";
         }
-        return "redirect:/home/";
+        return "redirect:/login/";
     }
 
     @GetMapping("login")
@@ -71,7 +72,7 @@ public class HomeController {
         MvcToolkit.autoLoadNewsData(messageService, mm);
         mm.addAttribute("title", "Login");
         if (!msg.isEmpty()) {
-            mm.addAttribute("msg", msg);
+            mm.addAttribute("msg", Base64.decode(msg));
         }
         return "login";
     }

@@ -8,6 +8,7 @@ import com.rcircle.service.gateway.utils.Toolkit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +102,7 @@ public class ResourceService {
     }
 
     public List<Category> buildFallbackGetAllCategory(Throwable throwable) {
-        return null;
+        return new ArrayList<>();
     }
 
     public Category buildFallbackAddCategory(String desc, Throwable throwable) {
@@ -113,11 +114,11 @@ public class ResourceService {
     }
 
     public List<Tag> buildFallbackGetAllTags(Throwable throwable) {
-        return null;
+        return new ArrayList<>();
     }
 
     public List<LogFile> buildFallbackGetTopDiaries(Throwable throwable) {
-        return null;
+        return new ArrayList<>();
     }
 
     public LogFile buildFallbackGetDiary(int id, Throwable throwable) {

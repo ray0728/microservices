@@ -15,9 +15,6 @@ public class StreamApplicationTests {
     CommandExecutor commandExecutor;
     @Test
     public void contextLoads() throws Exception {
-        commandExecutor.doTaskOne();
-        commandExecutor.doTaskTwo();
-        commandExecutor.doTaskThree();
         Thread.currentThread().join();
     }
 

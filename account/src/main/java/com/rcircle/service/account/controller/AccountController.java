@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.rcircle.service.account.model.Account;
 import com.rcircle.service.account.model.Role;
 import com.rcircle.service.account.service.AccountService;
-import com.rcircle.service.account.util.ErrInfo;
+import com.rcircle.service.account.util.ResultInfo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -41,7 +41,7 @@ public class AccountController {
                          @RequestParam(name = "profile", required = false, defaultValue = "") String profile
     ) {
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
         }
         boolean isAdminOp = false;
         if (principal != null) {
@@ -53,7 +53,7 @@ public class AccountController {
         account.setEmail(email);
         account.setProfile(profile);
         if (mAccountService.createAccount(account) == 0) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
         }
         if (isAdminOp) {
             if (roles.length == 0) {
@@ -65,14 +65,15 @@ public class AccountController {
             mAccountService.addRole(account, Role.ID_GUEST);
         }
         account.setPassword("******");
-        return JSONObject.toJSONString(account);
+
+        return ResultInfo.assembleSuccessJson(ResultInfo.CODE_CREATE_ACCOUNT, "finished", "account", account);
     }
 
     @DeleteMapping("delete")
     public String delete(Principal principal,
                          @RequestParam(name = "uid", required = true) int uid) {
         if (uid == 0) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_DELETE_ACCOUNT, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_DELETE_ACCOUNT, "Invalid request parameters.");
         }
         boolean isAdminOp = false;
         if (principal != null) {
@@ -81,11 +82,11 @@ public class AccountController {
         if (isAdminOp) {
             Account account = mAccountService.getAccount(null, uid);
             if (account == null) {
-                return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_DELETE_ACCOUNT, "Invalid resources.");
+                return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_DELETE_ACCOUNT, "Invalid resources.");
             }
             mAccountService.destroyAccount(account);
         }
-        return "";
+        return ResultInfo.assembleSuccessJson(ResultInfo.CODE_DELETE_ACCOUNT, null, null, null);
     }
 
     @PutMapping("change")
@@ -94,20 +95,20 @@ public class AccountController {
                                 @RequestParam(name = "status", required = false, defaultValue = "-1") int status,
                                 @RequestParam(name = "roles", required = false) int[] roles) {
         if (uid == 0 || principal == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
         }
         Account opAccount = mAccountService.getAccount(principal.getName(), 0);
         if (opAccount == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_CHANGE_ACCOUNT, "Invalid request parameters.");
         }
         int maxRoleLevel = opAccount.getMaxLevelRole();
         if (maxRoleLevel >= Role.ID_ADMIN) {
             Account account = mAccountService.getAccount(null, uid);
             if (account == null) {
-                return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_CHANGE_ACCOUNT, "Invalid resources.");
+                return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_CHANGE_ACCOUNT, "Invalid resources.");
             }
             if (account.getMaxLevelRole() > maxRoleLevel) {
-                return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_CHANGE_ACCOUNT, "have no enough permission.");
+                return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_CHANGE_ACCOUNT, "have no enough permission.");
             }
             if (status != -1) {
                 mAccountService.setAccountStatus(account, status);
@@ -116,9 +117,9 @@ public class AccountController {
                 mAccountService.addRole(account, roles);
             }
             account.setPassword("******");
-            return JSONObject.toJSONString(account);
+            return ResultInfo.assembleSuccessJson(ResultInfo.CODE_CHANGE_ACCOUNT, "finished", "account", account);
         } else {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_CHANGE_ACCOUNT, "have no enough permission.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_CHANGE_ACCOUNT, "have no enough permission.");
         }
     }
 
@@ -128,15 +129,15 @@ public class AccountController {
                                  @RequestParam(name = "passwd", required = false, defaultValue = "") String password,
                                  @RequestParam(name = "profile", required = false, defaultValue = "") String profile) {
         if (principal == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_EDIT_ACCOUNT, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_EDIT_ACCOUNT, "Invalid request parameters.");
         }
         Account account = mAccountService.getAccount(principal.getName(), 0);
         if (account == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_EDIT_ACCOUNT, "Invalid resources.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_EDIT_ACCOUNT, "Invalid resources.");
         }
         mAccountService.updateAccountInfo(account.getUid(), email, password, profile);
         account.setPassword("******");
-        return JSONObject.toJSONString(account);
+        return ResultInfo.assembleSuccessJson(ResultInfo.CODE_EDIT_ACCOUNT, "finished", "account", account);
     }
 
     @GetMapping("info")
@@ -154,15 +155,15 @@ public class AccountController {
     @PutMapping("refresh")
     public String refreshTime(Principal principal) {
         if (principal == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.NULLOBJ, ErrInfo.CODE_REFRESH_ACCOUNT, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_REFRESH_ACCOUNT, "Invalid request parameters.");
         }
         Account account = mAccountService.getAccount(principal.getName(), 0);
         if (account == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_REFRESH_ACCOUNT, "Invalid resources.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_REFRESH_ACCOUNT, "Invalid resources.");
         }
         mAccountService.updateAccountTimeInfo(account);
         account.setPassword("******");
-        return JSONObject.toJSONString(account);
+        return ResultInfo.assembleSuccessJson(ResultInfo.CODE_REFRESH_ACCOUNT, "finished", "account", account);
     }
 
     @GetMapping("me")

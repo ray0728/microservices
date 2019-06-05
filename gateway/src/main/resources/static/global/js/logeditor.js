@@ -72,7 +72,7 @@ $('button.btn-type').click(function (e) {
     });
     let newoption = new Option(userdefcategory, userdefcategory);
     !error && shoudadd && $('select').append(newoption);
-    !error && $("select").val(userdefcategory);
+    !error && $("#select_category").val(userdefcategory);
     !error && input.val("");
     !error && $("#addLogType").modal('hide');
 });
@@ -109,7 +109,7 @@ $('#extmodal').on('shown.bs.modal', function (e) {
     if (source == "Publish") {
         let resid = $($.find('div[name="context"]')).val();
         let titleobj = $.find('input[name="title"]');
-        let category = $("select").find(":selected").val();
+        let category = $("#select_category").find(":selected").val();
         let title = $(titleobj).val();
         let error = !title && !!($(titleobj).css("border-color", "red")) || !($(titleobj).css("border-color", ""));
         error = (typeof (category) == "undefined" && !!($('select').css("border-color", "red")) || !($('select').css("border-color", ""))) || error;
@@ -236,7 +236,7 @@ errorOccurred = function () {
 
 createLog = function (header, progress) {
     let title = $($.find('input[name="title"]')).val();
-    let category = $("select").find(":selected").val();
+    let category = $("#select_category").find(":selected").val();
     let tags = $($.find('input[name="tag"]')).val().replace(/；/g, ";").split(";");
     tags = tags.filter(function (s) {
         return s && s.trim();

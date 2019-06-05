@@ -1,10 +1,10 @@
 package com.rcircle.service.account.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.rcircle.service.account.model.ErrorData;
+import com.rcircle.service.account.model.ResultData;
 
 
-public class ErrInfo {
+public class ResultInfo {
     public static final int CODE_CREATE_ACCOUNT = 301;
     public static final int CODE_DELETE_ACCOUNT = 302;
     public static final int CODE_CHANGE_ACCOUNT = 303;
@@ -17,6 +17,7 @@ public class ErrInfo {
     public static final int CODE_QUERY_GROUP= 310;
 
     public static enum ErrType {
+        SUCCESS,
         PARAMS,
         NULLOBJ,
         INVALID
@@ -32,6 +33,8 @@ public class ErrInfo {
                 break;
             case NULLOBJ:
                 desc = "NULLOBJ";
+            case SUCCESS:
+                desc = "SUCCESS";
                 break;
             default:
                 desc = "UNKNOWN";
@@ -41,10 +44,23 @@ public class ErrInfo {
     }
 
     public static String assembleJson(ErrType type, int code, String msg) {
-        ErrorData data = new ErrorData();
+        ResultData data = new ResultData();
         data.setCode(code);
         data.setType(translate(type));
         data.setMsg(msg);
+        return JSONObject.toJSONString(data);
+    }
+
+    public static String assembleSuccessJson(int code, String msg, String label, Object obj) {
+        ResultData data = new ResultData();
+        data.setCode(code);
+        data.setType(translate(ErrType.SUCCESS));
+        if (msg != null) {
+            data.setMsg(msg);
+        }
+        if(label != null) {
+            data.addToMap(label, obj);
+        }
         return JSONObject.toJSONString(data);
     }
 }

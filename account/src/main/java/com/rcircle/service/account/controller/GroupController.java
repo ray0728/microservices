@@ -6,7 +6,7 @@ import com.rcircle.service.account.model.Group;
 import com.rcircle.service.account.model.GroupMemberMap;
 import com.rcircle.service.account.service.AccountService;
 import com.rcircle.service.account.service.GroupService;
-import com.rcircle.service.account.util.ErrInfo;
+import com.rcircle.service.account.util.ResultInfo;
 import com.rcircle.service.account.util.SimpleDate;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,11 +36,11 @@ public class GroupController {
                          @RequestParam(name = "desc", required = true) String desc,
                          @RequestParam(name = "type", required = true) int type) {
         if (principal == null || name == null || name.length() == 0 || desc == null || desc.length() == 0 || type == 0) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_GROUP, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CREATE_GROUP, "Invalid request parameters.");
         }
         Account opAccount = accountService.getAccount(principal.getName(), 0);
         if (opAccount == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CREATE_GROUP, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CREATE_GROUP, "Invalid request parameters.");
         }
         Group group = new Group();
         group.setName(name);
@@ -52,21 +52,21 @@ public class GroupController {
         if (groupService.create(group) > 0) {
             return JSONObject.toJSONString(group);
         } else {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_CREATE_GROUP, "Invalid request.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_CREATE_GROUP, "Invalid request.");
         }
     }
 
     @DeleteMapping("delete")
     public String delete(Principal principal, @RequestParam(name = "gid", required = true) int gid) {
         if (principal == null || gid == 0) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_DELETE_GROUP, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_DELETE_GROUP, "Invalid request parameters.");
         }
         Group group = groupService.getDetialById(gid);
         if (!isAdminOp(principal.getName(), group.getAdmin_uid())) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_DELETE_GROUP, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_DELETE_GROUP, "Invalid request parameters.");
         }
         if (groupService.delete(group) != 1) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.INVALID, ErrInfo.CODE_DELETE_GROUP, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_DELETE_GROUP, "Invalid request parameters.");
         }
         return "";
     }
@@ -78,11 +78,11 @@ public class GroupController {
                              @RequestParam(name = "type", required = false, defaultValue = "0") int type,
                              @RequestParam(name = "uid", required = false, defaultValue = "0") int admin_uid) {
         if (principal == null || gid == 0) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CHANGE_GROUP, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CHANGE_GROUP, "Invalid request parameters.");
         }
         Group group = groupService.getDetialById(gid);
         if (!isAdminOp(principal.getName(), group.getAdmin_uid())) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CHANGE_GROUP, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CHANGE_GROUP, "Invalid request parameters.");
         }
         boolean shouldUpdate = false;
         if (!group.getName().equals(name)) {
@@ -131,15 +131,15 @@ public class GroupController {
                                @RequestParam(name = "add", required = false, defaultValue = "") int[] newMembers,
                                @RequestParam(name = "rm", required = false, defaultValue = "") int[] rmMembers) {
         if (principal == null || gid == 0) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CHANGE_GROUP_MEMBER, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CHANGE_GROUP_MEMBER, "Invalid request parameters.");
         }
         Group group = groupService.getDetialById(gid);
         if (!isAdminOp(principal.getName(), group.getAdmin_uid())) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CHANGE_GROUP_MEMBER, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CHANGE_GROUP_MEMBER, "Invalid request parameters.");
         }
         if (newMembers.length > 0) {
             if (!checkMembers(group, newMembers, true)) {
-                return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CHANGE_GROUP_MEMBER, "Invalid request parameters.");
+                return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CHANGE_GROUP_MEMBER, "Invalid request parameters.");
             }
             for(int uid:newMembers) {
                 groupService.addMember(group, uid);
@@ -147,7 +147,7 @@ public class GroupController {
         }
         if (rmMembers.length > 0) {
             if (!checkMembers(group, rmMembers, true)) {
-                return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_CHANGE_GROUP_MEMBER, "Invalid request parameters.");
+                return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CHANGE_GROUP_MEMBER, "Invalid request parameters.");
             }
             for(int uid:rmMembers) {
                 groupService.removeMember(group, uid);
@@ -160,11 +160,11 @@ public class GroupController {
     public String getDetial(Principal principal, @RequestParam(name="gid", required = false, defaultValue = "0")int gid,
                             @RequestParam(name="keyword", required = false, defaultValue = "")String keyword){
         if (principal == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_QUERY_GROUP, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_QUERY_GROUP, "Invalid request parameters.");
         }
         Account opAccount = accountService.getAccount(principal.getName(), 0);
         if (opAccount == null) {
-            return ErrInfo.assembleJson(ErrInfo.ErrType.PARAMS, ErrInfo.CODE_QUERY_GROUP, "Invalid request parameters.");
+            return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_QUERY_GROUP, "Invalid request parameters.");
         }
         List<Group> groups = null;
         Group group = null;

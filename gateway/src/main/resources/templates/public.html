@@ -138,7 +138,7 @@
         </div>
 
         <!-- Widget Area -->
-        <div class="sidebar-widget-area">
+        <div class="sidebar-widget-area" th:if="${top.size() > 0}">
             <h5 class="title">Hot Posts</h5>
             <div class="widget-content">
                 <div th:each="post:${top}" class="single-blog-post d-flex align-items-center widget-post">
@@ -161,7 +161,7 @@
         </div>
 
         <!-- Widget Area -->
-        <div class="sidebar-widget-area">
+        <div class="sidebar-widget-area" th:if="${tags.size() > 0}">
             <h5 class="title">Tags</h5>
             <div class="widget-content">
                 <ul class="tags">

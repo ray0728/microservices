@@ -42,7 +42,7 @@ public class AccountService implements UserDetailsService {
        return info;
     }
 
-    private String buildFallbackAccountInfo(){
-        return "Invalid resources.";
+    private String buildFallbackAccountInfo(Throwable throwable){
+        return null;
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,8 +31,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/res")
 public class ResourceController {
-    @Value("${rource.upload.dir.root}")
-    private String saveDirRoot;
 
     @Value("${label.upload.files}")
     private String uploadFileLabel;
@@ -310,14 +309,15 @@ public class ResourceController {
     }
 
     @GetMapping("blog")
-    public String getLog(@RequestParam(name = "id") int id) {
+    public String getLog(HttpServletRequest request, @RequestParam(name = "id") int id) {
+        String securityFlag = request.getHeader("rc-resource-security");
         ResultData data = new ResultData();
         Log log = resourceService.getLog(id);
         String info = accountService.getAccountInfo(log.getUid(), null);
         if (info != null) {
             log.setAuthor(JSONObject.parseObject(info, Account.class).getUsername());
         }
-        if(log.getStatus() == Log.STATUS_NORMAL) {
+        if(securityFlag != null || log.getStatus() == Log.STATUS_NORMAL) {
             data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
             data.addToMap("log", log);
         }else {

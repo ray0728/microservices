@@ -81,6 +81,11 @@ public class Base64 {
         }
     }
 
+    public static String decode(String in){
+        byte[] out = decode(in.getBytes());
+        return new String(out);
+    }
+
     public static String encode(byte[] in) {
         int length = (in.length + 2) * 4 / 3;
         byte[] out = new byte[length];

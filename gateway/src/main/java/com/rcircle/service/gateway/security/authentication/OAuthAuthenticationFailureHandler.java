@@ -1,5 +1,6 @@
 package com.rcircle.service.gateway.security.authentication;
 
+import com.rcircle.service.gateway.utils.Base64;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class OAuthAuthenticationFailureHandler extends SimpleUrlAuthenticationFa
         }else{
             errorinfo = "Network Timeout";
         }
-        response.sendRedirect("/login?info=" + errorinfo);
+        response.sendRedirect("/login?info=" + Base64.encode(errorinfo.getBytes()));
         return;
     }
 }

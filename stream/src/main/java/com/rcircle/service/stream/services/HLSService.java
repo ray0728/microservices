@@ -19,8 +19,19 @@ public class HLSService implements CommandCallback<HLSService.MateData> {
     @Autowired
     CommandExecutor commandExecutor;
 
-    @Value("${ffmpeg-path}")
-    private String ffmpeg_bin_path;
+    @Value("${ffmpeg.path.windows}")
+    private String ffmpeg_bin_path_w;
+
+    @Value("${ffmpeg.path.linux}")
+    private String ffmpeg_bin_path_l;
+
+    private String autoDelectPath(String win, String lin) {
+        String os = System.getProperty("os.name");
+        if (os.toLowerCase().startsWith("win")) {
+            return win;
+        }
+        return lin;
+    }
 
     public void createHLSFiles(int id, String srcfile, String dstpath, String baseurl) {
         MateData md = new MateData(FLAG_CREATE_HLS_FILES);
@@ -32,7 +43,7 @@ public class HLSService implements CommandCallback<HLSService.MateData> {
         md.filename = srcFile.getName();
         md.id = id;
         List<String> cmd = new ArrayList<>();
-        cmd.add(assembleAbsoluteFilePath(ffmpeg_bin_path, "ffmpeg"));
+        cmd.add(assembleAbsoluteFilePath(autoDelectPath(ffmpeg_bin_path_w, ffmpeg_bin_path_l), "ffmpeg"));
         cmd.add("-i");
         cmd.add(srcfile);
         cmd.add("-c:a");

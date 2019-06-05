@@ -37,7 +37,8 @@ public class AccountService {
     @HystrixCommand(fallbackMethod = "buildFallbackAfterLoginSuccess", threadPoolKey = "AccountThreadPool")
     public Account afterLoginSuccess(){
         String ret = remoteAccountClient.refreshTime();
-        return JSON.parseObject(ret, Account.class);
+        ResultData data = JSON.parseObject(ret, ResultData.class);
+        return JSON.parseObject(data.getMap().get("account").toString(), Account.class);
     }
 
     private String autoDetectErrinfo(Throwable throwable){

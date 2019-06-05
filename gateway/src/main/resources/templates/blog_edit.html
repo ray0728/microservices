@@ -16,7 +16,7 @@
 <div th:include="public::topbar"></div>
 <div id="errinfo" class="alert alert-danger alert-dismissible fade show">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <strong>Error occurred</strong><span></span>
+    <strong>Error occurred! </strong><span></span>
 </div>
 <div class="container" name="context" th:value="${res_id}">
     <div class="row">
@@ -43,7 +43,7 @@
                     </div>
                     <div class="col-12 d-flex mb-1">
                         <label class="my-auto ml-auto mr-1 label">Category</label>
-                        <select>
+                        <select id="select_category">
                             <option th:each="category:${categories}" th:value="${category.desc}"
                                     th:text="${category.desc}"></option>
                         </select>

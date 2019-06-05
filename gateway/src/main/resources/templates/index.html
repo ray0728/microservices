@@ -80,7 +80,7 @@
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-12 col-md-8 col-lg-9">
+            <div class="col-12 col-md-8 col-lg-9" th:if="${logs.size() > 0}">
                 <div class="single-blog-area blog-style-2 mb-50 wow fadeInUp" th:each="log,state:${logs}"
                      th:data-wow-delay="${'0.' + state.index+ 's'}">
                     <div th:if="${state.index != 2}" class="row align-items-center">
