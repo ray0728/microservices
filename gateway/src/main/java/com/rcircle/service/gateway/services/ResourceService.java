@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.rcircle.service.gateway.clients.RemoteResourceClient;
 import com.rcircle.service.gateway.model.*;
+import com.rcircle.service.gateway.utils.HttpContextHolder;
 import com.rcircle.service.gateway.utils.Toolkit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,14 +77,20 @@ public class ResourceService {
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackGetDiary", threadPoolKey = "DirayThreadPool")
-    public LogFile getBlog(int id) {
+    public LogFile getBlog(int id, boolean force) {
+        if(force){
+            HttpContextHolder.getContext().setValue("rc-resource-security", Toolkit.randomString(8));
+        }
         String ret = remoteResourceClient.getBLog(id);
         Map<String, Object> map = new HashMap<>();
         map.put("log", LogFile.class);
         if (Toolkit.parseResultData(ret, map)) {
             return (LogFile) map.get("log");
         }
-        return buildFallbackGetDiary(id, null);
+        if(force){
+            HttpContextHolder.getContext().delete("rc-resource-security");
+        }
+        return buildFallbackGetDiary(id, force, null);
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackGetAllReplies", threadPoolKey = "ReplyThreadPool")
@@ -121,7 +128,7 @@ public class ResourceService {
         return new ArrayList<>();
     }
 
-    public LogFile buildFallbackGetDiary(int id, Throwable throwable) {
+    public LogFile buildFallbackGetDiary(int id, boolean force, Throwable throwable) {
         return null;
     }
 }

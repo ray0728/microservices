@@ -34,7 +34,7 @@ public class BlogController {
         MvcToolkit.autoLoadNewsData(messageService, mm);
         LogFile log = null;
         if (id != 0) {
-            log = resourceService.getBlog(id);
+            log = resourceService.getBlog(id, false);
         }
         if (log == null) {
             log = new LogFile();
@@ -87,7 +87,7 @@ public class BlogController {
 
     @GetMapping("article")
     public String showLog(Principal principal, @RequestParam(name = "id") int lid, ModelMap mm) {
-        LogFile log = resourceService.getBlog(lid);
+        LogFile log = resourceService.getBlog(lid, false);
         if (log == null) {
             return "redirect:/error?type=404";
         } else {

@@ -57,7 +57,7 @@ public class RestPageController {
     public String getHlsResult(Principal principal,
                                @RequestParam(name="lid") int logid,
                                @RequestParam(name="file") String filename){
-        LogFile log = resourceService.getBlog(logid);
+        LogFile log = resourceService.getBlog(logid, true);
         Account opAccount = accountService.getAccountInfo(0, principal.getName());
         if(log.getUid() != opAccount.getUid()){
             throw new PermissionDeniedDataAccessException("You don't have permission to access this data",null);
@@ -67,7 +67,7 @@ public class RestPageController {
 
     @DeleteMapping("/hls")
     public String delAllHlsResult(Principal principal, @RequestParam(name="lid")int logid){
-        LogFile log = resourceService.getBlog(logid);
+        LogFile log = resourceService.getBlog(logid, false);
         Account opAccount = accountService.getAccountInfo(0, principal.getName());
         if(log.getUid() == opAccount.getUid()){
             messageService.clearAllHLSResultFor(logid);

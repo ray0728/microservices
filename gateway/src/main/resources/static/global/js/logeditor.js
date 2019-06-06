@@ -273,7 +273,7 @@ uploadCover = function (lid) {
     if ($("#cover_img").attr("src").indexOf("blob") == 0) {
         let filename = $("#cover_img").data("filename");
         $('#upload_div').append(createCoverUploadBody(filename));
-        blobFileTransfer(lid, filename, $("#cover_img").attr("src"), "cover", progress[1], 0);
+        blobFileTransfer(lid, "cover_" + filename, $("#cover_img").attr("src"), "cover", progress[1], 0);
     } else {
         $(progress[0]).css("width", "50%");
     }
@@ -327,7 +327,7 @@ blobFileTransfer = function (lid, filename, url, type, progress, nextstep) {
             compressImage(lid, filename, new File([blobdata], filename, {
                 type: blobdata.type,
                 lastModified: Date.now()
-            }), type, progress, nextstep);
+            }),type, progress, nextstep);
         }
     };
     xhr.open('GET', url, true);
@@ -335,7 +335,7 @@ blobFileTransfer = function (lid, filename, url, type, progress, nextstep) {
 };
 
 compressImage = function (lid, filename, file, type, progress, nextstep) {
-    if (!file.type.indexOf("image") && (file.size / 1024 > 1025)) {
+    if (file.type.indexOf("image") && (file.size / 1024 > 1025)) {
         let ready = new FileReader();
         ready.readAsDataURL(file);
         ready.onload = function () {
@@ -357,7 +357,6 @@ compressImage = function (lid, filename, file, type, progress, nextstep) {
                 canvas.setAttributeNode(anh);
                 ctx.drawImage(that, 0, 0, w, h);
                 let base64 = canvas.toDataURL('image/jpeg', quality);
-                type == "cover" && (filename = "cover_" + filename);
                 let afterfile = convertBase64UrlToFile(filename, base64);
                 sliceUpload(lid, afterfile, 2097152, type, progress, nextstep);
             }
