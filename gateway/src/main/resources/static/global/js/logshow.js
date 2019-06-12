@@ -51,3 +51,8 @@ $('.original-btn').click(function () {
         });
     }
 });
+
+$('input[type="checkbox"]').change(function () {
+    let btnobj = $(this).parent().find('.danger-btn');
+    $(this).checked && $(btnobj).attr("disabled","");
+});

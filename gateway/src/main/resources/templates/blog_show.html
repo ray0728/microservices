@@ -47,6 +47,16 @@
                         <div th:utext="${context}"></div>
                     </div>
                 </div>
+                <div class="d-flex">
+                    <div class="btn-group ml-auto">
+                        <button type="button" class="btn original-btn mr-1">
+                            Edit
+                        </button>
+                        <button type="button" class="btn danger-btn" data-toggle="modal" data-target="#deletemodal">
+                            Delete
+                        </button>
+                    </div>
+                </div>
                 <div class="blog-post-author mt-100 d-flex">
                     <div class="author-thumbnail">
                         <img src="/global/img/bg-img/b6.jpg"/>
@@ -117,6 +127,24 @@
     </div>
 </div>
 <div th:include="public::bottombar"></div>
+<div class="subscribe-newsletter-area">
+    <div class="modal fade" id="deletemodal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <div class="modal-body">
+                    <h5 class="title">Are you absolutely sure?</h5>
+                    <div class="newsletterForm">
+                        <h3>'${"This action cannot be undone. This will permanently delete the <" + title + ">"}'</h3>
+                        <input type="checkbox" name="colors" value="blue" />I understand the danger of this operation
+                        <button type="button" class="btn danger-btn btn-type" disabled="disabled">Delete</button>
+                        <button type="button" class="btn original-btn btn-type">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 <script src="/global/js/jquery-2.2.4.min.js"></script>
 <script src="/global/js/popper.min.js"></script>
 <script src="/global/bootstrap/js/bootstrap.min.js"></script>

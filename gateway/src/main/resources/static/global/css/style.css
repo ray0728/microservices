@@ -307,6 +307,29 @@ img {
   border-color: #30336b;
   background-color: #30336b; }
 
+.danger-btn {
+  position: relative;
+  z-index: 1;
+  padding: 0 30px;
+  min-width: 175px;
+  height: 60px;
+  border: 1px solid;
+  color: floralwhite;
+  border-color: red;
+  background-color: red;
+  font-size: 14px;
+  border-radius: 0;
+  line-height: 59px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-family: "Open Sans", sans-serif;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+}
+.danger-btn:hover, .danger-btn:focus {
+  font-family: "Open Sans", sans-serif;
+  color: #ffffff;
+  border-color: darkred;
+  background-color: darkred; }
 /* :: Header Area CSS */
 .header-area {
   position: relative;
