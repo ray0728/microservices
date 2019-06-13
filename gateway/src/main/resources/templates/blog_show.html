@@ -14,6 +14,10 @@
 <body>
 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 <div th:include="public::topbar"></div>
+<div id="errinfo" class="alert alert-danger alert-dismissible fade show">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Error occurred! </strong><span></span>
+</div>
 <div class="single-blog-wrapper section-padding-0-100">
     <div class="single-blog-area blog-style-2 mb-50">
         <div class="single-blog-thumbnail">
@@ -136,15 +140,27 @@
                 <div class="modal-body">
                     <h5 class="title">Are you absolutely sure?</h5>
                     <div class="newsletterForm">
-                        <h3>'${"This action cannot be undone. This will permanently delete the <" + title + ">"}'</h3>
-                        <input type="checkbox" name="colors" value="blue" />I understand the danger of this operation
-                        <button type="button" class="btn danger-btn btn-type" disabled="disabled">Delete</button>
-                        <button type="button" class="btn original-btn btn-type">Close</button>
+                        <ul class="list-inline mb-4">
+                            <li class="list-inline-item">This action cannot be</li>
+                            <li class="list-inline-item text-danger">UNDONE.</li>
+                            <li class="list-inline-item">This will permanently</li>
+                            <li class="list-inline-item text-danger">DELETE</li>
+                            <li class="list-inline-item text-primary" th:text="${title}"></li>
+                        </ul>
+                        <button type="button" class="btn danger-btn btn-type" th:data-id="${log_id}" disabled="disabled"
+                                id="btn_delete">Delete
+                        </button>
+                        <button type="button" class="btn original-btn btn-type" data-dismiss="modal">Close</button>
+                    </div>
+                    <div class="mt-4">
+                        <input id="cb_delete" type="checkbox" name="colors" value="blue"/>
+                        <label for="cb_delete" class="ml-2">I understand the danger of this operation</label>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 <script src="/global/js/jquery-2.2.4.min.js"></script>
 <script src="/global/js/popper.min.js"></script>
 <script src="/global/bootstrap/js/bootstrap.min.js"></script>

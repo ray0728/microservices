@@ -232,7 +232,7 @@ errorOccurred = function () {
     let spanobj = $("#errinfo").find("span");
     $(spanobj).text("The server is busy, please try again later");
     $('#extmodal').modal('hide');
-}
+};
 
 createLog = function (header, progress) {
     let title = $($.find('input[name="title"]')).val();

@@ -14,6 +14,7 @@ $(document).ready(function () {
     $.each(videos, function (index, video) {
         videojs($(video).attr('id'), options);
     });
+    $("#errinfo").hide();
 });
 
 $('.original-btn').click(function () {
@@ -52,7 +53,27 @@ $('.original-btn').click(function () {
     }
 });
 
-$('input[type="checkbox"]').change(function () {
-    let btnobj = $(this).parent().find('.danger-btn');
-    $(this).checked && $(btnobj).attr("disabled","");
+$('#cb_delete').change(function () {
+    if ($(this).is(':checked')) {
+        $("#btn_delete").removeAttr("disabled");
+    } else {
+        $("#btn_delete").attr("disabled", "true");
+    }
+});
+
+$("#btn_delete").click(function () {
+    let logid = $(this).data("id");
+    console.log(logid);
+    $.ajax({
+        url: '/blog/api/res/delete',
+        type: 'DELETE',
+        success: function(result) {
+            window.location.href = "/blog/list";
+        },
+        error: function () {
+            $("#errinfo").is(':hidden') && $("#errinfo").show();
+            let spanobj = $("#errinfo").find("span");
+            $(spanobj).text("Delete will not take effect");
+        }
+    });
 });

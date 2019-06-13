@@ -100,6 +100,7 @@ public class BlogController {
             mm.addAttribute("context", log.getDetail().getLog());
             mm.addAttribute("author", account);
             mm.addAttribute("replies", resourceService.getAllReplies(log.getId()));
+            mm.addAttribute("log_id", lid);
             if (principal != null) {
                 mm.addAttribute("reply_name", principal.getName());
                 if (principal instanceof Account) {
