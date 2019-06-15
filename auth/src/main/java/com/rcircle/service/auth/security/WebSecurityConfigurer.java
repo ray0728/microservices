@@ -47,7 +47,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .formLogin()
-//                .disable()
+                .disable()
         ;
     }
 
