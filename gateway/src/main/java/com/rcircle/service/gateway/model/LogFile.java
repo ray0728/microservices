@@ -5,6 +5,7 @@ import com.rcircle.service.gateway.utils.Toolkit;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -66,9 +67,9 @@ public class LogFile implements Serializable {
         return date;
     }
 
-    public String getCreateDate(){
+    public String getCreateDate() {
         String _date = String.valueOf(date);
-        return String.format("%s/%s/%s", _date.substring(0, 4),_date.substring(4,6), _date.substring(6,8));
+        return String.format("%s/%s/%s", _date.substring(0, 4), _date.substring(4, 6), _date.substring(6, 8));
     }
 
     public void setDate(long date) {
@@ -110,6 +111,22 @@ public class LogFile implements Serializable {
     public List<Tag> getTags() {
         return tags;
     }
+
+    public String getTagsFormat() {
+        String formattags = "";
+        if (tags != null) {
+            Iterator<Tag> iter = tags.iterator();
+            while (iter.hasNext()) {
+                formattags += iter.next().getDesc() + ";";
+            }
+            if (!formattags.isEmpty()) {
+                formattags = formattags.substring(0, formattags.length() - 2);
+            }
+        }
+        return formattags;
+    }
+
+    ;
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;

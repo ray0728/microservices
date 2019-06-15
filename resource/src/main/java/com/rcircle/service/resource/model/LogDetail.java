@@ -50,6 +50,12 @@ public class LogDetail implements Serializable {
         return files;
     }
 
+    public void reset(){
+        if(files != null) {
+            files.clear();
+        }
+    }
+
     public void addResFile(String name, String path) {
         if(files == null){
             files = new HashMap<>();

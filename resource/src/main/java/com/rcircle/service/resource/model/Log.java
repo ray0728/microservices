@@ -117,6 +117,7 @@ public class Log implements Serializable {
     public void reset(){
         id = 0;
         title = null;
+        detail.reset();
     }
 
     public String getAuthor() {

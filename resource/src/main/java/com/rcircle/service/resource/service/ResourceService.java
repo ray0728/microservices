@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,6 +64,7 @@ public class ResourceService {
                 resourceMapper.deleteReply(reply.getId());
             }
         }
+        NetFile.deleteDir(new File(log.getDetail().getRes_url()));
         resourceMapper.deleteLogDetial(log.getDetail().getId());
         int ret = resourceMapper.deleteLog(log.getId());
         Iterator<Tag> iter = log.getTags().iterator();
@@ -114,11 +116,13 @@ public class ResourceService {
 
     public Log getLog(int id) {
         Log log = resourceMapper.getLogById(id);
-        List replies = resourceMapper.getLogReplies(log.getId());
-        log.setReplies_count(replies == null ? 0 : replies.size());
-        copyResFileToLog(log, "img");
-        copyResFileToLog(log, "video");
-        copyResFileToLog(log, "cover");
+        if (log != null) {
+            List replies = resourceMapper.getLogReplies(log.getId());
+            log.setReplies_count(replies == null ? 0 : replies.size());
+            copyResFileToLog(log, "img");
+            copyResFileToLog(log, "video");
+            copyResFileToLog(log, "cover");
+        }
         return log;
     }
 

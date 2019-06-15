@@ -35,13 +35,14 @@ public class BlogController {
         LogFile log = null;
         if (id != 0) {
             log = resourceService.getBlog(id, false);
+            mm.addAttribute("log", log);
+            mm.addAttribute("context", log.getDetail().getLog());
         }
         if (log == null) {
             log = new LogFile();
             id = 0;
         }
         mm.addAttribute("title", id == 0 ? "Create New Blog" : "Edit - " + log.getTitle());
-        mm.addAttribute("logfile", log);
         mm.addAttribute("res_id", id);
         return "blog_edit";
     }
@@ -100,7 +101,12 @@ public class BlogController {
             mm.addAttribute("context", log.getDetail().getLog());
             mm.addAttribute("author", account);
             mm.addAttribute("replies", resourceService.getAllReplies(log.getId()));
-            mm.addAttribute("log_id", lid);
+            if(principal != null) {
+                Account op = accountService.getAccountInfo(0, principal.getName());
+                if(op.getUid() == log.getUid()){
+                    mm.addAttribute("log_id", lid);
+                }
+            }
             if (principal != null) {
                 mm.addAttribute("reply_name", principal.getName());
                 if (principal instanceof Account) {

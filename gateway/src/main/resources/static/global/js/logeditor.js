@@ -55,6 +55,8 @@ $(document).ready(function () {
     $('#summernote').on('summernote.mousedown', function () {
         $(".note-video-popover").css('display', 'none');
     });
+
+    $("#org_log").length > 0 && $('#summernote').summernote("code", $("#org_log").val()) && $("#org_log").remove();
     $(".card-header").css("z-index", "auto");
     $.base64.utf8encode = true;
     $("#errinfo").hide();

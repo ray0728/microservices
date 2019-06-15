@@ -61,13 +61,21 @@ $('#cb_delete').change(function () {
     }
 });
 
+$("#btn_edit").click(function () {
+    let logid = $(this).data("id");
+    window.location.href = "/blog/edit?id=" + logid;
+});
+
 $("#btn_delete").click(function () {
     let logid = $(this).data("id");
-    console.log(logid);
     $.ajax({
         url: '/blog/api/res/delete',
         type: 'DELETE',
-        success: function(result) {
+        data: {
+            '_csrf': $($.find('input[type="hidden"]')).val(),
+            id: logid
+        },
+        success: function (result) {
             window.location.href = "/blog/list";
         },
         error: function () {

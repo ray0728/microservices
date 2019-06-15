@@ -4,19 +4,18 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NetFile {
 
-    public static String autoDetectSystemType(String win, String lin){
+    public static String autoDetectSystemType(String win, String lin) {
         String os = System.getProperty("os.name");
-        if(os.toLowerCase().startsWith("win")){
+        if (os.toLowerCase().startsWith("win")) {
             return win;
         }
         return lin;
     }
+
     public static int saveSplitFile(String root, String filename,
                                     long index, long total, String checksum,
                                     int chunksize, MultipartFile srcfile) throws IOException {
@@ -74,6 +73,45 @@ public class NetFile {
         }
     }
 
+    public static void deleteDir(File root) {
+        if (root.isDirectory()) {
+            String[] children = root.list();
+            File child;
+            for (int i = 0; i < children.length; i++) {
+                child = new File(root, children[i]);
+                if (child.isDirectory()) {
+                    deleteDir(child);
+                } else {
+                    child.delete();
+                }
+            }
+        }
+        root.delete();
+    }
+
+    public static void deleteFilesExist(String path) {
+        File root = new File(path);
+        if (root.isDirectory()) {
+            File[] files = root.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    if (pathname.isFile()) {
+                        String filename = pathname.getName();
+                        return (filename.startsWith("Unconfirmed") && filename.endsWith(".download")) || filename.endsWith(".cache");
+                    }
+                    return false;
+                }
+            });
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isFile()) {
+                    files[i].delete();
+                }
+            }
+        } else {
+            root.delete();
+        }
+    }
+
     public static String getDirAbsolutePath(String... dirs) {
         String absolutePath = "";
         for (String dir : dirs) {
@@ -113,10 +151,10 @@ public class NetFile {
                 File.separatorChar + file.getName() + File.separatorChar);
     }
 
-    public static String translateLocalVideoFileToTsFile(String path, String tsname){
+    public static String translateLocalVideoFileToTsFile(String path, String tsname) {
         File file = new File(path);
         return String.format("%shls%s%s", file.getParent() + File.separatorChar,
-                File.separatorChar + file.getName() + File.separatorChar,tsname);
+                File.separatorChar + file.getName() + File.separatorChar, tsname);
     }
 
 

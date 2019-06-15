@@ -265,6 +265,10 @@
           AND lid = #{lid};
     </delete>
 
+    <delete id="deleteLogDetial">
+        DELETE FROM t_log_detail WHERE id=#{id}
+    </delete>
+
     <select id="getTag" resultType="Tag">
         SELECT *
         FROM t_tag

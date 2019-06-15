@@ -29,13 +29,13 @@
                             <label for="upload_cover">Select Cover</label>
                             <br/>
                             <div class="single-blog-thumbnail">
-                            <img  id="cover_img" src="/global/img/blog-img/add-cover.jpg">
+                            <img  id="cover_img" src="/global/img/blog-img/add-cover.jpg" th:src="${log.cover}">
                             </div>
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="group">
-                            <input type="text" name="title" required>
+                            <input type="text" name="title" required th:value="${log.title}">
                             <span class="highlight"></span>
                             <span class="bar"></span>
                             <label>Title</label>
@@ -55,7 +55,7 @@
                     </div>
                     <div class="col-12 mt-2">
                         <div class="group">
-                            <input type="text" name="tag" required>
+                            <input type="text" name="tag" required th:value="${log.getTagsFormat()}">
                             <span class="highlight"></span>
                             <span class="bar"></span>
                             <label>Tag
@@ -114,6 +114,7 @@
     </div>
 </div>
 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+<input type="hidden" th:value="${log.detail.log}" id="org_log" th:if="${log.detail.log != null}"/>
 <script src="/global/js/jquery-2.2.4.min.js"></script>
 <script src="/global/js/jquery.base64.js"></script>
 <script src="/global/js/popper.min.js"></script>
