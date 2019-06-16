@@ -2,6 +2,7 @@ package com.rcircle.service.resource.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Log implements Serializable {
@@ -81,18 +82,57 @@ public class Log implements Serializable {
     }
 
     public List<Tag> getTags() {
-        if(tags == null){
+        if (tags == null) {
             tags = new ArrayList<>();
         }
         return tags;
+    }
+
+    public boolean checkTags(String[] descs, List<Tag> shouldAdd, List<Tag> shouldRm) {
+        shouldAdd.clear();
+        shouldRm.clear();
+        if (tags != null) {
+            Iterator<Tag> iter = tags.iterator();
+            while (iter.hasNext()) {
+                Tag tag = iter.next();
+                for (String desc : descs) {
+                    if (!tag.getDesc().equalsIgnoreCase(desc)) {
+                        shouldRm.add(tag);
+                    }
+                }
+            }
+            boolean ret = false;
+            for (String desc : descs) {
+                iter = tags.iterator();
+                while (iter.hasNext()) {
+                    Tag tag = iter.next();
+                    if (tag.getDesc().equalsIgnoreCase(desc)) {
+                        ret = true;
+                        break;
+                    }
+                }
+                if (!ret) {
+                    Tag tag = new Tag();
+                    tag.setDesc(desc);
+                    shouldAdd.add(tag);
+                }
+            }
+        } else {
+            for (String desc : descs) {
+                Tag tag = new Tag();
+                tag.setDesc(desc);
+                shouldAdd.add(tag);
+            }
+        }
+        return shouldAdd.isEmpty() || shouldRm.isEmpty();
     }
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
 
-    public void addTag(Tag tag){
-        if(tags == null){
+    public void addTag(Tag tag) {
+        if (tags == null) {
             tags = new ArrayList<>();
         }
         tags.add(tag);
@@ -114,7 +154,7 @@ public class Log implements Serializable {
         this.count = count;
     }
 
-    public void reset(){
+    public void reset() {
         id = 0;
         title = null;
         detail.reset();
@@ -136,8 +176,8 @@ public class Log implements Serializable {
         this.category = category;
     }
 
-    public void setCategory(String desc){
-        if(category == null){
+    public void setCategory(String desc) {
+        if (category == null) {
             category = new Category();
         }
         category.setDesc(desc);

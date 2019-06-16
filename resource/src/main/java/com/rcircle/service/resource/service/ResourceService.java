@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ResourceService {
@@ -31,12 +28,6 @@ public class ResourceService {
         log.getCategory().setId(category.getId());
         log.getCategory().setUid(category.getUid());
         resourceMapper.createLog(log);
-        Iterator<Tag> iter = log.getTags().iterator();
-        while (iter.hasNext()) {
-            Tag tag = iter.next();
-            createTag(tag);
-            resourceMapper.addTagForLog(log.getId(), tag);
-        }
         createLogDetail(log, content);
         return log;
     }
@@ -77,7 +68,23 @@ public class ResourceService {
     }
 
 
-    public int changeLog(Log log) {
+    public int changeLog(Log log, String[] tags) {
+        List<Tag> shouldAdd = new ArrayList<>();
+        List<Tag> shouldRm = new ArrayList<>();
+        if(log.checkTags(tags, shouldAdd, shouldRm)){
+            Tag tag;
+            Iterator<Tag> iter = shouldAdd.iterator();
+            while(iter.hasNext()){
+                tag = iter.next();
+                createTag(tag);
+                resourceMapper.addTagForLog(log.getId(), tag);
+            }
+            iter = shouldRm.iterator();
+            while (iter.hasNext()){
+                tag = iter.next();
+                resourceMapper.deleteTagFromLog(tag.getMid(), tag.getId(), log.getId());
+            }
+        }
         Category category = createNewCategory(log.getUid(), log.getCategory().getDesc());
         log.getCategory().setCid(category.getCid());
         log.getCategory().setId(category.getId());

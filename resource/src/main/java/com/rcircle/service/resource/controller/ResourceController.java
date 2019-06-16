@@ -66,8 +66,7 @@ public class ResourceController {
                                @RequestParam(name = "title") String title,
                                @RequestParam(name = "type") String type,
                                @RequestParam(name = "content", required = false, defaultValue = "")String content,
-                               @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
-                               @RequestParam(name = "tags", required = false, defaultValue = "") String[] tags) {
+                               @RequestParam(name = "gid", required = false, defaultValue = "0") int gid) {
         Account account = getOpAccount(principal);
         if (account == null) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_CREATE_NEW, "Invalid request parameters.");
@@ -79,11 +78,6 @@ public class ResourceController {
         log.setUid(account.getUid());
         log.setDate(SimpleDate.getUTCTime());
         log.setStatus(Log.STATUS_EDITING);
-        for (String desc : tags) {
-            Tag tag = new Tag();
-            tag.setDesc(desc);
-            log.addTag(tag);
-        }
         resourceService.createLog(log, content);
         return String.valueOf(log.getId());
     }
@@ -95,6 +89,7 @@ public class ResourceController {
                             @RequestParam(name = "type", required = false, defaultValue = "") String category,
                             @RequestParam(name = "gid", required = false, defaultValue = "0") int gid,
                             @RequestParam(name = "log", required = false, defaultValue = "") String htmllog,
+                            @RequestParam(name = "tags", required = false, defaultValue = "") String[] tags,
                             @RequestParam(name="status", required = false, defaultValue = "-1")int status) {
         Account account = getOpAccount(principal);
         if (account == null) {
@@ -122,7 +117,7 @@ public class ResourceController {
             shouldUpdate |= changeLogStatus(account, status, log);
         }
         if (shouldUpdate) {
-            resourceService.changeLog(log);
+            resourceService.changeLog(log, tags);
         }
         if (!htmllog.isEmpty()) {
             log.getDetail().setLog(htmllog);
