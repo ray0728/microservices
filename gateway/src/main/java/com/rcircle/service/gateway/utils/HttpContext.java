@@ -12,7 +12,7 @@ public class HttpContext {
     private Map<String, Object> contextMap = new HashMap<>();
 
     public void setValue(String key, Object value) {
-        contextMap.putIfAbsent(key, value);
+        contextMap.put(key, value);
     }
 
     public Object getValue(String key) {

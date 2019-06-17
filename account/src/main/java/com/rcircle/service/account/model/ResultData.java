@@ -49,7 +49,7 @@ public class ResultData implements Serializable {
         if (map == null) {
             map = new HashMap<>();
         }
-        map.putIfAbsent(key, obj);
+        map.put(key, obj);
     }
 
     public String toString() {

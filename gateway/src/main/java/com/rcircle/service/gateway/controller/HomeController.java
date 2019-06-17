@@ -8,11 +8,16 @@ import com.rcircle.service.gateway.services.ReferenceService;
 import com.rcircle.service.gateway.services.ResourceService;
 import com.rcircle.service.gateway.utils.Base64;
 import com.rcircle.service.gateway.utils.MvcToolkit;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,5 +80,14 @@ public class HomeController {
             mm.addAttribute("msg", Base64.decode(msg));
         }
         return "login";
+    }
+
+    @GetMapping("logout")
+    public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null){
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        return "redirect:/login/";
     }
 }

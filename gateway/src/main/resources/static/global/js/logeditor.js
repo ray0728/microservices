@@ -83,6 +83,7 @@ $("#extmodal").on('show.bs.modal', function (e) {
     let header = $(this).find('h5[class="title"]');
     let content = $(this).find('div[class="modal-div"]');
     let source = $(e.relatedTarget).text();
+    $("#btn-close").removeAttr("disabled");
     source = $.trim(source);
     if (source == "Publish") {
         header.text("Prepare to create an article") && content.html(createBody());
@@ -109,7 +110,7 @@ $('#extmodal').on('shown.bs.modal', function (e) {
     let progress = $(this).find('div.progress-bar');
     source = $.trim(source);
     if (source == "Publish") {
-        let resid = $($.find('div[name="context"]')).val();
+        let resid = $($.find('div[name="context"]')[0]).data("id");
         let titleobj = $.find('input[name="title"]');
         let category = $("#select_category").find(":selected").val();
         let title = $(titleobj).val();
@@ -124,23 +125,16 @@ $('#extmodal').on('shown.bs.modal', function (e) {
     }
 });
 
-$('#extmodal').on('hide.bs.modal', function (e) {
-    let source = $(e.relatedTarget).text();
-    source = $.trim(source);
-    if (source == "Publish") {
-        abort_upload = true;
-        $.each(xhr_upload, function (index, filename) {
-            $.ajax({
-                // TODO:missing log_id
-                url: "/blog/api/res/files?name=" + filename,
-                type: "Delete",
-                cache: false,
-                processData: false,
-                contentType: false
-            });
-        });
-    }
-});
+abortUpload = function (resid) {
+    abort_upload = true;
+    $.ajax({
+        url: "/blog/api/res/files?id=" + resid + "&name=" + xhr_upload.join(";"),
+        type: "Delete",
+        cache: false,
+        processData: false,
+        contentType: false
+    });
+};
 
 $('#extmodal').on('hidden.bs.modal', function (e) {
     let source = $(e.relatedTarget).text();
@@ -203,6 +197,7 @@ jump = function (lid) {
     if (xhr_upload.length != 0) {
         return;
     }
+    $('#btn-close').attr("disabled", "true");
     $.post("/blog/api/res/update", {
         'id': lid,
         'status': 0,
@@ -278,6 +273,7 @@ uploadCover = function (lid) {
         blobFileTransfer(lid, "cover_" + filename, $("#cover_img").attr("src"), "cover", progress[1], 0);
     } else {
         $(progress[0]).css("width", "50%");
+        uploadResFiles(lid);
     }
 };
 
@@ -316,6 +312,7 @@ processUpload = function (lid) {
         let filename = $(data).find("span").text();
         blobFileTransfer(lid, filename, url, null, progress, 1);
     });
+    !uploadlist.length && jump(lid);
 };
 
 blobFileTransfer = function (lid, filename, url, type, progress, nextstep) {
@@ -329,7 +326,7 @@ blobFileTransfer = function (lid, filename, url, type, progress, nextstep) {
             compressImage(lid, filename, new File([blobdata], filename, {
                 type: blobdata.type,
                 lastModified: Date.now()
-            }),type, progress, nextstep);
+            }), type, progress, nextstep);
         }
     };
     xhr.open('GET', url, true);
@@ -466,4 +463,8 @@ $('#upload_cover').on("change", function (e) {
     $('#cover_img').attr("data-filename", file[0].name);
 });
 
+$('#btn-close').on('click', function () {
+    let resid = $($.find('div[name="context"]')[0]).data("id");
+    abortUpload(resid);
+});
 
