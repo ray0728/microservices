@@ -68,8 +68,8 @@
     </insert>
 
     <insert id="createLog" useGeneratedKeys="true" keyProperty="id" parameterType="Log">
-        INSERT INTO t_log(uid, title, `date`, gid, `type`, status)
-        VALUES (#{uid}, #{title}, #{date}, #{gid}, #{category.cid}, #{status});
+        INSERT INTO t_log(uid, `date`, status)
+        VALUES (#{uid}, #{date}, #{status});
     </insert>
 
     <insert id="createReply" useGeneratedKeys="true" keyProperty="id" parameterType="Reply">
@@ -119,12 +119,12 @@
     <select id="getLogs" resultMap="logMapWithCount">
         SELECT SQL_CALC_FOUND_ROWS t_log.*
         <choose>
-        <when test="tid != 0">
-            , t_tag_log_map.tid AS "tid"
-        </when>
-        <otherwise>
-            , "0" AS "tid"
-        </otherwise>
+            <when test="tid != 0">
+                , t_tag_log_map.tid AS "tid"
+            </when>
+            <otherwise>
+                , "0" AS "tid"
+            </otherwise>
         </choose>
         FROM t_log
         <if test="tid !=0">
@@ -152,8 +152,32 @@
     </select>
 
     <select id="getTopLogs" resultMap="logMap">
-        SELECT t_log.id, t_log.uid, t_log.type, t_log.gid, t_log.title, t_log.date, t_log.status, count(*) AS count
-        FROM t_log join t_reply ON t_log.id = t_reply.lid AND t_log.gid = 0  GROUP BY t_log.id ORDER BY count DESC LIMIT 10;
+        SELECT t_log.id,
+               t_log.uid,
+               t_log.type,
+               t_log.gid,
+               t_log.title,
+               t_log.date,
+               t_log.status,
+               count(*)
+               AS
+               count
+        FROM t_log
+             join
+             t_reply
+        ON t_log
+           .
+           id =
+           t_reply
+           .
+           lid
+           AND
+           t_log
+           .
+           gid =
+           0
+        GROUP BY t_log.id
+        ORDER BY count DESC LIMIT 10;
     </select>
 
     <select id="getLogById" resultMap="logMap">
@@ -266,7 +290,9 @@
     </delete>
 
     <delete id="deleteLogDetial">
-        DELETE FROM t_log_detail WHERE id=#{id}
+        DELETE
+        FROM t_log_detail
+        WHERE id = #{id}
     </delete>
 
     <select id="getTag" resultType="Tag">

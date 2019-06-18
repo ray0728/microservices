@@ -22,13 +22,13 @@ public class ResourceService {
     @Autowired
     private ResourceMapper resourceMapper;
 
-    public Log createLog(Log log, String content) {
+    public Log createLog(Log log) {
         Category category = createNewCategory(log.getUid(), log.getCategory().getDesc());
         log.getCategory().setCid(category.getCid());
         log.getCategory().setId(category.getId());
         log.getCategory().setUid(category.getUid());
         resourceMapper.createLog(log);
-        createLogDetail(log, content);
+        createLogDetail(log, "");
         return log;
     }
 

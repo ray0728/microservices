@@ -62,23 +62,16 @@ public class ResourceController {
     }
 
     @PostMapping("new")
-    public String createNewLog(Principal principal,
-                               @RequestParam(name = "title") String title,
-                               @RequestParam(name = "type") String type,
-                               @RequestParam(name = "content", required = false, defaultValue = "")String content,
-                               @RequestParam(name = "gid", required = false, defaultValue = "0") int gid) {
+    public String createNewLog(Principal principal) {
         Account account = getOpAccount(principal);
         if (account == null) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_CREATE_NEW, "Invalid request parameters.");
         }
         Log log = new Log();
-        log.setTitle(title);
-        log.setCategory(type);
-        log.setGid(gid);
         log.setUid(account.getUid());
         log.setDate(SimpleDate.getUTCTime());
         log.setStatus(Log.STATUS_EDITING);
-        resourceService.createLog(log, content);
+        resourceService.createLog(log);
         return String.valueOf(log.getId());
     }
 
@@ -173,7 +166,6 @@ public class ResourceController {
                                   @RequestParam(name = "total", required = true) int total,
                                   @RequestParam(name = "chunksize") int chunkSize,
                                   @RequestParam(name = "checksum", required = true) String checksum) {
-
         Log log = resourceService.getLog(id);
         String ret = verifyAccount(principal, log, ResultInfo.CODE_UPLOAD_RES, false);
         if (ret != null) {
