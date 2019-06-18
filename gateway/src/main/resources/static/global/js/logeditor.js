@@ -121,7 +121,7 @@ $('#extmodal').on('shown.bs.modal', function (e) {
             return;
         }
         !resid && createLog(header, progress);
-        resid && uploadCover(resid);
+        resid && updateLog(resid, progress) && uploadCover(resid);
     }
 });
 
@@ -137,11 +137,7 @@ abortUpload = function (resid) {
 };
 
 $('#extmodal').on('hidden.bs.modal', function (e) {
-    let source = $(e.relatedTarget).text();
-    source = $.trim(source);
-    if (source == "Publish") {
-        abort_upload = false;
-    }
+    abort_upload = false;
 });
 
 dynamicsUploadFilesBody = function (files) {
@@ -232,17 +228,8 @@ errorOccurred = function () {
 };
 
 createLog = function (header, progress) {
-    let title = $($.find('input[name="title"]')).val();
-    let category = $("#select_category").find(":selected").val();
-    let tags = $($.find('input[name="tag"]')).val().replace(/；/g, ";").split(";");
-    tags = tags.filter(function (s) {
-        return s && s.trim();
-    });
     header.text("Prepare to create an article");
     $.post("/blog/api/res/new", {
-        'title': title,
-        'type': category,
-        'tags': tags,
         '_csrf': $($.find('input[type="hidden"]')).val()
     }, function (data, status) {
         status == "success" && $(progress[0]).css("width", "25%") && updateLog(data, progress);
@@ -251,11 +238,20 @@ createLog = function (header, progress) {
 };
 
 updateLog = function (lid, progress) {
+    let title = $($.find('input[name="title"]')).val();
+    let category = $("#select_category").find(":selected").val();
+    let tags = $($.find('input[name="tag"]')).val().replace(/；/g, ";").split(";");
+    tags = tags.filter(function (s) {
+        return s && s.trim();
+    });
     $('#summernote').summernote('code');
     let code = replaceNode($('#summernote').summernote('code'), lid);
     $.post("/blog/api/res/update", {
         'id': lid,
         'log': $(code).html(),
+        'title': title,
+        'type': category,
+        'tags':tags,
         '_csrf': $($.find('input[type="hidden"]')).val()
     }, function (ret, status) {
         status == "success" && $(progress[0]).css("width", "50%") && uploadCover(lid);
@@ -334,7 +330,7 @@ blobFileTransfer = function (lid, filename, url, type, progress, nextstep) {
 };
 
 compressImage = function (lid, filename, file, type, progress, nextstep) {
-    if (file.type.indexOf("image") && (file.size / 1024 > 1025)) {
+    if (file.type.indexOf("image") == 0 && (file.size / 1024 > 1025)) {
         let ready = new FileReader();
         ready.readAsDataURL(file);
         ready.onload = function () {
@@ -439,7 +435,7 @@ sliceUpload = function (lid, file, chunkSize, type, progress, nextstep) {
                     }
                 }
             },
-            error: function () {
+            error: function (ret) {
                 errorOccurred();
             }
         });

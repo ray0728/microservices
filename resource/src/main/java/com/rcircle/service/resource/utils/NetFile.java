@@ -112,6 +112,18 @@ public class NetFile {
         }
     }
 
+    public static String translateToUrlFormat(String str) {
+        str = str.replace("+", "%2B");
+        str = str.replaceAll(" ", "%20");
+        str = str.replaceAll("/", "%2F");
+        str = str.replace("?", "%3F");
+        str = str.replaceAll("%", "%25");
+        str = str.replaceAll("#", "%23");
+        str = str.replaceAll("&", "%26");
+        str = str.replaceAll("=", "%3D");
+        return str;
+    }
+
     public static String getDirAbsolutePath(String... dirs) {
         String absolutePath = "";
         for (String dir : dirs) {
