@@ -23,13 +23,26 @@ echo "********************************************************"
 while ! `nc -z redis $REDIS_PORT`; do sleep 10; done
 echo "******* REDIS has started"
 
+echo "********************************************************"
+echo "Waiting for the database server to start on port $DATABASE_PORT"
+echo "********************************************************"
+while ! `nc -z database $DATABASE_PORT`; do sleep 3; done
+echo "******** Database Server has started "
 
 echo "********************************************************"
-echo "Starting the Auth Server"
+echo "Waiting for the auth server to start on port $AUTH_PORT"
+echo "********************************************************"
+while ! `nc -z authserver $AUTH_PORT`; do sleep 3; done
+echo "******** Database Server has started "
+
+echo "********************************************************"
+echo "Starting the Account Server"
 echo "********************************************************"
 java -Djava.security.egd=file:/dev/./urandom                \
      -Dspring.cloud.config.uri=$CONFIGSERVER_URI            \
      -Deureka.client.serviceUrl.defaultZone=$EUREKASERVER_URI \
      -Dspring.redis.host=$REDIS_URI                         \
+     -Dauth-server=$AUTH_URI                                \
+     -Dspring.datasource.url=$DATABASE_URI                  \
      -Dspring.profiles.active=$PROFILE                      \
 -jar /usr/local/server/@project.build.finalName@.jar

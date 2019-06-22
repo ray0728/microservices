@@ -30,6 +30,9 @@ echo "********************************************************"
 java -Djava.security.egd=file:/dev/./urandom                \
      -Dspring.cloud.config.uri=$CONFIGSERVER_URI            \
      -Deureka.client.serviceUrl.defaultZone=$EUREKASERVER_URI \
+     -Dspring.zipkin.base-url=$ZIPKIN_URI                    \
      -Dspring.redis.host=$REDIS_URI                         \
+     -Dauth-server=$AUTH_URI                                \
+     -Dspring.datasource.url=$DATABASE_URI                  \
      -Dspring.profiles.active=$PROFILE                      \
 -jar /usr/local/server/@project.build.finalName@.jar
