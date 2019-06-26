@@ -1,6 +1,7 @@
 package com.rcircle.service.stream.services;
 
-import com.rcircle.service.stream.events.source.HLSBean;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.rcircle.service.stream.clients.RemoteMessageFeignClient;
 import com.rcircle.service.stream.utils.core.CommandCallback;
 import com.rcircle.service.stream.utils.core.CommandExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,12 @@ import java.util.List;
 @Service
 public class HLSService implements CommandCallback<HLSService.MateData> {
     private static final int FLAG_CREATE_HLS_FILES = 0;
+
     @Autowired
-    private HLSBean hlsBean;
+    private RemoteMessageFeignClient remoteMessageFeignClient;
+
     @Autowired
-    CommandExecutor commandExecutor;
+    private CommandExecutor commandExecutor;
 
     @Value("${ffmpeg.path.windows}")
     private String ffmpeg_bin_path_w;
@@ -68,9 +71,6 @@ public class HLSService implements CommandCallback<HLSService.MateData> {
         commandExecutor.setCmd(cmd).asyncProcess(md, this);
     }
 
-    public void sendHLSSplitFinished(int logid, String filename, boolean ret) {
-        hlsBean.sendHLSSplitFinished(logid, filename, ret);
-    }
 
 
     @Override
@@ -89,9 +89,25 @@ public class HLSService implements CommandCallback<HLSService.MateData> {
         switch (flag.type) {
             case FLAG_CREATE_HLS_FILES:
                 result = checkHLSFilesCreatedResult(flag.filepath);
-                sendHLSSplitFinished(flag.id, flag.filename, result);
+                while(!sendHLSSplitFinished(flag.id, flag.filename, result)){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 break;
         }
+    }
+
+    @HystrixCommand(fallbackMethod = "buildFallbacksendHLSSplitFinished", threadPoolKey = "MessageThreadPool")
+    public boolean sendHLSSplitFinished (int id, String filename, boolean ret) {
+        remoteMessageFeignClient.sendHLSSplitFinished(id, filename, ret);
+        return true;
+    }
+
+    public boolean buildFallbacksendHLSSplitFinished(int id, String filename, boolean ret, Throwable throwable){
+        return false;
     }
 
     private boolean checkHLSFilesCreatedResult(String filepath) {
