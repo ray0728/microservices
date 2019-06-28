@@ -94,9 +94,9 @@ public class HomeController {
     @GetMapping("about")
     public String about(ModelMap mm){
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
-        MvcToolkit.autoLoadSideBarData(resourceService, mm);
         MvcToolkit.autoLoadNewsData(messageService, mm);
         mm.addAttribute("title", "About us");
+
         return "about";
     }
 }
