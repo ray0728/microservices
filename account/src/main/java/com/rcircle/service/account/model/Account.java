@@ -14,11 +14,29 @@ public class Account implements Serializable {
     private String password;
     private String email;
     private String profile;
+    private String resume;
+    private String header;
     private int status = STATUS_NORMAL;
     private long firsttime;
     private int times;
     private long lastlogin;
     private List<Role> roles;
+
+    public String getResume() {
+        return resume;
+    }
+
+    public void setResume(String resume) {
+        this.resume = resume;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
 
     public int getUid() {
         return uid;
