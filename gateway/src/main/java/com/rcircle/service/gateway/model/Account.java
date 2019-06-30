@@ -19,6 +19,8 @@ public class Account implements Authentication, CredentialsContainer {
     private Object principal;
     private Object detials;
     private String profile;
+    private String resume;
+    private String header;
     private JWTToken jwtToken = null;
     private boolean authenticated = false;
     private String errinfo;
@@ -39,6 +41,26 @@ public class Account implements Authentication, CredentialsContainer {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getResume() {
+        return resume;
+    }
+
+    public String autoDetectResume() {
+        return resume != null && !resume.isEmpty() ? resume : profile;
+    }
+
+    public void setResume(String resume) {
+        this.resume = resume;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
     }
 
     @Override
@@ -73,7 +95,7 @@ public class Account implements Authentication, CredentialsContainer {
 
     @Override
     public String getName() {
-        if(principal instanceof Principal) {
+        if (principal instanceof Principal) {
             return ((Principal) principal).getName();
         }
         if (principal instanceof String) {
@@ -91,7 +113,7 @@ public class Account implements Authentication, CredentialsContainer {
         jwtToken = JSONObject.parseObject(token, JWTToken.class);
     }
 
-    public JWTToken getToken(){
+    public JWTToken getToken() {
         return jwtToken;
     }
 
@@ -124,7 +146,7 @@ public class Account implements Authentication, CredentialsContainer {
         this.errinfo = errinfo;
     }
 
-    public boolean hasError(){
+    public boolean hasError() {
         return errinfo != null && !errinfo.isEmpty();
     }
 
@@ -144,7 +166,7 @@ public class Account implements Authentication, CredentialsContainer {
         this.lastlogin = lastlogin;
     }
 
-    public void setUsername(String name){
+    public void setUsername(String name) {
         principal = name;
     }
 
@@ -152,8 +174,8 @@ public class Account implements Authentication, CredentialsContainer {
         this.roles = roles;
     }
 
-    public void copyFrom(Account account){
-        if(!account.hasError()){
+    public void copyFrom(Account account) {
+        if (!account.hasError()) {
             setEmail(account.getEmail());
             setLastlogin(account.getLastlogin());
             setProfile(account.getProfile());
@@ -161,8 +183,8 @@ public class Account implements Authentication, CredentialsContainer {
             Iterator<? extends GrantedAuthority> iter = account.getAuthorities().iterator();
             List<Role> roles = new ArrayList<>();
             Role role;
-            while(iter.hasNext()){
-                role =  new Role();
+            while (iter.hasNext()) {
+                role = new Role();
                 role.setAuthority(iter.next().getAuthority());
                 roles.add(role);
             }

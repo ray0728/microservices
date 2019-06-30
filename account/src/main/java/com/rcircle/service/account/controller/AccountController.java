@@ -1,5 +1,6 @@
 package com.rcircle.service.account.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.rcircle.service.account.model.Account;
 import com.rcircle.service.account.model.Role;
@@ -38,7 +39,9 @@ public class AccountController {
                          @RequestParam(name = "email") String email,
                          @RequestParam(name = "passwd") String password,
                          @RequestParam(name = "roles", required = false, defaultValue = "") int[] roles,
-                         @RequestParam(name = "profile", required = false, defaultValue = "") String profile
+                         @RequestParam(name = "profile", required = false, defaultValue = "") String profile,
+                         @RequestParam(name = "resume", required = false, defaultValue = "") String resume,
+                         @RequestParam(name = "header", required = false, defaultValue = "") String header
     ) {
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
@@ -52,6 +55,8 @@ public class AccountController {
         account.setPassword(password);
         account.setEmail(email);
         account.setProfile(profile);
+        account.setResume(resume);
+        account.setHeader(header);
         if (mAccountService.createAccount(account) == 0) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
         }
@@ -127,7 +132,9 @@ public class AccountController {
     public String changePassword(Principal principal,
                                  @RequestParam(name = "email", required = false, defaultValue = "") String email,
                                  @RequestParam(name = "passwd", required = false, defaultValue = "") String password,
-                                 @RequestParam(name = "profile", required = false, defaultValue = "") String profile) {
+                                 @RequestParam(name = "profile", required = false, defaultValue = "") String profile,
+                                 @RequestParam(name = "resume", required = false, defaultValue = "") String resume,
+                                 @RequestParam(name = "header", required = false, defaultValue = "") String header) {
         if (principal == null) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_EDIT_ACCOUNT, "Invalid request parameters.");
         }
@@ -135,7 +142,7 @@ public class AccountController {
         if (account == null) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_EDIT_ACCOUNT, "Invalid resources.");
         }
-        mAccountService.updateAccountInfo(account.getUid(), email, password, profile);
+        mAccountService.updateAccountInfo(account.getUid(), email, password, profile, resume, header);
         account.setPassword("******");
         return ResultInfo.assembleSuccessJson(ResultInfo.CODE_EDIT_ACCOUNT, "finished", "account", account);
     }
@@ -144,12 +151,19 @@ public class AccountController {
     public String getInfo(HttpServletRequest request,
                           @RequestParam(name = "username", required = false, defaultValue = "") String username,
                           @RequestParam(name = "uid", required = false, defaultValue = "0") int uid) {
-        Account account = mAccountService.getAccount(username, uid);
-        String securityFlag = request.getHeader("rc-account-security");
-        if (account != null && securityFlag == null) {
-            account.setPassword("******");
+        String ret = null;
+        if (username.isEmpty() && uid == 0) {
+            List accounts = mAccountService.getAllAccounts();
+            ret = accounts == null ? null : JSONArray.toJSONString(accounts);
+        } else {
+            Account account = mAccountService.getAccount(username, uid);
+            String securityFlag = request.getHeader("rc-account-security");
+            if (account != null && securityFlag == null) {
+                account.setPassword("******");
+            }
+            ret = account == null ? null : JSONObject.toJSONString(account);
         }
-        return account == null ? null : JSONObject.toJSONString(account);
+        return ret;
     }
 
     @PutMapping("refresh")

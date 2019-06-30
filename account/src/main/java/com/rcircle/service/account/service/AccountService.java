@@ -40,6 +40,10 @@ public class AccountService {
         return null;
     }
 
+    public List<Account> getAllAccounts(){
+        return mapper.getAllAccount();
+    }
+
     private boolean isEmailFormat(String email) {
         if(email == null){
             return false;
@@ -67,11 +71,13 @@ public class AccountService {
         return mapper.setAccountStatus(account.getUid(), status);
     }
 
-    public int updateAccountInfo(int uid, String email, String password, String profile) {
+    public int updateAccountInfo(int uid, String email, String password, String profile, String resume, String header) {
         Account tmpAccount = new Account();
         tmpAccount.setUid(uid);
         tmpAccount.setEmail(email);
         tmpAccount.setProfile(profile);
+        tmpAccount.setResume(resume);
+        tmpAccount.setHeader(header);
         tmpAccount.setPassword(Password.crypt(password));
         return mapper.updateAccount(tmpAccount);
     }

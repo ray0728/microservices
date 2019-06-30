@@ -28,5 +28,7 @@ public interface AccountMapper {
 
     public List<String> getAllUsername();
 
+    public List<Account> getAllAccount();
+
     public int updateAccount(Account account);
 }

@@ -26,53 +26,95 @@
                 <span th:utext="${'<strong>Failed! </strong>' + errinfo}"></span>
             </div>
             <br/>
-            <form role="form" action="#" th:action="@{/join}" th:object="${account}" method="post">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="group">
-                            <input type="text" th:field="*{principal}" required>
-                            <label>Username</label>
+            <div class="row">
+                <div class="col-12 col-sm-3">
+                    <div class="group">
+                        <div class="single-blog-thumbnail">
+                            <img id="avatar_img" src="/global/img/default-avatar.png">
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="group">
-                            <input type="email" th:field="*{email}" required>
-                            <p class="help-block">We’ll occasionally send updates about your account to this inbox.
-                                We’ll
-                                never share
-                                your email address with anyone.</p>
-                            <label>Email address</label>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="group">
-                            <input type="password" th:field="*{credentials}" required>
-                            <p class="help-block">Make sure it's more than 15 characters OR at least 8 characters
-                                including
-                                a number and a lowercase letter.</p>
-                            <label>Password</label>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="group">
-                            <input type="text" th:field="*{profile}">
-                            <label>Profile</label>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <button type="submit" class="btn original-btn">Create an account</button>
+                        <input id="upload_avatar" type="file" accept="image/*" class="hidden">
+                        <label for="upload_avatar">Select avatar</label>
                     </div>
                 </div>
-            </form>
+                <div class="col-12 col-sm-9">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="group">
+                                <input type="text" required>
+                                <label>Username</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="group">
+                                <input type="email" required>
+                                <p class="help-block">We’ll occasionally send updates about your account to this
+                                    inbox.
+                                    We’ll
+                                    never share
+                                    your email address with anyone.</p>
+                                <label>Email address</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="group">
+                                <input type="password" required>
+                                <p class="help-block">Make sure it's more than 15 characters OR at least 8
+                                    characters
+                                    including
+                                    a number and a lowercase letter.</p>
+                                <label>Password</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="group">
+                        <input type="text">
+                        <p class="help-block">Create your own signature.</p>
+                        <label>Profile</label>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="group">
+                        <input type="text">
+                        <p class="help-block">Make an assessment of yourself, such as mastering skills, past work,
+                            hobbies, etc.</p>
+                        <label>Resume</label>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button type="button" class="btn original-btn" data-toggle="modal"
+                            data-target="#createAccountModal">Create an account
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="col-12 col-lg-3" th:include="public::sidebar"></div>
     </div>
 </div>
 <div th:include="public::bottombar"></div>
+<div class="subscribe-newsletter-area">
+    <div class="modal fade" id="createAccountModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <div class="modal-body">
+                    <h5 class="title">Create category</h5>
+                    <div class="newsletterForm">
+                        <input placeholder="New category here">
+                        <button type="button" class="btn original-btn btn-type">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="/global/js/jquery-2.2.4.min.js"></script>
 <script src="/global/js/popper.min.js"></script>
 <script src="/global/bootstrap/js/bootstrap.min.js"></script>
 <script src="/global/js/plugins.js"></script>
 <script src="/global/js/active.js"></script>
+<script src="/global/js/signup.js"></script>
 </body>
 </html>

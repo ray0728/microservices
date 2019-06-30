@@ -1,12 +1,15 @@
 package com.rcircle.service.gateway.services;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.rcircle.service.gateway.clients.RemoteAccountClient;
 import com.rcircle.service.gateway.model.Account;
 import com.rcircle.service.gateway.model.ResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AccountService {
@@ -17,6 +20,12 @@ public class AccountService {
     public Account getAccountInfo(int id, String name) {
         String info = remoteAccountClient.getInfo(name, id);
         return JSON.parseObject(info, Account.class);
+    }
+
+    @HystrixCommand(fallbackMethod = "buildFallbackGetAllAcounts", threadPoolKey = "AccountThreadPool")
+    public List<Account> getAllAccounts(){
+        String ret = remoteAccountClient.getInfo("", 0);
+        return JSONArray.parseArray(ret, Account.class);
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackCreateAccount", threadPoolKey = "AccountThreadPool")
@@ -49,6 +58,10 @@ public class AccountService {
             failinfo = throwable.getMessage();
         }
         return failinfo;
+    }
+
+    private List<Account> buildFallbackGetAllAcounts(Throwable throwable){
+        return null;
     }
 
     private Account buildFallbackAfterLoginSuccess(Throwable throwable){
