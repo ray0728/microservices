@@ -5,11 +5,15 @@ import com.alibaba.fastjson.JSONArray;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.rcircle.service.gateway.clients.RemoteAccountClient;
 import com.rcircle.service.gateway.model.Account;
+import com.rcircle.service.gateway.model.LogFile;
 import com.rcircle.service.gateway.model.ResultData;
+import com.rcircle.service.gateway.utils.Toolkit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AccountService {
@@ -23,7 +27,7 @@ public class AccountService {
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackGetAllAcounts", threadPoolKey = "AccountThreadPool")
-    public List<Account> getAllAccounts(){
+    public List<Account> getAllAccounts() {
         String ret = remoteAccountClient.getInfo("", 0);
         return JSONArray.parseArray(ret, Account.class);
     }
@@ -38,19 +42,25 @@ public class AccountService {
         if (existAccount != null && !existAccount.hasError()) {
             return String.format("email address(%s) has been used", account.getName());
         }
-        String info = remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null, account.getProfile());
-        ResultData errorData = JSON.parseObject(info, ResultData.class);
-        return errorData.isSuccess()? "success" : errorData.toString();
+        String info = remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null, account.getSignature(), account.getResume());
+        Map<String, Object> map = new HashMap<>();
+        map.put("account", Account.class);
+        if (Toolkit.parseResultData(info, map)) {
+            return String.valueOf(((Account) map.get("account")).getUid());
+        }else {
+            ResultData data = JSON.parseObject(info, ResultData.class);
+            return data.toString();
+        }
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackAfterLoginSuccess", threadPoolKey = "AccountThreadPool")
-    public Account afterLoginSuccess(){
+    public Account afterLoginSuccess() {
         String ret = remoteAccountClient.refreshTime();
         ResultData data = JSON.parseObject(ret, ResultData.class);
         return JSON.parseObject(data.getMap().get("account").toString(), Account.class);
     }
 
-    private String autoDetectErrinfo(Throwable throwable){
+    private String autoDetectErrinfo(Throwable throwable) {
         String failinfo;
         if (throwable instanceof com.netflix.hystrix.exception.HystrixTimeoutException) {
             failinfo = "remote service is busy now, please retry it late";
@@ -60,17 +70,17 @@ public class AccountService {
         return failinfo;
     }
 
-    private List<Account> buildFallbackGetAllAcounts(Throwable throwable){
+    private List<Account> buildFallbackGetAllAcounts(Throwable throwable) {
         return null;
     }
 
-    private Account buildFallbackAfterLoginSuccess(Throwable throwable){
+    private Account buildFallbackAfterLoginSuccess(Throwable throwable) {
         Account account = new Account();
         account.setErrinfo(autoDetectErrinfo(throwable));
         return account;
     }
 
-    private Account buildFallbackGetAccountInfo(int id, String name, Throwable throwable){
+    private Account buildFallbackGetAccountInfo(int id, String name, Throwable throwable) {
         Account account = new Account();
         account.setErrinfo(autoDetectErrinfo(throwable));
         return account;

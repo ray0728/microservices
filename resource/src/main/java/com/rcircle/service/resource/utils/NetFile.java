@@ -7,15 +7,6 @@ import java.io.*;
 import java.util.*;
 
 public class NetFile {
-
-    public static String autoDetectSystemType(String win, String lin) {
-        String os = System.getProperty("os.name");
-        if (os.toLowerCase().startsWith("win")) {
-            return win;
-        }
-        return lin;
-    }
-
     public static int saveSplitFile(String root, String filename,
                                     long index, long total, String checksum,
                                     int chunksize, MultipartFile srcfile) throws IOException {

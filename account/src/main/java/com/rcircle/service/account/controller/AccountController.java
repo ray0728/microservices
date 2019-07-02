@@ -3,10 +3,13 @@ package com.rcircle.service.account.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.rcircle.service.account.model.Account;
+import com.rcircle.service.account.model.ResultData;
 import com.rcircle.service.account.model.Role;
 import com.rcircle.service.account.service.AccountService;
+import com.rcircle.service.account.util.NetFile;
 import com.rcircle.service.account.util.ResultInfo;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -33,15 +36,30 @@ public class AccountController {
         return false;
     }
 
+    @PostMapping("avatar/{uid}")
+    public String uploadAvatar(Principal principal,
+                               MultipartFile file,
+                               @PathVariable("uid") int uid,
+                               @RequestParam(name = "index") int index,
+                               @RequestParam(name = "total") int total,
+                               @RequestParam(name = "chunksize") int chunkSize,
+                               @RequestParam(name = "checksum") String checksum) {
+        Account opAccount = mAccountService.getAccount(principal.getName(), 0);
+        if (opAccount == null || opAccount.getUid() != uid) {
+            return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_UPLOAD_AVATAR, "Invalid resources.");
+        }
+        return mAccountService.updateAvatar(uid, index, total, chunkSize, checksum, file);
+    }
+
+
     @PostMapping("create")
     public String create(Principal principal,
                          @RequestParam(name = "usrname") String username,
                          @RequestParam(name = "email") String email,
                          @RequestParam(name = "passwd") String password,
                          @RequestParam(name = "roles", required = false, defaultValue = "") int[] roles,
-                         @RequestParam(name = "profile", required = false, defaultValue = "") String profile,
-                         @RequestParam(name = "resume", required = false, defaultValue = "") String resume,
-                         @RequestParam(name = "header", required = false, defaultValue = "") String header
+                         @RequestParam(name = "signature", required = false, defaultValue = "") String profile,
+                         @RequestParam(name = "resume", required = false, defaultValue = "") String resume
     ) {
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
@@ -54,9 +72,8 @@ public class AccountController {
         account.setUsername(username);
         account.setPassword(password);
         account.setEmail(email);
-        account.setProfile(profile);
+        account.setSignature(profile);
         account.setResume(resume);
-        account.setHeader(header);
         if (mAccountService.createAccount(account) == 0) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
         }
@@ -70,8 +87,11 @@ public class AccountController {
             mAccountService.addRole(account, Role.ID_GUEST);
         }
         account.setPassword("******");
-
-        return ResultInfo.assembleSuccessJson(ResultInfo.CODE_CREATE_ACCOUNT, "finished", "account", account);
+        ResultData data = new ResultData();
+        data.setCode(ResultInfo.CODE_CREATE_ACCOUNT);
+        data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));
+        data.addToMap("account", account);
+        return JSONObject.toJSONString(data);
     }
 
     @DeleteMapping("delete")
@@ -132,9 +152,9 @@ public class AccountController {
     public String changePassword(Principal principal,
                                  @RequestParam(name = "email", required = false, defaultValue = "") String email,
                                  @RequestParam(name = "passwd", required = false, defaultValue = "") String password,
-                                 @RequestParam(name = "profile", required = false, defaultValue = "") String profile,
+                                 @RequestParam(name = "signature", required = false, defaultValue = "") String profile,
                                  @RequestParam(name = "resume", required = false, defaultValue = "") String resume,
-                                 @RequestParam(name = "header", required = false, defaultValue = "") String header) {
+                                 @RequestParam(name = "avatar", required = false, defaultValue = "") String header) {
         if (principal == null) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.NULLOBJ, ResultInfo.CODE_EDIT_ACCOUNT, "Invalid request parameters.");
         }

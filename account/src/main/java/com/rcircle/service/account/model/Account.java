@@ -13,9 +13,9 @@ public class Account implements Serializable {
     private String username;
     private String password;
     private String email;
-    private String profile;
+    private String signature;
     private String resume;
-    private String header;
+    private String avatar;
     private int status = STATUS_NORMAL;
     private long firsttime;
     private int times;
@@ -30,12 +30,12 @@ public class Account implements Serializable {
         this.resume = resume;
     }
 
-    public String getHeader() {
-        return header;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setHeader(String header) {
-        this.header = header;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public int getUid() {
@@ -128,12 +128,12 @@ public class Account implements Serializable {
         this.times = times;
     }
 
-    public String getProfile() {
-        return profile;
+    public String getSignature() {
+        return signature;
     }
 
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 
     public void appendOneTimes() {

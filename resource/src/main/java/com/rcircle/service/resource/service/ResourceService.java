@@ -14,11 +14,8 @@ import java.util.*;
 
 @Service
 public class ResourceService {
-    @Value("${rource.upload.dir.root.windows}")
-    private String saveDirRootW;
-
-    @Value("${rource.upload.dir.root.linux}")
-    private String saveDirRootL;
+    @Value("${rource.upload.dir.root}")
+    private String saveDirRoot;
     @Autowired
     private ResourceMapper resourceMapper;
 
@@ -35,7 +32,7 @@ public class ResourceService {
     private Log createLogDetail(Log log, String content) {
         LogDetail logDetail = new LogDetail();
         logDetail.setLid(log.getId());
-        logDetail.setRes_url(NetFile.getDirAbsolutePath(NetFile.autoDetectSystemType(saveDirRootW, saveDirRootL),
+        logDetail.setRes_url(NetFile.getDirAbsolutePath(saveDirRoot,
                 String.valueOf(log.getUid()),
                 SimpleDate.today(),
                 String.valueOf(log.getId())));
@@ -71,16 +68,16 @@ public class ResourceService {
     public int changeLog(Log log, String[] tags) {
         List<Tag> shouldAdd = new ArrayList<>();
         List<Tag> shouldRm = new ArrayList<>();
-        if(log.checkTags(tags, shouldAdd, shouldRm)){
+        if (log.checkTags(tags, shouldAdd, shouldRm)) {
             Tag tag;
             Iterator<Tag> iter = shouldAdd.iterator();
-            while(iter.hasNext()){
+            while (iter.hasNext()) {
                 tag = iter.next();
                 createTag(tag);
                 resourceMapper.addTagForLog(log.getId(), tag);
             }
             iter = shouldRm.iterator();
-            while (iter.hasNext()){
+            while (iter.hasNext()) {
                 tag = iter.next();
                 resourceMapper.deleteTagFromLog(tag.getMid(), tag.getId(), log.getId());
             }

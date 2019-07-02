@@ -18,22 +18,14 @@ public class Account implements Authentication, CredentialsContainer {
     private Object credentials;
     private Object principal;
     private Object detials;
-    private String profile;
+    private String signature;
     private String resume;
-    private String header;
+    private String avatar;
     private JWTToken jwtToken = null;
     private boolean authenticated = false;
     private String errinfo;
     private long lastlogin;
     private List<Role> roles;
-
-    public String getProfile() {
-        return profile;
-    }
-
-    public void setProfile(String profile) {
-        this.profile = profile;
-    }
 
     public String getEmail() {
         return email;
@@ -48,19 +40,27 @@ public class Account implements Authentication, CredentialsContainer {
     }
 
     public String autoDetectResume() {
-        return resume != null && !resume.isEmpty() ? resume : profile;
+        return resume != null && !resume.isEmpty() ? resume : signature;
     }
 
     public void setResume(String resume) {
         this.resume = resume;
     }
 
-    public String getHeader() {
-        return header;
+    public String getSignature() {
+        return signature;
     }
 
-    public void setHeader(String header) {
-        this.header = header;
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     @Override
@@ -178,7 +178,8 @@ public class Account implements Authentication, CredentialsContainer {
         if (!account.hasError()) {
             setEmail(account.getEmail());
             setLastlogin(account.getLastlogin());
-            setProfile(account.getProfile());
+            setSignature(account.getSignature());
+            setResume(account.getResume());
             setUsername(account.getName());
             Iterator<? extends GrantedAuthority> iter = account.getAuthorities().iterator();
             List<Role> roles = new ArrayList<>();

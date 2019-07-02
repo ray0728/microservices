@@ -17,7 +17,8 @@ public interface RemoteAccountClient {
                          @RequestParam(name = "email") String email,
                          @RequestParam(name = "passwd") String password,
                          @RequestParam(name = "roles") int[] roles,
-                         @RequestParam(name = "profile") String profile);
+                         @RequestParam(name = "signature") String profile,
+                         @RequestParam(name = "resume") String resume);
 
     @RequestMapping(method = RequestMethod.PUT, value = "/account/refresh")
     public String refreshTime();

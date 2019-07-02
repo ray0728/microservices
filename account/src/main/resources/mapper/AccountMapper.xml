@@ -9,8 +9,10 @@
         <result property="status" column="status"/>
         <result property="firsttime" column="first_time"/>
         <result property="times" column="times"/>
+        <result property="resume" column="resume"/>
+        <result property="avatar" column="avatar"/>
         <result property="lastlogin" column="last_login"/>
-        <result property="profile" column="profile"/>
+        <result property="signature" column="signature"/>
         <collection property="roles" column="id" select="getAccountRoles"/>
     </resultMap>
 
@@ -30,14 +32,14 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="uid" parameterType="Account">
         INSERT INTO t_account (
-        <if test="profile.length > 0">profile,</if>
+        <if test="signature.length > 0">signature,</if>
         <if test="resume.length > 0">resume,</if>
-        <if test="header.length > 0">header,</if>
+        <if test="avatar.length > 0">avatar,</if>
         username, password, email, first_time, status
         ) VALUES (
-        <if test="profile.length > 0">#{profile},</if>
+        <if test="signature.length > 0">#{signature},</if>
         <if test="resume.length > 0">#{resume},</if>
-        <if test="header.length > 0">#{header},</if>
+        <if test="avatar.length > 0">#{avatar},</if>
         #{username}, #{password}, #{email}, #{firsttime}, #{status}
         )
     </insert>
@@ -93,7 +95,7 @@
     </select>
 
     <select id="getAllAccount" resultType="Account">
-        SELECT id,username,profile,resume,header
+        SELECT id,username,signature,resume,avatar
         FROM account.t_account
         WHERE status = 0;
     </select>
@@ -122,9 +124,9 @@
         <set>
             <if test="password.length > 0">password=#{password},</if>
             <if test="email.length > 0">email=#{email},</if>
-            <if test="profile.length > 0">profile=#{profile},</if>
+            <if test="signature.length > 0">signature=#{signature},</if>
             <if test="resume.length > 0">resume=#{resume},</if>
-            <if test="header.length > 0">header=#{header},</if>
+            <if test="avatar.length > 0">avatar=#{avatar},</if>
         </set>
         WHERE id = #{uid}
     </update>

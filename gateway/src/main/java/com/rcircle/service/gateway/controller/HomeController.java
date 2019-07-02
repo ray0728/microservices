@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -53,13 +54,27 @@ public class HomeController {
         MvcToolkit.autoLoadSideBarData(resourceService, mm);
         MvcToolkit.autoLoadNewsData(messageService, mm);
         mm.addAttribute("title", "Create new account");
-        mm.addAttribute("account", new Account());
         mm.addAttribute("quot", referenceService.getRandomQuotation());
         return "sign_up";
     }
 
     @PostMapping("join")
-    public String createNewAccount(@ModelAttribute Account account, ModelMap mm) {
+    public String createNewAccount(ModelMap mm,
+                                   @RequestParam(name = "name") String name,
+                                   @RequestParam(name = "email") String email,
+                                   @RequestParam(name = "passwd") String password,
+                                   @RequestParam(name = "signature", required = false, defaultValue = "") String signature,
+                                   @RequestParam(name = "resume", required = false, defaultValue = "") String resume) {
+        Account account = new Account();
+        account.setUsername(name);
+        account.setEmail(email);
+        account.setCredentials(password);
+        if (!signature.isEmpty()) {
+            account.setSignature(signature);
+        }
+        if (!resume.isEmpty()) {
+            account.setResume(resume);
+        }
         String ret = accountService.createAccount(account);
         if (!ret.startsWith("success")) {
             mm.addAttribute("errinfo", ret);
@@ -83,16 +98,16 @@ public class HomeController {
     }
 
     @GetMapping("logout")
-    public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+    public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null){
+        if (auth != null) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         return "redirect:/login/";
     }
 
     @GetMapping("about")
-    public String about(ModelMap mm){
+    public String about(ModelMap mm) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
         MvcToolkit.autoLoadNewsData(messageService, mm);
         mm.addAttribute("title", "About us");

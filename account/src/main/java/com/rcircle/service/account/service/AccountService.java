@@ -4,19 +4,51 @@ package com.rcircle.service.account.service;
 import com.rcircle.service.account.mapper.AccountMapper;
 import com.rcircle.service.account.model.Account;
 import com.rcircle.service.account.model.Role;
+import com.rcircle.service.account.util.NetFile;
 import com.rcircle.service.account.util.Password;
+import com.rcircle.service.account.util.ResultInfo;
 import com.rcircle.service.account.util.SimpleDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class AccountService {
+    @Value("${account.dir.root}")
+    private String saveDirRoot;
 
     @Autowired
     AccountMapper mapper;
+
+    public String updateAvatar(int uid, int index, int total, int chunkSize, String checksum, MultipartFile file) {
+        String ret = "";
+        String message = null;
+        int error = 0;
+        String root = NetFile.getDirAbsolutePath(saveDirRoot, String.valueOf(uid));
+        try {
+            error = NetFile.saveSplitFile(root, "avatar", index, total, checksum, chunkSize, file);
+            switch(error){
+                case ResultInfo.CODE_OPEN_FILE:
+                    message = "cannot find file";
+                    break;
+                case ResultInfo.CODE_SAVE_FILE:
+                    message = "cannot save file";
+                    break;
+                case ResultInfo.CODE_CHECK_SUM:
+                    message = "checksum mismatch";
+                    break;
+            }
+            ret =  ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, message);
+        } catch (IOException e) {
+            ret =  ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, e.getMessage());
+        }
+        return ret;
+    }
 
     public long createAccount(Account account) {
         long uid = 0;
@@ -32,23 +64,23 @@ public class AccountService {
     public Account getAccount(String name, int uid) {
         if (uid != 0) {
             return mapper.getDetialByUid(uid);
-        } else if(isEmailFormat(name)) {
+        } else if (isEmailFormat(name)) {
             return mapper.getDetialByName(null, name);
-        }else if (name != null && !name.isEmpty()) {
+        } else if (name != null && !name.isEmpty()) {
             return mapper.getDetialByName(name, null);
         }
         return null;
     }
 
-    public List<Account> getAllAccounts(){
+    public List<Account> getAllAccounts() {
         return mapper.getAllAccount();
     }
 
     private boolean isEmailFormat(String email) {
-        if(email == null){
+        if (email == null) {
             return false;
         }
-        return  email.matches("[\\w\\.\\-]+@([\\w\\-]+\\.)+[\\w\\-]+");
+        return email.matches("[\\w\\.\\-]+@([\\w\\-]+\\.)+[\\w\\-]+");
     }
 
     public int updateAccountTimeInfo(Account account) {
@@ -75,9 +107,9 @@ public class AccountService {
         Account tmpAccount = new Account();
         tmpAccount.setUid(uid);
         tmpAccount.setEmail(email);
-        tmpAccount.setProfile(profile);
+        tmpAccount.setSignature(profile);
         tmpAccount.setResume(resume);
-        tmpAccount.setHeader(header);
+        tmpAccount.setAvatar(header);
         tmpAccount.setPassword(Password.crypt(password));
         return mapper.updateAccount(tmpAccount);
     }

@@ -44,5 +44,6 @@ java -Djava.security.egd=file:/dev/./urandom                \
      -Dspring.redis.host=$REDIS_URI                         \
      -Dauth-server=$AUTH_URI                                \
      -Dspring.datasource.url=$DATABASE_URI                  \
+     -Daccount.dir.root=$ACCOUNT_DIR                        \
      -Dspring.profiles.active=$PROFILE                      \
 -jar /usr/local/server/@project.build.finalName@.jar

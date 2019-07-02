@@ -15,17 +15,20 @@ public class ResultInfo {
     public static final int CODE_CHANGE_GROUP = 308;
     public static final int CODE_CHANGE_GROUP_MEMBER = 309;
     public static final int CODE_QUERY_GROUP= 310;
+    public static final int CODE_SAVE_FILE = 311;
+    public static final int CODE_OPEN_FILE = 312;
+    public static final int CODE_UPLOAD_AVATAR = 313;
+    public static final int CODE_CHECK_SUM = 314;
 
     public static enum ErrType {
         SUCCESS,
         PARAMS,
         NULLOBJ,
-        INVALID
+        INVALID,
+        EXCEPTION
     }
 
-    ;
-
-    private static String translate(ErrType type) {
+    public static String translate(ErrType type) {
         String desc = null;
         switch (type) {
             case PARAMS:
@@ -35,6 +38,9 @@ public class ResultInfo {
                 desc = "NULLOBJ";
             case SUCCESS:
                 desc = "SUCCESS";
+                break;
+            case EXCEPTION:
+                desc = "EXCEPTION";
                 break;
             default:
                 desc = "UNKNOWN";
