@@ -22,7 +22,7 @@
             </blockquote>
             <h5>Create your personal account</h5>
             <br/>
-            <div class="alert alert-danger alert-dismissible fade show" th:if="${errinfo != null}">
+            <div id="errinfo" class="alert alert-danger alert-dismissible fade show" hidden>
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 <span th:utext="${'<strong>Failed! </strong>' + errinfo}"></span>
             </div>
@@ -96,11 +96,11 @@
 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 <div th:include="public::bottombar"></div>
 <div class="subscribe-newsletter-area">
-    <div class="modal fade" id="createAccountModal" tabindex="-1">
+    <div class="modal fade" id="createAccountModal" tabindex="-1" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span-->
+<!--                        aria-hidden="true">&times;</span></button>-->
                 <div class="modal-body">
                     <h5 class="title">Creating your account</h5>
                     <div class="progress progresswithlabel mb-2">
@@ -110,11 +110,15 @@
             </div>
         </div>
     </div>
-    <script src="/global/js/jquery-2.2.4.min.js"></script>
-    <script src="/global/js/popper.min.js"></script>
-    <script src="/global/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/global/js/plugins.js"></script>
-    <script src="/global/js/active.js"></script>
-    <script src="/global/js/signup.js"></script>
+</div>
+<script src="/global/js/jquery-2.2.4.min.js"></script>
+<script src="/global/js/jquery.base64.js"></script>
+<script src="/global/js/popper.min.js"></script>
+<script src="/global/bootstrap/js/bootstrap.min.js"></script>
+<script src="/global/js-spark-md5/spark-md5.min.js"></script>
+<script src="/global/js/plugins.js"></script>
+<script src="/global/js/active.js"></script>
+<!--<script src="/global/js/events.js"></script>-->
+<script src="/global/js/signup.js"></script>
 </body>
 </html>

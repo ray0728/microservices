@@ -36,21 +36,13 @@ public class AccountService {
     public String createAccount(Account account) {
         Account existAccount = getAccountInfo(0, account.getName());
         if (existAccount != null && !existAccount.hasError()) {
-            return String.format("user name(%s) has been used", account.getName());
+            return String.format("failed!user name(%s) has been used", account.getName());
         }
         existAccount = getAccountInfo(0, account.getEmail());
         if (existAccount != null && !existAccount.hasError()) {
-            return String.format("email address(%s) has been used", account.getName());
+            return String.format("failed!email address(%s) has been used", account.getName());
         }
-        String info = remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null, account.getSignature(), account.getResume());
-        Map<String, Object> map = new HashMap<>();
-        map.put("account", Account.class);
-        if (Toolkit.parseResultData(info, map)) {
-            return String.valueOf(((Account) map.get("account")).getUid());
-        }else {
-            ResultData data = JSON.parseObject(info, ResultData.class);
-            return data.toString();
-        }
+        return remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null, account.getSignature(), account.getResume());
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackAfterLoginSuccess", threadPoolKey = "AccountThreadPool")
@@ -61,11 +53,11 @@ public class AccountService {
     }
 
     private String autoDetectErrinfo(Throwable throwable) {
-        String failinfo;
+        String failinfo = "failed!";
         if (throwable instanceof com.netflix.hystrix.exception.HystrixTimeoutException) {
-            failinfo = "remote service is busy now, please retry it late";
+            failinfo += "remote service is busy now, please retry it late";
         } else {
-            failinfo = throwable.getMessage();
+            failinfo += throwable.getMessage();
         }
         return failinfo;
     }

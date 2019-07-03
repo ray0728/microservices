@@ -13,9 +13,9 @@ public class Account implements Serializable {
     private String username;
     private String password;
     private String email;
-    private String signature;
-    private String resume;
-    private String avatar;
+    private String signature = "";
+    private String resume = "";
+    private String avatar = "";
     private int status = STATUS_NORMAL;
     private long firsttime;
     private int times;
@@ -92,21 +92,21 @@ public class Account implements Serializable {
         if (roles == null) {
             roles = new ArrayList<>();
         }
-        if(!roles.contains(auth)) {
+        if (!roles.contains(auth)) {
             roles.add(auth);
         }
     }
 
-    public void deleteRole(int rid){
+    public void deleteRole(int rid) {
         Role auth = new Role();
         auth.setRid(rid);
-        if(roles != null && roles.contains(auth)){
+        if (roles != null && roles.contains(auth)) {
             roles.remove(auth);
         }
     }
 
     public List<Role> getRoles() {
-        if(roles == null){
+        if (roles == null) {
             roles = new ArrayList<>();
         }
         return roles;
@@ -140,20 +140,20 @@ public class Account implements Serializable {
         this.times++;
     }
 
-    public int getMaxLevelRole(){
+    public int getMaxLevelRole() {
         int rid = Role.ID_GUEST;
         for (Role role : roles) {
-            if(role.getRid() > rid){
+            if (role.getRid() > rid) {
                 rid = role.getRid();
             }
         }
         return rid;
     }
 
-    public int getMinLevelRole(){
+    public int getMinLevelRole() {
         int rid = Role.ID_SUPER;
         for (Role role : roles) {
-            if(role.getRid() < rid){
+            if (role.getRid() < rid) {
                 rid = role.getRid();
             }
         }

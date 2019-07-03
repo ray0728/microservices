@@ -1,11 +1,7 @@
 package com.rcircle.service.gateway.controller;
 
-import com.rcircle.service.gateway.model.Account;
 import com.rcircle.service.gateway.model.LogFile;
-import com.rcircle.service.gateway.services.AccountService;
-import com.rcircle.service.gateway.services.MessageService;
-import com.rcircle.service.gateway.services.ReferenceService;
-import com.rcircle.service.gateway.services.ResourceService;
+import com.rcircle.service.gateway.services.*;
 import com.rcircle.service.gateway.utils.Base64;
 import com.rcircle.service.gateway.utils.MvcToolkit;
 import org.springframework.security.core.Authentication;
@@ -14,7 +10,6 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -56,33 +51,6 @@ public class HomeController {
         mm.addAttribute("title", "Create new account");
         mm.addAttribute("quot", referenceService.getRandomQuotation());
         return "sign_up";
-    }
-
-    @PostMapping("join")
-    public String createNewAccount(ModelMap mm,
-                                   @RequestParam(name = "name") String name,
-                                   @RequestParam(name = "email") String email,
-                                   @RequestParam(name = "passwd") String password,
-                                   @RequestParam(name = "signature", required = false, defaultValue = "") String signature,
-                                   @RequestParam(name = "resume", required = false, defaultValue = "") String resume) {
-        Account account = new Account();
-        account.setUsername(name);
-        account.setEmail(email);
-        account.setCredentials(password);
-        if (!signature.isEmpty()) {
-            account.setSignature(signature);
-        }
-        if (!resume.isEmpty()) {
-            account.setResume(resume);
-        }
-        String ret = accountService.createAccount(account);
-        if (!ret.startsWith("success")) {
-            mm.addAttribute("errinfo", ret);
-            mm.addAttribute("quot", referenceService.getRandomQuotation());
-            mm.addAttribute("title", "Create new account");
-            return "sign_up";
-        }
-        return "redirect:/login/";
     }
 
     @GetMapping("login")

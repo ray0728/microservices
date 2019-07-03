@@ -1,3 +1,6 @@
+$(document).ready(function () {
+    $("#errinfo").hide();
+});
 $('#avatar_img').on("click", function (e) {
     $('#upload_avatar').click();
     e.preventDefault();
@@ -12,49 +15,56 @@ $('#upload_avatar').on("change", function (e) {
 $('#createAccountModal').on('shown.bs.modal', function (e) {
     createAccount();
 });
+
+errorOccurred = function (msg) {
+    $("#errinfo").is(':hidden') && $("#errinfo").show();
+    let spanobj = $("#errinfo").find("span");
+    !msg.length && $(spanobj).text("The server is busy, please try again later");
+    msg.length && $(spanobj).text(msg);
+    $('#createAccountModal').modal('hide');
+};
+
 createAccount = function () {
     let progress = $(this).find('div.progress-bar');
-    $.post("/join", {
-        'username': $('#username').val(),
+    $.post("/rst/join", {
+        'name': $('#username').val(),
         'email': $('#email').val(),
         'passwd': $('#passwd').val(),
         'signature': $('#signature').val(),
         'resume': $('#resume').val(),
         '_csrf': $($.find('input[type="hidden"]')).val()
     }, function (ret, status) {
-        status == "success" && $(progress[0]).css("width", "25%") && uploadCover(lid);
-        status != "success" && errorOccurred();
+        status == "success"  && $(progress[0]).css("width", "25%") && processAvatarUpload(ret, progress);
+        status != "success"  && errorOccurred(ret);
     });
 }
 
-processAvatarUpload = function () {
-    let progress = $(this).find('div.progress-bar');
-    let url = $('#avatar_img').src;
+processAvatarUpload = function (uid, progress) {
+    let url = $('#avatar_img').attr("src");
     let filename = $('#avatar_img').data("filename");
-    filename && blobFileTransfer(filename, url, progress);
-    !filename && submitcreate(progress);
+    filename && blobFileTransfer(uid, filename, url, progress);
 };
 
-blobFileTransfer = function (filename, url, progress) {
+blobFileTransfer = function (uid, filename, url, progress) {
     let xhr = new XMLHttpRequest;
     xhr.responseType = 'blob';
     xhr.onload = function () {
         if (this.status == 200) {
-            $(progress[0]).css("width", "25%");
+            $(progress[0]).css("width", "50%");
             let blobdata = xhr.response;
             blobdata.name = filename;
             blobdata.lastModifiedDate = $.now();
-            compressImage(filename, new File([blobdata], filename, {
+            compressImage(uid, filename, new File([blobdata], filename, {
                 type: blobdata.type,
                 lastModified: Date.now()
-            }), type, progress);
+            }), progress);
         }
     };
     xhr.open('GET', url, true);
     xhr.send();
 };
 
-compressImage = function (filename, file, progress) {
+compressImage = function (uid, filename, file, progress) {
     let ready = new FileReader();
     ready.readAsDataURL(file);
     ready.onload = function () {
@@ -84,13 +94,13 @@ compressImage = function (filename, file, progress) {
             context.drawImage(that, 0, 0, targetWidth, targetHeight);
             let base64 = canvas.toDataURL('image/jpeg', quality);
             let afterfile = convertBase64UrlToFile(filename, base64);
-            $(progress[0]).css("width", "50%");
-            sliceUpload(afterfile, 2097152, progress);
+            $(progress[0]).css("width", "75%");
+            sliceUpload(uid, afterfile, 2097152, progress);
         }
     }
 }
 
-sliceUpload = function (file, chunkSize, progress) {
+sliceUpload = function (uid, file, chunkSize, progress) {
     let chunks = Math.ceil(file.size / chunkSize);
     let currentChunk = 0;
     let checksum;
@@ -113,7 +123,7 @@ sliceUpload = function (file, chunkSize, progress) {
         formData.append("checksum", checksum);
         formData.append("_csrf", $($.find('input[type="hidden"]')).val());
         $.ajax({
-            url: "/api/account/" + type + "/" + lid + "/" + $.base64.encode(file.name),
+            url: "/api/user/account/avatar/" + uid,
             data: formData,
             type: "Post",
             cache: false,
@@ -124,41 +134,28 @@ sliceUpload = function (file, chunkSize, progress) {
                     start = currentChunk * chunkSize;
                     end = start + chunkSize >= file.size ? file.size : start + chunkSize;
                     filedata = blobSlice.call(file, start, end);
-                    !abort_upload && fileReader.readAsBinaryString(filedata);
+                    fileReader.readAsBinaryString(filedata);
                 } else if (respond == "abort") {
-                    xhr_upload.splice(file.name, 1);
+                    errorOccurred("");
                 } else if (currentChunk + 1 < chunks) {
                     currentChunk++;
-                    $(progress).css('width', (currentChunk * 100 / chunks) + '%');
+                    $(progress).css('width', (2500 * chunks / currentChunk) + '%');
                     start = currentChunk * chunkSize;
                     end = start + chunkSize >= file.size ? file.size : start + chunkSize;
                     filedata = blobSlice.call(file, start, end);
-                    !abort_upload && fileReader.readAsBinaryString(filedata);
+                    fileReader.readAsBinaryString(filedata);
                 } else {
-                    if (type == "video") {
-                        $(progress).css('width', '99%');
-                        xhr_upload_clock.put(file.name, setInterval(function () {
-                            waitHLSFinish(lid, file.name, progress);
-                        }, 10000));
-                    } else {
-                        $(progress).css('width', '100%');
-                        xhr_upload.splice(file.name, 1);
-                        nextstep && jump(lid);
-                        !nextstep && uploadResFiles(lid);
-                    }
+                    $(progress).css('width', '100%');
+                    window.location.href = "/login";
                 }
             },
             error: function (ret) {
-                errorOccurred();
+                errorOccurred("");
             }
         });
     };
     let filedata = blobSlice.call(file, start, end);
-    if (!abort_upload) {
-        fileReader.readAsBinaryString(filedata);
-    }
-    xhr_upload.push(file.name);
-
+    fileReader.readAsBinaryString(filedata);
 };
 
 convertBase64UrlToFile = function (filename, urlData) {

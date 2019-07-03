@@ -34,13 +34,13 @@ public class AccountService {
             error = NetFile.saveSplitFile(root, "avatar", index, total, checksum, chunkSize, file);
             switch(error){
                 case ResultInfo.CODE_OPEN_FILE:
-                    message = "cannot find file";
+                    message = "abort";
                     break;
                 case ResultInfo.CODE_SAVE_FILE:
-                    message = "cannot save file";
+                    message = "abort";
                     break;
                 case ResultInfo.CODE_CHECK_SUM:
-                    message = "checksum mismatch";
+                    message = "resend";
                     break;
             }
             ret =  ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, message);

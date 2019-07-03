@@ -23,7 +23,7 @@ public class OAuthFeignAuthenticationProvider implements AuthenticationProvider 
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String token = oAuth2SsoService.getAccessToken(authentication.getName(), authentication.getCredentials().toString());
+        String token = oAuth2SsoService.getAccessToken(authentication.getName(), (String) authentication.getCredentials());
         if(token.startsWith("failed!")){
            throw new BadCredentialsException(token);
         }
