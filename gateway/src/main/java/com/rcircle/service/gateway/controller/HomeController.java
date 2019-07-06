@@ -1,5 +1,6 @@
 package com.rcircle.service.gateway.controller;
 
+import com.rcircle.service.gateway.model.Account;
 import com.rcircle.service.gateway.model.LogFile;
 import com.rcircle.service.gateway.services.*;
 import com.rcircle.service.gateway.utils.Base64;
@@ -10,6 +11,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;

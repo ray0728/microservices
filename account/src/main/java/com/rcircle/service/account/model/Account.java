@@ -142,9 +142,11 @@ public class Account implements Serializable {
 
     public int getMaxLevelRole() {
         int rid = Role.ID_GUEST;
-        for (Role role : roles) {
-            if (role.getRid() > rid) {
-                rid = role.getRid();
+        if(roles != null) {
+            for (Role role : roles) {
+                if (role.getRid() > rid) {
+                    rid = role.getRid();
+                }
             }
         }
         return rid;
@@ -152,10 +154,14 @@ public class Account implements Serializable {
 
     public int getMinLevelRole() {
         int rid = Role.ID_SUPER;
-        for (Role role : roles) {
-            if (role.getRid() < rid) {
-                rid = role.getRid();
+        if(roles != null) {
+            for (Role role : roles) {
+                if (role.getRid() < rid) {
+                    rid = role.getRid();
+                }
             }
+        }else{
+            rid = Role.ID_GUEST;
         }
         return rid;
     }

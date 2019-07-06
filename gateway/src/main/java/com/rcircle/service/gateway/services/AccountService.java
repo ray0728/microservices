@@ -10,6 +10,7 @@ import com.rcircle.service.gateway.model.ResultData;
 import com.rcircle.service.gateway.utils.Toolkit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,7 @@ public class AccountService {
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackCreateAccount", threadPoolKey = "AccountThreadPool")
-    public String createAccount(Account account) {
+    public String createAccount(Account account, MultipartFile file, String checksum) {
         Account existAccount = getAccountInfo(0, account.getName());
         if (existAccount != null && !existAccount.hasError()) {
             return String.format("failed!user name(%s) has been used", account.getName());
@@ -42,7 +43,7 @@ public class AccountService {
         if (existAccount != null && !existAccount.hasError()) {
             return String.format("failed!email address(%s) has been used", account.getName());
         }
-        return remoteAccountClient.create(account.getName(), account.getEmail(), account.getCredentials().toString(), null, account.getSignature(), account.getResume());
+        return remoteAccountClient.create(file, account.getName(), account.getEmail(), (String) account.getCredentials(), account.getSignature(), account.getResume(), checksum);
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackAfterLoginSuccess", threadPoolKey = "AccountThreadPool")
@@ -78,7 +79,7 @@ public class AccountService {
         return account;
     }
 
-    private String buildFallbackCreateAccount(Account account, Throwable throwable) {
+    private String buildFallbackCreateAccount(Account account, MultipartFile file, String checksum, Throwable throwable) {
         return autoDetectErrinfo(throwable);
     }
 }

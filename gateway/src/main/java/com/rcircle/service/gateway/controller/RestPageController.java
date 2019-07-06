@@ -18,6 +18,7 @@ import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -88,11 +89,13 @@ public class RestPageController {
 
     @PostMapping("/join")
     public String createNewAccount(HttpServletResponse response,
-                                   @RequestParam(name = "name") String name,
+                                   @RequestPart(value = "file", required = false) MultipartFile file,
+                                   @RequestParam(name = "username") String name,
                                    @RequestParam(name = "email") String email,
                                    @RequestParam(name = "passwd") String password,
                                    @RequestParam(name = "signature", required = false, defaultValue = "") String signature,
-                                   @RequestParam(name = "resume", required = false, defaultValue = "") String resume) {
+                                   @RequestParam(name = "resume", required = false, defaultValue = "") String resume,
+                                   @RequestParam(name = "checksum", required = false, defaultValue = "") String checksum) {
         Account account = new Account();
         account.setUsername(name);
         account.setEmail(email);
@@ -103,33 +106,11 @@ public class RestPageController {
         if (!resume.isEmpty()) {
             account.setResume(resume);
         }
-        String msg = null;
-        String ret = accountService.createAccount(account);
-        if (!ret.startsWith("failed!")) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("account", Account.class);
-            if (Toolkit.parseResultData(ret, map)) {
-                account = (Account) map.get("account");
-            } else {
-                msg = "";
-            }
-        } else if (ret.contains("has been used")) {
-            msg = ret;
-            account = accountService.getAccountInfo(0, account.getName());
+        String ret = accountService.createAccount(account, file, checksum);
+        if (ret.startsWith("failed!")) {
+            response.setStatus(400);
+            return ret;
         }
-        String token = oAuth2SsoService.getAccessToken(account.getName(), (String) account.getCredentials());
-        if (!token.startsWith("failed!")) {
-            JWTToken jwtToken = JSONObject.parseObject(token, JWTToken.class);
-            HttpContextHolder.getContext().setValue(
-                    RemoteRequestWithTokenInterceptor.ACCESSTOKEN,
-                    jwtToken.getAccess_token());
-            msg = null;
-        }else if(msg == null){
-            msg = "";
-        }
-        if (msg != null) {
-            response.setStatus(500);
-        }
-        return msg == null ? String.valueOf(account.getUid()) : msg;
+        return ret;
     }
 }
