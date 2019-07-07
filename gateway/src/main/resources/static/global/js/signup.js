@@ -14,7 +14,19 @@ $('#upload_avatar').on("change", function (e) {
 
 $('#createAccountModal').on('shown.bs.modal', function (e) {
     let progress = $(this).find('div.progress-bar');
-    processAvatarUpload(progress);
+    $.post("/rst/account/check", {
+        'username': $('#username').val(),
+        'email': $('#email').val(),
+    }, function(){
+        processAvatarUpload(progress);
+    }).error(function (ret) {
+        errorOccurred(ret);
+    });
+});
+
+$('#createAccountModal').on('hidden.bs.modal', function (e) {
+    let progress = $(this).find('div.progress-bar');
+    $(progress[0]).css("width", "0%");
 });
 
 errorOccurred = function (msg) {
@@ -26,7 +38,7 @@ errorOccurred = function (msg) {
 };
 
 createAccountWithoutAvatar = function (progress) {
-    $.post("/rst/join", {
+    $.post("/api/user/account/create", {
         'username': $('#username').val(),
         'email': $('#email').val(),
         'passwd': $('#passwd').val(),
@@ -126,7 +138,7 @@ sliceUpload = function (file, progress) {
         formData.append("checksum", checksum);
         formData.append("_csrf", $($.find('input[type="hidden"]')).val());
         $.ajax({
-            url: "/rst/join",
+            url: "/api/user/account/create",
             data: formData,
             type: "Post",
             cache: false,

@@ -33,17 +33,17 @@ public class AccountService {
         return JSONArray.parseArray(ret, Account.class);
     }
 
-    @HystrixCommand(fallbackMethod = "buildFallbackCreateAccount", threadPoolKey = "AccountThreadPool")
-    public String createAccount(Account account, MultipartFile file, String checksum) {
-        Account existAccount = getAccountInfo(0, account.getName());
+    @HystrixCommand(fallbackMethod = "buildFallbackisExist", threadPoolKey = "AccountThreadPool")
+    public boolean isExist(String username, String email) {
+        Account existAccount = getAccountInfo(0, username);
         if (existAccount != null && !existAccount.hasError()) {
-            return String.format("failed!user name(%s) has been used", account.getName());
+            return true;
         }
-        existAccount = getAccountInfo(0, account.getEmail());
+        existAccount = getAccountInfo(0, email);
         if (existAccount != null && !existAccount.hasError()) {
-            return String.format("failed!email address(%s) has been used", account.getName());
+            return true;
         }
-        return remoteAccountClient.create(file, account.getName(), account.getEmail(), (String) account.getCredentials(), account.getSignature(), account.getResume(), checksum);
+        return false;
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackAfterLoginSuccess", threadPoolKey = "AccountThreadPool")
@@ -79,7 +79,7 @@ public class AccountService {
         return account;
     }
 
-    private String buildFallbackCreateAccount(Account account, MultipartFile file, String checksum, Throwable throwable) {
-        return autoDetectErrinfo(throwable);
+    private boolean buildFallbackisExist(String username, String email, Throwable throwable) {
+        return true;
     }
 }

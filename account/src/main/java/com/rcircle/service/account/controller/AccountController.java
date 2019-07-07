@@ -52,10 +52,10 @@ public class AccountController {
     }
 
 
-    @PostMapping(value="create")
+    @PostMapping(value = "create")
     public String create(Principal principal,
-                         @RequestPart(value = "file") MultipartFile file,
-                         @RequestParam(name = "usrname") String username,
+                         @RequestParam(name = "file", required = false) MultipartFile file,
+                         @RequestParam(name = "username") String username,
                          @RequestParam(name = "email") String email,
                          @RequestParam(name = "passwd") String password,
                          @RequestParam(name = "roles", required = false, defaultValue = "") int[] roles,
@@ -89,7 +89,7 @@ public class AccountController {
             mAccountService.addRole(account, Role.ID_GUEST);
         }
         account.setPassword("******");
-        if(!checksum.isEmpty() && file != null) {
+        if (!checksum.isEmpty() && file != null) {
             mAccountService.updateAvatar(account.getUid(), checksum, file);
         }
         ResultData data = new ResultData();

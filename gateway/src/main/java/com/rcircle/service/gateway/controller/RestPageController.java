@@ -87,30 +87,14 @@ public class RestPageController {
         return "";
     }
 
-    @PostMapping("/join")
+    @PostMapping("/account/check")
     public String createNewAccount(HttpServletResponse response,
-                                   @RequestPart(value = "file", required = false) MultipartFile file,
                                    @RequestParam(name = "username") String name,
-                                   @RequestParam(name = "email") String email,
-                                   @RequestParam(name = "passwd") String password,
-                                   @RequestParam(name = "signature", required = false, defaultValue = "") String signature,
-                                   @RequestParam(name = "resume", required = false, defaultValue = "") String resume,
-                                   @RequestParam(name = "checksum", required = false, defaultValue = "") String checksum) {
-        Account account = new Account();
-        account.setUsername(name);
-        account.setEmail(email);
-        account.setCredentials(password);
-        if (!signature.isEmpty()) {
-            account.setSignature(signature);
-        }
-        if (!resume.isEmpty()) {
-            account.setResume(resume);
-        }
-        String ret = accountService.createAccount(account, file, checksum);
-        if (ret.startsWith("failed!")) {
+                                   @RequestParam(name = "email") String email) {
+        if (accountService.isExist(name, email)) {
             response.setStatus(400);
-            return ret;
+            return "username or email has been used";
         }
-        return ret;
+        return "";
     }
 }
