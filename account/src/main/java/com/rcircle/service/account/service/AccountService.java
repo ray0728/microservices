@@ -25,27 +25,45 @@ public class AccountService {
     @Autowired
     AccountMapper mapper;
 
+    private String autoDetectErrorMessageAfterUpload(int error) {
+        String message = null;
+        switch (error) {
+            case ResultInfo.CODE_OPEN_FILE:
+                message = "abort";
+                break;
+            case ResultInfo.CODE_SAVE_FILE:
+                message = "abort";
+                break;
+            case ResultInfo.CODE_CHECK_SUM:
+                message = "resend";
+                break;
+        }
+        return message;
+    }
+
+    public String updateAvatar(int uid, String checksum, MultipartFile file) {
+        String root = NetFile.getDirAbsolutePath(saveDirRoot, String.valueOf(uid));
+        String ret = null;
+        try {
+            int error = NetFile.saveFileFromNet(root, "avatar", checksum, file);
+            String message = autoDetectErrorMessageAfterUpload(error);
+            ret = ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, message);
+        } catch (IOException e) {
+            ret = ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, 0, e.getMessage());
+        }
+        return ret;
+    }
+
     public String updateAvatar(int uid, int index, int total, int chunkSize, String checksum, MultipartFile file) {
         String ret = "";
-        String message = null;
         int error = 0;
         String root = NetFile.getDirAbsolutePath(saveDirRoot, String.valueOf(uid));
         try {
             error = NetFile.saveSplitFile(root, "avatar", index, total, checksum, chunkSize, file);
-            switch(error){
-                case ResultInfo.CODE_OPEN_FILE:
-                    message = "abort";
-                    break;
-                case ResultInfo.CODE_SAVE_FILE:
-                    message = "abort";
-                    break;
-                case ResultInfo.CODE_CHECK_SUM:
-                    message = "resend";
-                    break;
-            }
-            ret =  ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, message);
+            String message = autoDetectErrorMessageAfterUpload(error);
+            ret = ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, message);
         } catch (IOException e) {
-            ret =  ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, e.getMessage());
+            ret = ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, e.getMessage());
         }
         return ret;
     }

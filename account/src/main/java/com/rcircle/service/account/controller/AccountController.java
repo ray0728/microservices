@@ -6,8 +6,8 @@ import com.rcircle.service.account.model.Account;
 import com.rcircle.service.account.model.ResultData;
 import com.rcircle.service.account.model.Role;
 import com.rcircle.service.account.service.AccountService;
-import com.rcircle.service.account.util.NetFile;
 import com.rcircle.service.account.util.ResultInfo;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,14 +52,16 @@ public class AccountController {
     }
 
 
-    @PostMapping("create")
+    @PostMapping(value="create")
     public String create(Principal principal,
+                         @RequestPart(value = "file") MultipartFile file,
                          @RequestParam(name = "usrname") String username,
                          @RequestParam(name = "email") String email,
                          @RequestParam(name = "passwd") String password,
                          @RequestParam(name = "roles", required = false, defaultValue = "") int[] roles,
                          @RequestParam(name = "signature", required = false, defaultValue = "") String profile,
-                         @RequestParam(name = "resume", required = false, defaultValue = "") String resume
+                         @RequestParam(name = "resume", required = false, defaultValue = "") String resume,
+                         @RequestParam(name = "checksum", required = false, defaultValue = "") String checksum
     ) {
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.PARAMS, ResultInfo.CODE_CREATE_ACCOUNT, "Invalid request parameters.");
@@ -87,6 +89,9 @@ public class AccountController {
             mAccountService.addRole(account, Role.ID_GUEST);
         }
         account.setPassword("******");
+        if(!checksum.isEmpty() && file != null) {
+            mAccountService.updateAvatar(account.getUid(), checksum, file);
+        }
         ResultData data = new ResultData();
         data.setCode(ResultInfo.CODE_CREATE_ACCOUNT);
         data.setType(ResultInfo.translate(ResultInfo.ErrType.SUCCESS));

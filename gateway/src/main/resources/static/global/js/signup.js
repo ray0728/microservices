@@ -13,7 +13,8 @@ $('#upload_avatar').on("change", function (e) {
 });
 
 $('#createAccountModal').on('shown.bs.modal', function (e) {
-    createAccount();
+    let progress = $(this).find('div.progress-bar');
+    processAvatarUpload(progress);
 });
 
 errorOccurred = function (msg) {
@@ -24,37 +25,39 @@ errorOccurred = function (msg) {
     $('#createAccountModal').modal('hide');
 };
 
-createAccount = function () {
-    let progress = $(this).find('div.progress-bar');
+createAccountWithoutAvatar = function (progress) {
     $.post("/rst/join", {
-        'name': $('#username').val(),
+        'username': $('#username').val(),
         'email': $('#email').val(),
         'passwd': $('#passwd').val(),
         'signature': $('#signature').val(),
         'resume': $('#resume').val(),
         '_csrf': $($.find('input[type="hidden"]')).val()
-    }, function (ret, status) {
-        status == "success"  && $(progress[0]).css("width", "25%") && processAvatarUpload(ret, progress);
-        status != "success"  && errorOccurred(ret);
+    }, function (ret) {
+        $(progress[0]).css("width", "100%");
+        window.location.href = "/login";
+    }).error(function(ret){
+        errorOccurred(ret);
     });
 }
 
-processAvatarUpload = function (uid, progress) {
+processAvatarUpload = function (progress) {
     let url = $('#avatar_img').attr("src");
     let filename = $('#avatar_img').data("filename");
-    filename && blobFileTransfer(uid, filename, url, progress);
+    filename && blobFileTransfer(filename, url, progress);
+    !filename && createAccountWithoutAvatar(progress);
 };
 
-blobFileTransfer = function (uid, filename, url, progress) {
+blobFileTransfer = function (filename, url, progress) {
     let xhr = new XMLHttpRequest;
     xhr.responseType = 'blob';
     xhr.onload = function () {
         if (this.status == 200) {
-            $(progress[0]).css("width", "50%");
+            $(progress[0]).css("width", "25%");
             let blobdata = xhr.response;
             blobdata.name = filename;
             blobdata.lastModifiedDate = $.now();
-            compressImage(uid, filename, new File([blobdata], filename, {
+            compressImage(filename, new File([blobdata], filename, {
                 type: blobdata.type,
                 lastModified: Date.now()
             }), progress);
@@ -64,7 +67,7 @@ blobFileTransfer = function (uid, filename, url, progress) {
     xhr.send();
 };
 
-compressImage = function (uid, filename, file, progress) {
+compressImage = function (filename, file, progress) {
     let ready = new FileReader();
     ready.readAsDataURL(file);
     ready.onload = function () {
@@ -94,21 +97,19 @@ compressImage = function (uid, filename, file, progress) {
             context.drawImage(that, 0, 0, targetWidth, targetHeight);
             let base64 = canvas.toDataURL('image/jpeg', quality);
             let afterfile = convertBase64UrlToFile(filename, base64);
-            $(progress[0]).css("width", "75%");
-            sliceUpload(uid, afterfile, 2097152, progress);
+            $(progress[0]).css("width", "50%");
+            sliceUpload(afterfile, progress);
         }
     }
 }
 
-sliceUpload = function (uid, file, chunkSize, progress) {
-    let chunks = Math.ceil(file.size / chunkSize);
-    let currentChunk = 0;
+sliceUpload = function (file, progress) {
     let checksum;
     let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
     let spark = new SparkMD5();
     let fileReader = new FileReader();
     let start = 0;
-    let end = chunkSize >= file.size ? file.size : chunkSize;
+    let end = file.size;
     fileReader.onload = function (e) {
         spark.appendBinary(e.target.result);
         checksum = spark.end();
@@ -116,14 +117,16 @@ sliceUpload = function (uid, file, chunkSize, progress) {
 
     fileReader.onloadend = function (e) {
         let formData = new FormData();
-        formData.append("index", currentChunk);
-        formData.append("total", chunks);
         formData.append("file", filedata);
-        formData.append("chunksize", chunkSize);
+        formData.append("username", $('#username').val());
+        formData.append("email", $('#email').val());
+        formData.append("passwd", $('#passwd').val());
+        formData.append("signature", $('#signature').val());
+        formData.append("resume", $('#resume').val());
         formData.append("checksum", checksum);
         formData.append("_csrf", $($.find('input[type="hidden"]')).val());
         $.ajax({
-            url: "/api/user/account/avatar/" + uid,
+            url: "/rst/join",
             data: formData,
             type: "Post",
             cache: false,
@@ -131,19 +134,9 @@ sliceUpload = function (uid, file, chunkSize, progress) {
             contentType: false,
             success: function (respond) {
                 if (respond == "resend") {
-                    start = currentChunk * chunkSize;
-                    end = start + chunkSize >= file.size ? file.size : start + chunkSize;
-                    filedata = blobSlice.call(file, start, end);
                     fileReader.readAsBinaryString(filedata);
                 } else if (respond == "abort") {
                     errorOccurred("");
-                } else if (currentChunk + 1 < chunks) {
-                    currentChunk++;
-                    $(progress).css('width', (2500 * chunks / currentChunk) + '%');
-                    start = currentChunk * chunkSize;
-                    end = start + chunkSize >= file.size ? file.size : start + chunkSize;
-                    filedata = blobSlice.call(file, start, end);
-                    fileReader.readAsBinaryString(filedata);
                 } else {
                     $(progress).css('width', '100%');
                     window.location.href = "/login";

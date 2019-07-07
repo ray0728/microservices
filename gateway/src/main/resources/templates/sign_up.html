@@ -22,19 +22,20 @@
             </blockquote>
             <h5>Create your personal account</h5>
             <br/>
-            <div id="errinfo" class="alert alert-danger alert-dismissible fade show" hidden>
+            <div id="errinfo" class="alert alert-danger alert-dismissible fade show">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 <span th:utext="${'<strong>Failed! </strong>' + errinfo}"></span>
             </div>
             <br/>
             <div class="row">
-                <div class="col-12 col-sm-3">
-                    <div class="group">
-                        <div class="author-thumbnail">
-                            <img id="avatar_img" src="/global/img/default-avatar.png">
+                    <div class="col-12 col-sm-3">
+                        <div class="group">
+                            <div class="author-thumbnail">
+                                <img id="avatar_img" src="/global/img/default-avatar.png">
+                            </div>
+                            <input id="upload_avatar" type="file" accept="image/*" class="hidden">
+                            <label for="upload_avatar">Avatar</label>
                         </div>
-                        <input id="upload_avatar" type="file" accept="image/*" class="hidden">
-                        <label for="upload_avatar">Avatar</label>
                     </div>
                 </div>
                 <div class="col-12 col-sm-9">
@@ -67,27 +68,27 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12">
-                    <div class="group">
-                        <input id="signature" type="text">
-                        <p class="help-block">Create your own signature.</p>
-                        <label>Signature</label>
+                    <div class="col-12">
+                        <div class="group">
+                            <input id="signature" type="text">
+                            <p class="help-block">Create your own signature.</p>
+                            <label>Signature</label>
+                        </div>
                     </div>
-                </div>
-                <div class="col-12">
-                    <div class="group">
-                        <input id="resume" type="text">
-                        <p class="help-block">Make an assessment of yourself, such as mastering skills, past work,
-                            hobbies, etc.</p>
-                        <label>Resume</label>
+                    <div class="col-12">
+                        <div class="group">
+                            <input id="resume" type="text">
+                            <p class="help-block">Make an assessment of yourself, such as mastering skills, past work,
+                                hobbies, etc.</p>
+                            <label>Resume</label>
+                        </div>
                     </div>
-                </div>
-                <div class="col-12">
-                    <button type="button" class="btn original-btn" data-toggle="modal"
-                            data-target="#createAccountModal">Create an account
-                    </button>
-                </div>
+                    <div class="col-12">
+                        <button type="button" class="btn original-btn" data-toggle="modal"
+                                data-target="#createAccountModal">Create an account
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
         <div class="col-12 col-lg-3" th:include="public::sidebar"></div>
@@ -120,5 +121,6 @@
 <script src="/global/js/active.js"></script>
 <!--<script src="/global/js/events.js"></script>-->
 <script src="/global/js/signup.js"></script>
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 </body>
 </html>

@@ -7,6 +7,33 @@ import java.io.*;
 
 public class NetFile {
 
+    public static int saveFileFromNet(String root, String filename, String checksum, MultipartFile srcfile) throws IOException {
+        int errcode = 0;
+        FileInputStream fis = null;
+        File targetDir = new File(root);
+        if (!targetDir.exists()) {
+            targetDir.mkdirs();
+        }
+        File dstFile = new File(targetDir, filename);
+        dstFile.deleteOnExit();
+        try{
+            srcfile.transferTo(dstFile);
+            fis = new FileInputStream(dstFile);
+            if (!DigestUtils.md5Hex(fis).equals(checksum)) {
+                errcode = ResultInfo.CODE_CHECK_SUM;
+            } else {
+                fis.close();
+            }
+        }catch (IOException e){
+            errcode = ResultInfo.CODE_SAVE_FILE;
+        }finally {
+            if (fis != null) {
+                fis.close();
+            }
+        }
+        return errcode;
+    }
+
     public static int saveSplitFile(String root, String filename,
                                     long index, long total, String checksum,
                                     int chunksize, MultipartFile srcfile) throws IOException {
