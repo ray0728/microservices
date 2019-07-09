@@ -5,6 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title th:text="${title}"></title>
     <link rel="icon" href="/global/img/core-img/favicon.ico">
     <link rel="stylesheet" href="/global/video-js/video-js.min.css">
@@ -12,7 +14,6 @@
     <link rel="stylesheet" href="/global/css/log.css">
 </head>
 <body>
-<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 <div th:include="public::topbar"></div>
 <div id="errinfo" class="alert alert-danger alert-dismissible fade show">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -63,7 +64,7 @@
                 </div>
                 <div class="blog-post-author mt-100 d-flex">
                     <div class="author-thumbnail">
-                        <img src="/global/img/bg-img/b6.jpg"/>
+                        <img th:src=${"/api/user/account/avatar/" + author.uid}/>
                     </div>
                     <div class="author-info">
                         <div class="line"></div>
@@ -160,7 +161,6 @@
             </div>
         </div>
     </div>
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 </div>
 <script src="/global/js/jquery-2.2.4.min.js"></script>
 <script src="/global/js/popper.min.js"></script>

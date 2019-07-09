@@ -35,7 +35,7 @@ $('.original-btn').click(function () {
         formData.append("name", name);
         formData.append("email", email);
         formData.append("message", message);
-        formData.append("_csrf", $($.find('input[type="hidden"]')).val());
+        formData.append("_csrf", $("meta[name='_csrf']").attr("content"));
         $.ajax({
             url: "/blog/api/reply/new",
             data: formData,
@@ -72,7 +72,7 @@ $("#btn_delete").click(function () {
         url: '/blog/api/res/delete',
         type: 'DELETE',
         data: {
-            '_csrf': $($.find('input[type="hidden"]')).val(),
+            '_csrf': $("meta[name='_csrf']").attr("content"),
             id: logid
         },
         success: function (result) {

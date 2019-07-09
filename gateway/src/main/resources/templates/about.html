@@ -68,14 +68,14 @@
                 <div class="instagram-slides owl-carousel">
                     <div class="single-insta-feed" th:each="author:${authors}">
                         <div class="card">
-                            <img class="card-img-top" src="${author.header}" alt="Card image" style="width:100%"/>
+                            <img class="card-img-top" th:src="${author.avatar}" alt="Card image" style="width:100%"/>
                             <div class="card-body">
                                 <h4 class="card-title" th:text="${author.name}"></h4>
-                                <p class="card-text" th:text="${author.resume}"></p>
+                                <p class="card-text" th:text="${author.autoDetectResume()}"></p>
                             </div>
                         </div>
                         <div class="hover-effects">
-                            <a href='${"/author?id=" + author.uid}' class="d-flex align-items-center justify-content-center"><i class="fa fa-link"></i></a>
+                            <a th:href='${"/author?id=" + author.uid}' class="d-flex align-items-center justify-content-center"><i class="fa fa-link"></i></a>
                         </div>
                     </div>
                 </div>

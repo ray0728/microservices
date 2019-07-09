@@ -18,6 +18,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -56,14 +57,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http
+//                .csrf().csrfTokenRepository(new HttpSessionCsrfTokenRepository())
+//                .requireCsrfProtectionMatcher(httpServletRequest -> {
+//                   return true;
+//                })
+//                .and()
+                .authorizeRequests()
                 .antMatchers("/api/user/**").permitAll()
                 .antMatchers("/blog/api/res/**", "/blog/api/reply/**").permitAll()
                 .antMatchers("/blog/article", "/blog/list", "/blog/reply", "/blog/page/**").permitAll()
                 .antMatchers("/home", "/", "/login**","/join**", "/news/**","/rst/redirect","/rst/ai", "/rst/account/check").permitAll()
                 .antMatchers("/about", "/contact").permitAll()
                 .antMatchers("/admin/**").hasRole(Role.ROLE_ADMIN)
-                .anyRequest().authenticated()git 
+                .anyRequest().authenticated()
                 .and()
                 .httpBasic().disable()
                 .formLogin().loginPage("/login").permitAll()

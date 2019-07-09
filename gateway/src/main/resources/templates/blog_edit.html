@@ -5,6 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title th:text="${title}"></title>
     <link rel="icon" href="/global/img/core-img/favicon.ico">
     <link rel="stylesheet" href="/global/summernote/summernote-bs4.css">
@@ -113,7 +115,6 @@
         </div>
     </div>
 </div>
-<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 <input type="hidden" th:value="${log.detail.log}" id="org_log" th:if="${log.detail.log != null}"/>
 <script src="/global/js/jquery-2.2.4.min.js"></script>
 <script src="/global/js/jquery.base64.js"></script>

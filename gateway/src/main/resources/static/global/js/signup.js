@@ -17,10 +17,11 @@ $('#createAccountModal').on('shown.bs.modal', function (e) {
     $.post("/rst/account/check", {
         'username': $('#username').val(),
         'email': $('#email').val(),
+        '_csrf': $("meta[name='_csrf']").attr("content")
     }, function(){
         processAvatarUpload(progress);
-    }).error(function (ret) {
-        errorOccurred(ret);
+    }).error(function (xhr, status, info) {
+        errorOccurred(xhr.responseText);
     });
 });
 
@@ -44,12 +45,12 @@ createAccountWithoutAvatar = function (progress) {
         'passwd': $('#passwd').val(),
         'signature': $('#signature').val(),
         'resume': $('#resume').val(),
-        '_csrf': $($.find('input[type="hidden"]')).val()
+        '_csrf': $("meta[name='_csrf']").attr("content")
     }, function (ret) {
         $(progress[0]).css("width", "100%");
         window.location.href = "/login";
-    }).error(function(ret){
-        errorOccurred(ret);
+    }).error(function(xhr, status, info){
+        errorOccurred(xhr.responseText);
     });
 }
 
@@ -136,7 +137,7 @@ sliceUpload = function (file, progress) {
         formData.append("signature", $('#signature').val());
         formData.append("resume", $('#resume').val());
         formData.append("checksum", checksum);
-        formData.append("_csrf", $($.find('input[type="hidden"]')).val());
+        formData.append("_csrf", $("meta[name='_csrf']").attr("content"));
         $.ajax({
             url: "/api/user/account/create",
             data: formData,

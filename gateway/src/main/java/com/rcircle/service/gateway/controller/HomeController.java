@@ -80,6 +80,7 @@ public class HomeController {
     public String about(ModelMap mm) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
         MvcToolkit.autoLoadNewsData(messageService, mm);
+        mm.addAttribute("authors", accountService.getAllAccountBasicInfo());
         mm.addAttribute("title", "About us");
 
         return "about";

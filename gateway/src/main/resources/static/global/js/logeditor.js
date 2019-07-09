@@ -197,7 +197,7 @@ jump = function (lid) {
     $.post("/blog/api/res/update", {
         'id': lid,
         'status': 0,
-        '_csrf': $($.find('input[type="hidden"]')).val()
+        '_csrf': $("meta[name='_csrf']").attr("content")
     }, function (ret, status) {
         $.ajax({
             url: "/rst/hls?lid=" + lid,
@@ -230,7 +230,7 @@ errorOccurred = function () {
 createLog = function (header, progress) {
     header.text("Prepare to create an article");
     $.post("/blog/api/res/new", {
-        '_csrf': $($.find('input[type="hidden"]')).val()
+        '_csrf': $("meta[name='_csrf']").attr("content")
     }, function (data, status) {
         status == "success" && $(progress[0]).css("width", "25%") && updateLog(data, progress);
         status != "success" && errorOccurred();
@@ -252,7 +252,7 @@ updateLog = function (lid, progress) {
         'title': title,
         'type': category,
         'tags':tags,
-        '_csrf': $($.find('input[type="hidden"]')).val()
+        '_csrf': $("meta[name='_csrf']").attr("content")
     }, function (ret, status) {
         status == "success" && $(progress[0]).css("width", "50%") && uploadCover(lid);
         status != "success" && errorOccurred();
@@ -398,7 +398,7 @@ sliceUpload = function (lid, file, chunkSize, type, progress, nextstep) {
         formData.append("file", filedata);
         formData.append("chunksize", chunkSize);
         formData.append("checksum", checksum);
-        formData.append("_csrf", $($.find('input[type="hidden"]')).val());
+        formData.append("_csrf", $("meta[name='_csrf']").attr("content"));
         $.ajax({
             url: "/blog/api/res/" + type + "/" + lid + "/" + $.base64.encode(file.name),
             data: formData,

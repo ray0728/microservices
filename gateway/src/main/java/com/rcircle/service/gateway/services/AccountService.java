@@ -27,6 +27,11 @@ public class AccountService {
         return JSON.parseObject(info, Account.class);
     }
 
+    public List<Account> getAllAccountBasicInfo(){
+        String info = remoteAccountClient.getInfo("", 0);
+        return JSON.parseArray(info, Account.class);
+    }
+
     @HystrixCommand(fallbackMethod = "buildFallbackGetAllAcounts", threadPoolKey = "AccountThreadPool")
     public List<Account> getAllAccounts() {
         String ret = remoteAccountClient.getInfo("", 0);
