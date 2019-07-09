@@ -68,7 +68,7 @@
                 <div class="instagram-slides owl-carousel">
                     <div class="single-insta-feed" th:each="author:${authors}">
                         <div class="card">
-                            <img class="card-img-top" th:src="${author.avatar}" alt="Card image" style="width:100%"/>
+                            <img class="card-img-top" th:src="${author.avatar}" alt="Card image" style="width:300px, height:300px"/>
                             <div class="card-body">
                                 <h4 class="card-title" th:text="${author.name}"></h4>
                                 <p class="card-text" th:text="${author.autoDetectResume()}"></p>

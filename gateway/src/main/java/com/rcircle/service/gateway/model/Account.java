@@ -56,7 +56,7 @@ public class Account implements Authentication, CredentialsContainer {
     }
 
     public String getAvatar() {
-        return avatar == "1" ?  "/api/user/account/avatar/" + uid : "/global/img/default-avatar.png";
+        return avatar.equals("1") ?  "/api/user/account/avatar/" + uid : "/global/img/default-avatar.png";
     }
 
     public void setAvatar(String avatar) {
