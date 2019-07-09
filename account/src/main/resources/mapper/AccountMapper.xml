@@ -95,7 +95,7 @@
     </select>
 
     <select id="getAllAccount" resultType="Account">
-        SELECT id,username,signature,resume,avatar
+        SELECT id AS 'uid',username,signature,resume,avatar
         FROM account.t_account
         WHERE status = 0;
     </select>
