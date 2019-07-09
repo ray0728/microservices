@@ -21,8 +21,6 @@ public class NetFile {
             fis = new FileInputStream(dstFile);
             if (!DigestUtils.md5Hex(fis).equals(checksum)) {
                 errcode = ResultInfo.CODE_CHECK_SUM;
-            } else {
-                fis.close();
             }
         }catch (IOException e){
             errcode = ResultInfo.CODE_SAVE_FILE;
@@ -30,51 +28,6 @@ public class NetFile {
             if (fis != null) {
                 fis.close();
             }
-        }
-        return errcode;
-    }
-
-    public static int saveSplitFile(String root, String filename,
-                                    long index, long total, String checksum,
-                                    int chunksize, MultipartFile srcfile) throws IOException {
-        int errcode = 0;
-        FileInputStream fis = null;
-        File targetDir = new File(root);
-        if (!targetDir.exists()) {
-            targetDir.mkdirs();
-        }
-        File tmpFile = new File(targetDir, filename + ".cache");
-        tmpFile.deleteOnExit();
-        try {
-            srcfile.transferTo(tmpFile);
-            fis = new FileInputStream(tmpFile);
-            if (!DigestUtils.md5Hex(fis).equals(checksum)) {
-                errcode = ResultInfo.CODE_CHECK_SUM;
-            } else {
-                fis.close();
-                RandomAccessFile dstFile = new RandomAccessFile(getDirAbsolutePath(root, "Unconfirmed " + filename + ".download"), "rw");
-                dstFile.seek(index * chunksize);
-                fis = new FileInputStream(tmpFile);
-                byte[] buffer = new byte[4096];
-                int length = 0;
-                while ((length = fis.read(buffer)) != -1) {
-                    dstFile.write(buffer, 0, length);
-                }
-                dstFile.close();
-            }
-        } catch (FileNotFoundException e) {
-            errcode = ResultInfo.CODE_OPEN_FILE;
-        } catch (IOException e) {
-            errcode = ResultInfo.CODE_SAVE_FILE;
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
-        }
-        if (index + 1 == total || errcode != 0) {
-            tmpFile.delete();
-            File file = new File(getDirAbsolutePath(root, "Unconfirmed " + filename + ".download"));
-            file.renameTo(new File(getDirAbsolutePath(root, filename)));
         }
         return errcode;
     }

@@ -43,27 +43,15 @@ public class AccountService {
 
     public String updateAvatar(int uid, String checksum, MultipartFile file) {
         String root = NetFile.getDirAbsolutePath(saveDirRoot, String.valueOf(uid));
-        String ret = null;
+        String ret = root;
         try {
             int error = NetFile.saveFileFromNet(root, "avatar", checksum, file);
             String message = autoDetectErrorMessageAfterUpload(error);
-            ret = ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, message);
+            if(message != null) {
+                ret = ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, message);
+            }
         } catch (IOException e) {
             ret = ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, 0, e.getMessage());
-        }
-        return ret;
-    }
-
-    public String updateAvatar(int uid, int index, int total, int chunkSize, String checksum, MultipartFile file) {
-        String ret = "";
-        int error = 0;
-        String root = NetFile.getDirAbsolutePath(saveDirRoot, String.valueOf(uid));
-        try {
-            error = NetFile.saveSplitFile(root, "avatar", index, total, checksum, chunkSize, file);
-            String message = autoDetectErrorMessageAfterUpload(error);
-            ret = ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, message);
-        } catch (IOException e) {
-            ret = ResultInfo.assembleJson(ResultInfo.ErrType.EXCEPTION, error, e.getMessage());
         }
         return ret;
     }
@@ -121,14 +109,24 @@ public class AccountService {
         return mapper.setAccountStatus(account.getUid(), status);
     }
 
-    public int updateAccountInfo(int uid, String email, String password, String profile, String resume, String header) {
+    public int updateAccountInfo(int uid, String email, String password, String signature, String resume, String avatar) {
         Account tmpAccount = new Account();
         tmpAccount.setUid(uid);
-        tmpAccount.setEmail(email);
-        tmpAccount.setSignature(profile);
-        tmpAccount.setResume(resume);
-        tmpAccount.setAvatar(header);
-        tmpAccount.setPassword(Password.crypt(password));
+        if(email != null) {
+            tmpAccount.setEmail(email);
+        }
+        if(signature != null) {
+            tmpAccount.setSignature(signature);
+        }
+        if(resume != null) {
+            tmpAccount.setResume(resume);
+        }
+        if(avatar != null) {
+            tmpAccount.setAvatar(avatar);
+        }
+        if(password != null) {
+            tmpAccount.setPassword(Password.crypt(password));
+        }
         return mapper.updateAccount(tmpAccount);
     }
 

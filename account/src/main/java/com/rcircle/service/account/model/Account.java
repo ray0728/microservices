@@ -11,8 +11,8 @@ public class Account implements Serializable {
     public static final int STATUS_DISABLED = 3;
     private int uid = 0;
     private String username;
-    private String password;
-    private String email;
+    private String password = "";
+    private String email = "";
     private String signature = "";
     private String resume = "";
     private String avatar = "";
@@ -110,6 +110,21 @@ public class Account implements Serializable {
             roles = new ArrayList<>();
         }
         return roles;
+    }
+
+    public void hideSensitiveInfo(){
+        if(roles != null){
+            roles.clear();
+        }
+        email = "";
+        firsttime = 0;
+        lastlogin = 0;
+        password = "";
+        status = 0;
+        times = 0;
+        if(!avatar.isEmpty()){
+            avatar = "1";
+        }
     }
 
     public long getFirsttime() {

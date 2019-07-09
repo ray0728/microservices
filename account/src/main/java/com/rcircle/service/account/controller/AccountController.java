@@ -7,12 +7,18 @@ import com.rcircle.service.account.model.ResultData;
 import com.rcircle.service.account.model.Role;
 import com.rcircle.service.account.service.AccountService;
 import com.rcircle.service.account.util.ResultInfo;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -40,15 +46,12 @@ public class AccountController {
     public String uploadAvatar(Principal principal,
                                MultipartFile file,
                                @PathVariable("uid") int uid,
-                               @RequestParam(name = "index") int index,
-                               @RequestParam(name = "total") int total,
-                               @RequestParam(name = "chunksize") int chunkSize,
                                @RequestParam(name = "checksum") String checksum) {
         Account opAccount = mAccountService.getAccount(principal.getName(), 0);
         if (opAccount == null || opAccount.getUid() != uid) {
             return ResultInfo.assembleJson(ResultInfo.ErrType.INVALID, ResultInfo.CODE_UPLOAD_AVATAR, "Invalid resources.");
         }
-        return mAccountService.updateAvatar(uid, index, total, chunkSize, checksum, file);
+        return mAccountService.updateAvatar(uid, checksum, file);
     }
 
 
@@ -90,7 +93,9 @@ public class AccountController {
         }
         account.setPassword("******");
         if (!checksum.isEmpty() && file != null) {
-            mAccountService.updateAvatar(account.getUid(), checksum, file);
+            String avatarurl = mAccountService.updateAvatar(account.getUid(), checksum, file);
+            account.setAvatar(avatarurl);
+            mAccountService.updateAccountInfo(account.getUid(), null, null, null, null, avatarurl);
         }
         ResultData data = new ResultData();
         data.setCode(ResultInfo.CODE_CREATE_ACCOUNT);
@@ -178,18 +183,46 @@ public class AccountController {
                           @RequestParam(name = "uid", required = false, defaultValue = "0") int uid) {
         String ret = null;
         if (username.isEmpty() && uid == 0) {
-            List accounts = mAccountService.getAllAccounts();
+            List<Account> accounts = mAccountService.getAllAccounts();
+            for(Account account: accounts){
+                account.hideSensitiveInfo();
+            }
             ret = accounts == null ? null : JSONArray.toJSONString(accounts);
         } else {
             Account account = mAccountService.getAccount(username, uid);
             String securityFlag = request.getHeader("rc-account-security");
             if (account != null && securityFlag == null) {
-                account.setPassword("******");
+                account.hideSensitiveInfo();
             }
             ret = account == null ? null : JSONObject.toJSONString(account);
         }
         return ret;
     }
+
+    @GetMapping("avatar/{uid}")
+    public ResponseEntity getAvatar(Principal principal, @PathVariable("uid") int uid){
+        Account account = mAccountService.getAccount(null, uid);
+        String errinfo = null;
+        try {
+            return  account.getAvatar().isEmpty() ? null: createResponseEntity("image/jpg",  account.getAvatar() + File.separatorChar + "avatar");
+        }catch (IOException e){
+            errinfo = e.getMessage();
+        }
+        return ResponseEntity.status(404).body(errinfo);
+    }
+
+    private ResponseEntity createResponseEntity(String type, String filePath) throws IOException {
+        MediaType mediaType = MediaType.parseMediaType(type);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(mediaType);
+        File file = new File(filePath);
+        FileInputStream inputStream = new FileInputStream(file);
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes, 0, inputStream.available());
+        inputStream.close();
+        return new ResponseEntity(bytes, headers, HttpStatus.OK);
+    }
+
 
     @PutMapping("refresh")
     public String refreshTime(Principal principal) {
