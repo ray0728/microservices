@@ -1441,3 +1441,31 @@ textarea:focus ~ .highlight {
   overflow-x: hidden;
   overflow-y: auto;
 }
+
+p>span.ellipsis,
+p>span.op1,
+p>span.op2,
+p>span.op3{
+  display:block;
+  position:absolute;
+  bottom:0;
+  height:20px;
+  line-height:13px;
+  width:7px;
+}
+p>span.ellipsis{
+  width:20px;
+  right:0;
+}
+p>span.op1{
+  right:34px;
+  opacity:.7;
+}
+p>span.op2{
+  right:27px;
+  opacity:.8;
+}
+p>span.op3{
+  right:20px;
+  opacity:.9;
+}

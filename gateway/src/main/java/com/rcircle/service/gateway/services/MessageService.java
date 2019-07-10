@@ -20,7 +20,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
-//@EnableBinding(value = {NewsSink.class, SmsSink.class, HLSSink.class})
+@EnableBinding(value = {NewsSink.class, SmsSink.class, HLSSink.class})
 public class MessageService {
     public int RESULT_FAILED = 0;
     public int RESULT_SUCCESS = 1;

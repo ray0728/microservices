@@ -11,83 +11,110 @@
 </head>
 
 <body>
-    <!-- Preloader -->
-    <div id="preloader">
-        <div class="preload-content">
-            <div id="original-load"></div>
+<!-- Preloader -->
+<div id="preloader">
+    <div class="preload-content">
+        <div id="original-load"></div>
+    </div>
+</div>
+
+<div th:include="public::topbar"></div>
+<!-- ##### Breadcumb Area Start ##### -->
+<div class="breadcumb-area bg-img" style="background-image: url(global/img/bg-img/b1.jpg);">
+    <div class="container h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-12">
+                <div class="breadcumb-content text-center">
+                    <h2>about us</h2>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
-    <div th:include="public::topbar"></div>
-    <!-- ##### Breadcumb Area Start ##### -->
-    <div class="breadcumb-area bg-img" style="background-image: url(global/img/bg-img/b1.jpg);">
-        <div class="container h-100">
-            <div class="row h-100 align-items-center">
-                <div class="col-12">
-                    <div class="breadcumb-content text-center">
-                        <h2>about us</h2>
+<!-- ##### Blog Wrapper Start ##### -->
+<div class="blog-wrapper section-padding-100-0 clearfix">
+    <div class="container">
+        <div class="row align-items-end">
+            <!-- Single Blog Area -->
+            <div class="col-12 col-lg-4">
+                <div class="single-blog-area clearfix mb-100">
+                    <!-- Blog Content -->
+                    <div class="single-blog-content">
+                        <h4><a href="#" class="post-headline">Welcome to Simple Life blog</a></h4>
+                        <p class="mb-3">Curabitur venenatis efficitur lorem sed tempor. Integer aliquet tempor cursus.
+                            Nullam vestibulum convallis risus vel condimentum. Nullam auctor lorem in libero luctus, vel
+                            volutpat quam tincidunt. Morbi sodales, dolor id ultricies dictum. Lorem ipsum dolor sit
+                            amet, consectetur adipiscing elit. Mauris tempus vestibulum mauris quis aliquam. Integer
+                            accumsan sodales odio, id tempus velit ullamcorper id. Quisque at erat eu libero consequat
+                            tempus.slacus sit amet augue sodales, vel cursus enim tristique.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Single Blog Area -->
+            <div class="col-12 col-lg-4">
+                <div class="single-blog-area clearfix mb-100">
+                    <!-- Blog Content -->
+                    <div class="single-blog-content">
+                        <p class="mb-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus
+                            vestibulum mauris quis aliquam. Integer accumsan sodales odio, id tempus velit ullamcorper
+                            id. Quisque at erat eu libero consequat tempus. Quisque molestie convallis tempus. Ut semper
+                            purus metus, a euismod sapien sodales ac. Duis viverra eleifend fermentum. Donec sagittis
+                            lacus sit amet augue sodales, vel cursus enim tristique. Maecenas vitae massa ut est
+                            consectetur sagittis quis vitae tortor.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<!-- ##### Blog Wrapper End ##### -->
 
-    <!-- ##### Blog Wrapper Start ##### -->
-    <div class="blog-wrapper section-padding-100-0 clearfix">
-        <div class="container">
-            <div class="row align-items-end">
-                <!-- Single Blog Area -->
-                <div class="col-12 col-lg-4">
-                    <div class="single-blog-area clearfix mb-100">
-                        <!-- Blog Content -->
-                        <div class="single-blog-content">
-                            <h4><a href="#" class="post-headline">Welcome to Simple Life blog</a></h4>
-                            <p class="mb-3">Curabitur venenatis efficitur lorem sed tempor. Integer aliquet tempor cursus. Nullam vestibulum convallis risus vel condimentum. Nullam auctor lorem in libero luctus, vel volutpat quam tincidunt. Morbi sodales, dolor id ultricies dictum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestibulum mauris quis aliquam. Integer accumsan sodales odio, id tempus velit ullamcorper id. Quisque at erat eu libero consequat tempus.slacus sit amet augue sodales, vel cursus enim tristique.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Single Blog Area -->
-                <div class="col-12 col-lg-4">
-                    <div class="single-blog-area clearfix mb-100">
-                        <!-- Blog Content -->
-                        <div class="single-blog-content">
-                            <p class="mb-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestibulum mauris quis aliquam. Integer accumsan sodales odio, id tempus velit ullamcorper id. Quisque at erat eu libero consequat tempus. Quisque molestie convallis tempus. Ut semper purus metus, a euismod sapien sodales ac. Duis viverra eleifend fermentum. Donec sagittis lacus sit amet augue sodales, vel cursus enim tristique. Maecenas vitae massa ut est consectetur sagittis quis vitae tortor.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- ##### Blog Wrapper End ##### -->
-
-    <!-- ##### Cool Facts Area Start ##### -->
-    <div class="cool-facts-area section-padding-100-0 bg-img background-overlay" style="background-image: url(img/bg-img/b4.jpg);">
-        <div class="container">
-            <h4>Our Members</h4>
-            <div class="instagram-feed-area">
+<!-- ##### Cool Facts Area Start ##### -->
+<div class="cool-facts-area section-padding-100-0 bg-img background-overlay"
+     style="background-image: url(img/bg-img/b4.jpg);">
+    <div class="container">
+        <h4>Our Members</h4>
+        <div class="row">
+            <div class="instagram-feed-area col-9 ">
                 <div class="instagram-slides owl-carousel">
                     <div class="single-insta-feed" th:each="author:${authors}">
                         <div class="card">
-                            <img class="card-img-top" th:src="${author.avatar}" alt="Card image" style="width:300px, height:300px"/>
+                            <img class="card-img-top" th:src="${author.avatar}" alt="Card image"
+                                 style="width:200px;height:200px"/>
                             <div class="card-body">
                                 <h4 class="card-title" th:text="${author.name}"></h4>
                                 <p class="card-text" th:text="${author.autoDetectResume()}"></p>
                             </div>
                         </div>
                         <div class="hover-effects">
-                            <a th:href='${"/author?id=" + author.uid}' class="d-flex align-items-center justify-content-center"><i class="fa fa-link"></i></a>
+                            <a th:href='${"/author?id=" + author.uid}'
+                               class="d-flex align-items-center justify-content-center"><i class="fa fa-link"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="col-3">
+            <div class="card">
+                <img class="card-img-top" src="/global/img/default-avatar.png" alt="Card image"
+                     style="width:200px;height:200px"/>
+                <div class="card-body">
+                    <h4 class="card-title" text="We need you!"></h4>
+                    <p class="card-text">Your ability is far beyond your imagination, don't let it disappear into your plain life.</p>
+                    <a href='/contact'><i class="fa fa-link"></i> Contact us</a>
+                </div>
+            </div>
+            </div>
         </div>
     </div>
-    <div th:include="public::bottombar"></div>
-    <script src="/global/js/jquery-2.2.4.min.js"></script>
-    <script src="/global/js/popper.min.js"></script>
-    <script src="/global/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/global/js/plugins.js"></script>
-    <script src="/global/js/active.js"></script>
-    <script src="/global/js/events.js"></script>
+</div>
+<div th:include="public::bottombar"></div>
+<script src="/global/js/jquery-2.2.4.min.js"></script>
+<script src="/global/js/popper.min.js"></script>
+<script src="/global/bootstrap/js/bootstrap.min.js"></script>
+<script src="/global/js/plugins.js"></script>
+<script src="/global/js/active.js"></script>
+<script src="/global/js/events.js"></script>
+<script src="/global/js/about.js"></script>
 </body>
 </html>
