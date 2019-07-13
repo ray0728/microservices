@@ -22,11 +22,8 @@ public class HLSService implements CommandCallback<HLSService.MateData> {
     @Autowired
     private CommandExecutor commandExecutor;
 
-    @Value("${ffmpeg.path.windows}")
-    private String ffmpeg_bin_path_w;
-
-    @Value("${ffmpeg.path.linux}")
-    private String ffmpeg_bin_path_l;
+    @Value("${ffmpeg.bin.path}")
+    private String ffmpeg_bin_path;
 
     private String autoDelectPath(String win, String lin) {
         String os = System.getProperty("os.name");
@@ -46,7 +43,7 @@ public class HLSService implements CommandCallback<HLSService.MateData> {
         md.filename = srcFile.getName();
         md.id = id;
         List<String> cmd = new ArrayList<>();
-        cmd.add(assembleAbsoluteFilePath(autoDelectPath(ffmpeg_bin_path_w, ffmpeg_bin_path_l), "ffmpeg"));
+        cmd.add(assembleAbsoluteFilePath(ffmpeg_bin_path, "ffmpeg"));
         cmd.add("-i");
         cmd.add(srcfile);
         cmd.add("-c:a");

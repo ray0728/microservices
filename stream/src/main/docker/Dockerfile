@@ -1,4 +1,4 @@
-FROM ray/web-jar:1.8.0
+FROM ray0728/ffmpeg:1.0
 RUN mkdir -p /usr/local/server
 ADD sources.list /etc/apt/
 RUN apt update && apt install -y netcat-openbsd

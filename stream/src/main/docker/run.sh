@@ -29,6 +29,6 @@ echo "********************************************************"
 java -Djava.security.egd=file:/dev/./urandom                \
      -Dspring.cloud.config.uri=$CONFIGSERVER_URI            \
      -Deureka.client.serviceUrl.defaultZone=$EUREKASERVER_URI \
-     -Dspring.kafka.bootstrap-servers=$KAFKA_URI             \
+     -Dauth-server=$AUTH_URI                                 \
      -Dspring.profiles.active=$PROFILE                      \
 -jar /usr/local/server/@project.build.finalName@.jar
