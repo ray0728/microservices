@@ -14,7 +14,7 @@ import java.util.*;
 
 @Service
 public class ResourceService {
-    @Value("${rource.upload.dir.root}")
+    @Value("${resource.upload.dir.root}")
     private String saveDirRoot;
     @Autowired
     private ResourceMapper resourceMapper;
