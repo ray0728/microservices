@@ -30,5 +30,6 @@ java -Djava.security.egd=file:/dev/./urandom                \
      -Dspring.cloud.config.uri=$CONFIGSERVER_URI            \
      -Deureka.client.serviceUrl.defaultZone=$EUREKASERVER_URI \
      -Dauth-server=$AUTH_URI                                 \
+     -Dffmpeg.bin.path=$FFMPEG_BIN_PATH                       \
      -Dspring.profiles.active=$PROFILE                      \
 -jar /usr/local/server/@project.build.finalName@.jar
