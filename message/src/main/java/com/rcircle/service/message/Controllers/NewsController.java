@@ -1,6 +1,6 @@
 package com.rcircle.service.message.Controllers;
 
-import com.rcircle.service.message.services.NewsService;
+import com.rcircle.service.message.services.SendService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -10,7 +10,7 @@ import java.security.Principal;
 @RequestMapping("/news")
 public class NewsController {
     @Resource
-    private NewsService newsService;
+    private SendService newsService;
 
     @PostMapping("/break")
     public String sendBreakNews(Principal principal,

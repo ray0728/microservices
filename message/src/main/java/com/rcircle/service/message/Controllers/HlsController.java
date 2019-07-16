@@ -1,6 +1,6 @@
 package com.rcircle.service.message.Controllers;
 
-import com.rcircle.service.message.services.HlsService;
+import com.rcircle.service.message.services.SendService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 @RequestMapping("/hls")
 public class HlsController {
     @Resource
-    private HlsService hlsService;
+    private SendService hlsService;
 
     @PostMapping("/split/result")
     public String sendHLSSplitFinished(@RequestParam(name = "id") int logid,

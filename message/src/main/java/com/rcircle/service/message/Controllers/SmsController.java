@@ -1,6 +1,6 @@
 package com.rcircle.service.message.Controllers;
 
-import com.rcircle.service.message.services.SmsService;
+import com.rcircle.service.message.services.SendService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,7 +13,7 @@ import java.security.Principal;
 @RequestMapping("/sms")
 public class SmsController {
     @Resource
-    private SmsService smsService;
+    private SendService smsService;
 
     @PostMapping("/general")
     public String sendSms(Principal principal,

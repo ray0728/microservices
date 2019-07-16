@@ -11,7 +11,7 @@ public class ResourceSecurityConfigurer extends ResourceServerConfigurerAdapter 
 
         http
                 .authorizeRequests()
-                .antMatchers("/news/**", "/sms/**").permitAll()
+                .antMatchers("/contact/**").permitAll()
                 .anyRequest()
                 .authenticated();
     }
