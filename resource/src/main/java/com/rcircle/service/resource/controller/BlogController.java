@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/res")
-public class ResourceController {
+@RequestMapping("/blog")
+public class BlogController {
 
     @Value("${label.upload.files}")
     private String uploadFileLabel;
@@ -295,7 +295,7 @@ public class ResourceController {
         return JSONObject.toJSONString(data);
     }
 
-    @GetMapping("blog")
+    @GetMapping("article")
     public String getLog(HttpServletRequest request, @RequestParam(name = "id") int id) {
         String securityFlag = request.getHeader("rc-resource-security");
         ResultData data = new ResultData();
