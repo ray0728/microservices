@@ -91,9 +91,22 @@ public class RestPageController {
     public String createNewAccount(HttpServletResponse response,
                                    @RequestParam(name = "username") String name,
                                    @RequestParam(name = "email") String email) {
-        if (accountService.isExist(name, email)) {
-            response.setStatus(400);
-            return "username or email has been used";
+        String ret = "";
+        switch (accountService.isExist(name, email)) {
+            case AccountService.ERR_USERNAME_EXIST:
+                response.setStatus(400);
+                ret ="username has been used";
+                break;
+            case AccountService.ERR_EMAIL_EXIST:
+                response.setStatus(400);
+                ret ="email has been used";
+                break;
+            case AccountService.ERR_SERVER_BUSY:
+                response.setStatus(400);
+                ret ="remote service busy, try again later";
+                break;
+            default:
+                break;
         }
         return "";
     }

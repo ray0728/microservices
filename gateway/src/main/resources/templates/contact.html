@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title th:text="${title}"></title>
+    <link rel="icon" href="/global/img/core-img/favicon.ico">
+    <link rel="stylesheet" href="/global/css/style.css">
+    <link rel="stylesheet" href="/global/css/log.css">
+</head>
+<body>
+<div th:include="public::topbar"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-lg-9">
+            <section class="contact-area section-padding-100">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <!-- Contact Form Area -->
+                        <div class="col-12 col-md-10 col-lg-9">
+                            <div class="contact-form">
+                                <h5>Get in Touch</h5>
+                                <!-- Contact Form -->
+                                <form action="/api/message/contact/feedback" method="post">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <div class="group">
+                                                <input type="text" name="username" required>
+                                                <span class="highlight"></span>
+                                                <span class="bar"></span>
+                                                <label>Name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <div class="group">
+                                                <input type="email" name="email" required>
+                                                <span class="highlight"></span>
+                                                <span class="bar"></span>
+                                                <label>Email</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="group">
+                                                <input type="text" name="subject" required>
+                                                <span class="highlight"></span>
+                                                <span class="bar"></span>
+                                                <label>Subject</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="group">
+                                                <textarea name="message" required></textarea>
+                                                <span class="highlight"></span>
+                                                <span class="bar"></span>
+                                                <label>Message</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn original-btn">Send Message</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="col-12 col-lg-3" th:include="public::sidebar"></div>
+    </div>
+</div>
+<div th:include="public::bottombar"></div>
+<script src="/global/js/jquery-2.2.4.min.js"></script>
+<script src="/global/js/popper.min.js"></script>
+<script src="/global/bootstrap/js/bootstrap.min.js"></script>
+<script src="/global/js/plugins.js"></script>
+<script src="/global/js/active.js"></script>
+<script src="/global/js/events.js"></script>
+</body>
+
+</html>

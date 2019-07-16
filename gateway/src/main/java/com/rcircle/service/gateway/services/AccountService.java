@@ -18,6 +18,9 @@ import java.util.Map;
 
 @Service
 public class AccountService {
+    public static final int ERR_USERNAME_EXIST = 1;
+    public static final int ERR_EMAIL_EXIST = 2;
+    public static final int ERR_SERVER_BUSY = 3;
     @Autowired
     private RemoteAccountClient remoteAccountClient;
 
@@ -39,16 +42,16 @@ public class AccountService {
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackisExist", threadPoolKey = "AccountThreadPool")
-    public boolean isExist(String username, String email) {
+    public int isExist(String username, String email) {
         Account existAccount = getAccountInfo(0, username);
         if (existAccount != null && !existAccount.hasError()) {
-            return true;
+            return ERR_USERNAME_EXIST;
         }
         existAccount = getAccountInfo(0, email);
         if (existAccount != null && !existAccount.hasError()) {
-            return true;
+            return ERR_EMAIL_EXIST;
         }
-        return false;
+        return 0;
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackAfterLoginSuccess", threadPoolKey = "AccountThreadPool")
@@ -84,7 +87,7 @@ public class AccountService {
         return account;
     }
 
-    private boolean buildFallbackisExist(String username, String email, Throwable throwable) {
-        return true;
+    private int buildFallbackisExist(String username, String email, Throwable throwable) {
+        return ERR_SERVER_BUSY;
     }
 }

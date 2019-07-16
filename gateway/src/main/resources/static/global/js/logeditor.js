@@ -128,7 +128,7 @@ $('#extmodal').on('shown.bs.modal', function (e) {
 abortUpload = function (resid) {
     abort_upload = true;
     $.ajax({
-        url: "/blog/api/res/files?id=" + resid + "&name=" + xhr_upload.join(";"),
+        url: "/api/res/blog/files?id=" + resid + "&name=" + xhr_upload.join(";"),
         type: "Delete",
         cache: false,
         processData: false,
@@ -194,7 +194,7 @@ jump = function (lid) {
         return;
     }
     $('#btn-close').attr("disabled", "true");
-    $.post("/blog/api/res/update", {
+    $.post("/api/res/blog/update", {
         'id': lid,
         'status': 0,
         '_csrf': $("meta[name='_csrf']").attr("content")
@@ -229,7 +229,7 @@ errorOccurred = function () {
 
 createLog = function (header, progress) {
     header.text("Prepare to create an article");
-    $.post("/blog/api/res/new", {
+    $.post("/api/res/blog/new", {
         '_csrf': $("meta[name='_csrf']").attr("content")
     }, function (data, status) {
         status == "success" && $(progress[0]).css("width", "25%") && updateLog(data, progress);
@@ -246,7 +246,7 @@ updateLog = function (lid, progress) {
     });
     $('#summernote').summernote('code');
     let code = replaceNode($('#summernote').summernote('code'), lid);
-    $.post("/blog/api/res/update", {
+    $.post("/api/res/blog/update", {
         'id': lid,
         'log': $(code).html(),
         'title': title,
@@ -282,7 +282,7 @@ replaceNode = function (code, lid) {
         let id = $(node).attr('id');
         let origial_video = [
             '<video controls class="video-js vjs-big-play-centered" id="' + id + '">',
-            '<source src="/blog/api/res/video/' + lid + '/' + $.base64.encode($(node).data('filename')) + '" type="application/x-mpegURL">',
+            '<source src="/api/res/blog/video/' + lid + '/' + $.base64.encode($(node).data('filename')) + '" type="application/x-mpegURL">',
             '</video>'
         ].join("");
         $(node).replaceWith(origial_video);
@@ -293,7 +293,7 @@ replaceNode = function (code, lid) {
         if ($(node).attr('src').indexOf("blob") == 0) {
             let origial_img = $('<img>');
             origial_img.css('width', width);
-            origial_img.attr('src', '/blog/api/res/img/' + lid + "/" + $.base64.encode($(node).data('filename')));
+            origial_img.attr('src', '/api/res/blog/img/' + lid + "/" + $.base64.encode($(node).data('filename')));
             $(node).replaceWith(origial_img);
         }
     });
@@ -400,7 +400,7 @@ sliceUpload = function (lid, file, chunkSize, type, progress, nextstep) {
         formData.append("checksum", checksum);
         formData.append("_csrf", $("meta[name='_csrf']").attr("content"));
         $.ajax({
-            url: "/blog/api/res/" + type + "/" + lid + "/" + $.base64.encode(file.name),
+            url: "/api/res/blog/" + type + "/" + lid + "/" + $.base64.encode(file.name),
             data: formData,
             type: "Post",
             cache: false,

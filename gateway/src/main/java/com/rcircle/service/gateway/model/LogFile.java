@@ -169,7 +169,7 @@ public class LogFile implements Serializable {
             Map<String, String> files = detail.getFiles();
             for (Map.Entry<String, String> entry : files.entrySet()) {
                 if (entry.getValue().contains(File.separatorChar + "cover" + File.separatorChar)) {
-                    return String.format("/blog/api/res/cover/%d/%s", id, entry.getKey());
+                    return String.format("/api/res/blog/cover/%d/%s", id, entry.getKey());
                 }
             }
         }

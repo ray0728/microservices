@@ -11,7 +11,6 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -79,10 +78,20 @@ public class HomeController {
     @GetMapping("about")
     public String about(ModelMap mm) {
         MvcToolkit.autoLoadTopMenuData(resourceService, mm);
+        MvcToolkit.autoLoadSideBarData(resourceService, mm);
         MvcToolkit.autoLoadNewsData(messageService, mm);
         mm.addAttribute("authors", accountService.getAllAccountBasicInfo());
         mm.addAttribute("title", "About us");
 
         return "about";
+    }
+
+    @GetMapping("contact")
+    public String contact(ModelMap mm) {
+        MvcToolkit.autoLoadTopMenuData(resourceService, mm);
+        MvcToolkit.autoLoadSideBarData(resourceService, mm);
+        MvcToolkit.autoLoadNewsData(messageService, mm);
+        mm.addAttribute("title", "Contact us");
+        return "contact";
     }
 }

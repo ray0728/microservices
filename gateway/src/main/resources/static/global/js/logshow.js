@@ -37,7 +37,7 @@ $('.original-btn').click(function () {
         formData.append("message", message);
         formData.append("_csrf", $("meta[name='_csrf']").attr("content"));
         $.ajax({
-            url: "/blog/api/reply/new",
+            url: "/api/blog/res/reply/new",
             data: formData,
             type: "Post",
             cache: false,
@@ -69,7 +69,7 @@ $("#btn_edit").click(function () {
 $("#btn_delete").click(function () {
     let logid = $(this).data("id");
     $.ajax({
-        url: '/blog/api/res/delete',
+        url: '/api/res/blog/delete',
         type: 'DELETE',
         data: {
             '_csrf': $("meta[name='_csrf']").attr("content"),

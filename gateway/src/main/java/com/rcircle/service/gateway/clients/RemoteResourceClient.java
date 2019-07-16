@@ -14,7 +14,7 @@ public interface RemoteResourceClient {
     @PostMapping("/cate/new")
     public String addNewCategory(@RequestParam(name = "desc", required = true) String desc);
 
-    @GetMapping("/res/list")
+    @GetMapping("/blog/list")
     public String getAllDiaries(@RequestParam(name = "type") int type,
                                 @RequestParam(name = "gid") int gid,
                                 @RequestParam(name = "title") String title,
@@ -22,13 +22,13 @@ public interface RemoteResourceClient {
                                 @RequestParam(name = "offset") int offset,
                                 @RequestParam(name = "count") int count);
 
-    @GetMapping("/res/top")
+    @GetMapping("/blog/top")
     public String getTopResource();
 
-    @GetMapping("/res/files")
+    @GetMapping("/blog/files")
     public String getAllFileInfo(@RequestParam(name = "id") int id);
 
-    @GetMapping("/res/blog")
+    @GetMapping("/blog/article")
     public String getBLog(@RequestParam(name = "id")int id);
 
     @GetMapping("/tag/list")

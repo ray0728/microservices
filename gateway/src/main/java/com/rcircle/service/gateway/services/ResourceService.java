@@ -67,18 +67,19 @@ public class ResourceService {
 
     @HystrixCommand(fallbackMethod = "buildFallbackGetTopDiaries", threadPoolKey = "DirayThreadPool")
     public List<LogFile> getTopBlogs() {
+        List<LogFile> logs = null;
         String ret = remoteResourceClient.getTopResource();
         Map<String, Object> map = new HashMap<>();
         map.put("list_log", LogFile.class);
         if (Toolkit.parseResultData(ret, map)) {
-            return (List<LogFile>) map.get("list_log");
+            logs = (List<LogFile>) map.get("list_log");
         }
-        return buildFallbackGetTopDiaries(null);
+        return logs == null ? buildFallbackGetTopDiaries(null) : logs;
     }
 
     @HystrixCommand(fallbackMethod = "buildFallbackGetDiary", threadPoolKey = "DirayThreadPool")
     public LogFile getBlog(int id, boolean force) {
-        if(force){
+        if (force) {
             HttpContextHolder.getContext().setValue("rc-resource-security", Toolkit.randomString(8));
         }
         String ret = remoteResourceClient.getBLog(id);
@@ -87,7 +88,7 @@ public class ResourceService {
         if (Toolkit.parseResultData(ret, map)) {
             return (LogFile) map.get("log");
         }
-        if(force){
+        if (force) {
             HttpContextHolder.getContext().delete("rc-resource-security");
         }
         return buildFallbackGetDiary(id, force, null);
