@@ -19,7 +19,7 @@ public class LocalRedirectResolver implements RedirectResolver {
         if(requestedRedirect.substring(requestedRedirect.indexOf("//") + 2).equals(gw+"/rst/redirect")) {
             return requestedRedirect;
         }else{
-            throw new RedirectMismatchException("Invalid redirect: " + requestedRedirect + " does not match one of the registered values.");
+            throw new RedirectMismatchException("Invalid redirect: " + requestedRedirect + " does not match one of the registered values.[" + gw + "/rst/redirect]");
         }
     }
 }
