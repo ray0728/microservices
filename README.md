@@ -29,6 +29,6 @@ Message management service Support for posting multiple topics via Kafka.
 Streaming service Support for transcoding (HLS) video files and publishing transcoding results through message service.    
 [more](https://github.com/ray0728/streamserver)
 
-#gatewayserver ![travis_ci](https://www.travis-ci.org/ray0728/gatewayserver.svg?branch=master)
+## gatewayserver ![travis_ci](https://www.travis-ci.org/ray0728/gatewayserver.svg?branch=master)
 Gateway service, integrated UI (thymeleaf based) Provide all user interfaces    
 [more](https://github.com/ray0728/gatewayserver)
